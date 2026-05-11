@@ -1,0 +1,132 @@
+/* ============================================================
+   glo — shared brand stylesheet
+   Source of truth for tokens, nav, footer, buttons, a11y.
+   Page-specific section CSS lives inline in each HTML file.
+   ============================================================ */
+
+:root{
+  /* Backgrounds — white → soft rose tints */
+  --bg-1:#ffffff;
+  --bg-2:#faf7f7;
+  --bg-3:#f3eaea;
+  --bg-4:#e8d5d5;
+  --bg-warm:#faf6f3;
+
+  /* Burgundy scale */
+  --burg-50:#d4b5b5;
+  --burg-100:#b88787;
+  --burg-200:#8a4a52;
+  --burg-300:#6e3038;
+  --burg-400:#5a2229;
+  --burg-600:#3a1a22;
+  --burg-800:#2a1218;
+  --burg-900:#1a0f14;
+
+  /* Text */
+  --ink:#2a1218;
+  --ink-soft:rgba(42,18,24,0.72);
+  --ink-mute:rgba(42,18,24,0.68);
+  --ink-faint:rgba(42,18,24,0.35);
+  --ink-line:rgba(42,18,24,0.1);
+  --ink-line-2:rgba(42,18,24,0.06);
+
+  /* Brand accent (burgundy-rose, not orange) */
+  --accent:#8a4a52;
+  --accent-deep:#5a2229;
+
+  /* Aliases */
+  --paper:var(--bg-1);
+  --paper-2:var(--bg-2);
+  --bordeaux:var(--burg-600);
+  --bd:var(--burg-800);
+  --noir:var(--burg-900);
+  --cream:#f4ebeb;
+  --clay:var(--accent);
+  --cd:var(--accent-deep);
+}
+
+/* RESET */
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg-1);color:var(--ink);}
+body{font-family:'Inter',sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+sup.c{font-size:.63em;font-weight:600;color:var(--accent);vertical-align:super;line-height:0;margin-left:1px;}
+
+/* A11Y — skip link, hidden until focused */
+.skip{position:absolute;top:-48px;left:8px;z-index:100;background:var(--ink);color:var(--cream);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;letter-spacing:.2px;transition:top .2s;}
+.skip:focus{top:8px;}
+
+/* A11Y — focus only for keyboard users */
+:focus{outline:none;}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px;}
+.btn-p:focus-visible,.btn-nav:focus-visible,.final-btn:focus-visible,.buy-btn:focus-visible{outline:2px solid var(--cream);outline-offset:3px;}
+
+/* NAV — floating glass pills */
+nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
+.nav-i{display:flex;align-items:center;justify-content:space-between;padding:0 80px;max-width:1480px;margin:0 auto;gap:16px;}
+.nav-l,.nav-r{pointer-events:auto;display:flex;align-items:center;background:rgba(243,234,234,.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border:1px solid rgba(212,181,181,.4);border-radius:100px;box-shadow:0 8px 32px rgba(58,26,34,.08),inset 0 1px 0 rgba(255,255,255,.5);}
+.nav-l{padding:6px 32px;gap:32px;}
+.nav-r{padding:6px;gap:4px;}
+.logo{font-family:'Fraunces',serif;font-weight:300;font-size:30px;letter-spacing:-1.3px;color:var(--ink);line-height:1;}
+.logo .dot{color:var(--accent);font-style:italic;}
+.nav-links{display:flex;gap:24px;font-size:13px;font-weight:500;color:var(--ink-soft);padding:10px 4px;}
+.nav-links a:hover{color:var(--accent);}
+.nav-links a[aria-current="page"]{color:var(--ink);}
+.nav-r a{font-size:13px;font-weight:500;color:var(--ink-soft);padding:10px 18px;border-radius:100px;transition:color .2s,background .2s;}
+.nav-r a:hover{color:var(--ink);}
+.btn-nav{background:var(--burg-600) !important;color:var(--bg-1) !important;padding:10px 22px !important;font-weight:600;border-radius:100px;transition:background .2s;}
+.btn-nav:hover{background:var(--burg-400) !important;}
+
+/* BUTTONS */
+.btn-p{background:var(--burg-600);color:var(--bg-1);padding:16px 32px;font-weight:600;font-size:14px;display:inline-block;transition:background .2s,transform .15s;border-radius:100px;}
+.btn-p:hover{background:var(--burg-400);transform:translateY(-1px);}
+.btn-p.clay{background:var(--accent);color:var(--bg-1);}
+.btn-p.clay:hover{background:var(--burg-300);}
+.btn-p.lt{background:var(--bg-1);color:var(--ink);}
+.btn-p.lt:hover{background:var(--bg-2);}
+.btn-g{font-weight:500;font-size:14px;color:var(--ink);padding:16px 4px;border-bottom:1px solid var(--ink-line);}
+.btn-g:hover{border-color:var(--accent);}
+.btn-g.lt{color:var(--cream);border-color:rgba(244,235,235,.32);}
+.btn-g.lt:hover{border-color:var(--accent);}
+
+/* LAYOUT primitives */
+.ctr{max-width:1360px;margin:0 auto;padding:0 64px;}
+.ey{font-size:11px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:var(--ink-mute);margin-bottom:22px;}
+.ey .dash{display:inline-block;width:24px;height:1px;background:var(--accent);vertical-align:middle;margin-right:10px;}
+.ey.clay{color:var(--accent);}
+.ey.lt{color:rgba(244,235,235,.65);}
+.ey.lt.clay{color:var(--burg-50);}
+
+/* FOOTER — shared markup across all pages */
+footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6);}
+.foot-g{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;gap:32px;padding-bottom:44px;border-bottom:1px solid rgba(244,235,235,.08);}
+.foot-logo{font-family:'Fraunces',serif;font-weight:300;font-size:50px;letter-spacing:-2.2px;line-height:.9;color:var(--cream);}
+.foot-logo .dot{color:var(--burg-50);font-style:italic;}
+.foot-tag{font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:rgba(244,235,235,.5);margin-top:14px;max-width:240px;line-height:1.45;}
+.foot-col h4{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(244,235,235,.4);margin:0 0 14px;}
+.foot-col ul{list-style:none;display:flex;flex-direction:column;gap:8px;font-size:13px;}
+.foot-col li a:hover{color:var(--burg-50);}
+.foot-bot{display:flex;justify-content:space-between;padding-top:26px;font-size:11px;color:rgba(244,235,235,.34);gap:16px;}
+.foot-legal{font-size:10.5px;line-height:1.7;color:rgba(244,235,235,.3);margin-top:20px;max-width:860px;}
+
+/* RESPONSIVE — common rules only (page-specific stays inline) */
+@media (max-width:1100px){
+  .ctr{padding:0 32px;}
+  .nav-i{padding:0 48px;}
+  .nav-l{padding:6px 24px;gap:20px;}
+  .foot-g{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:640px){
+  .ctr{padding:0 20px;}
+  .nav-i{padding:0 24px;}
+  .nav-links{display:none;}
+  .nav-l{padding:6px 20px;}
+  .logo{font-size:26px;}
+  .foot-g{grid-template-columns:1fr;}
+}
+
+/* A11Y — honor reduced-motion */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important;}
+}

@@ -1,0 +1,35 @@
+# Project notes (kept local, not exposed via Pages)
+CLAUDE.md
+
+# Old project iteration (Rx telehealth pivot, not deployed)
+archive/
+
+# Heavy video backup — not referenced anywhere in production
+assets/video/hero-fluid-orig.mp4
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
+
+# Archive zips (deployment artifacts kept local)
+*.zip
+
+# Logs / env
+*.log
+.env
+.env.local
+.env.*.local
+
+# Dependencies (no build step yet — placeholder for Next.js migration)
+node_modules/
+.next/
+dist/
+build/

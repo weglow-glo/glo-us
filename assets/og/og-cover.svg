@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#faf7f7"/>
+      <stop offset="55%" stop-color="#f3eaea"/>
+      <stop offset="100%" stop-color="#e8d5d5"/>
+    </linearGradient>
+    <radialGradient id="orb1" cx="80%" cy="20%" r="55%">
+      <stop offset="0%" stop-color="#8a4a52" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#8a4a52" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="orb2" cx="10%" cy="90%" r="50%">
+      <stop offset="0%" stop-color="#d4b5b5" stop-opacity="0.36"/>
+      <stop offset="100%" stop-color="#d4b5b5" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#orb1)"/>
+  <rect width="1200" height="630" fill="url(#orb2)"/>
+  <text x="80" y="115" font-family="Georgia,serif" font-weight="300" font-size="58" fill="#2a1218" letter-spacing="-2">glo<tspan fill="#8a4a52" font-style="italic">.</tspan></text>
+  <text x="80" y="148" font-family="Helvetica,Arial,sans-serif" font-size="14" letter-spacing="3" fill="#8a4a52" font-weight="600">SKIN LONGEVITY · TAKEN DAILY</text>
+  <text x="80" y="320" font-family="Georgia,serif" font-weight="300" font-size="112" fill="#2a1218" letter-spacing="-4.5">Skin aging</text>
+  <text x="80" y="430" font-family="Georgia,serif" font-weight="300" font-size="112" fill="#2a1218" letter-spacing="-4.5">is just <tspan font-style="italic" fill="#8a4a52">a condition.</tspan></text>
+  <text x="80" y="540" font-family="Helvetica,Arial,sans-serif" font-size="22" fill="#2a1218" opacity="0.7">8 actives · 4 mechanisms · 30-day liquid shot protocol</text>
+  <text x="80" y="592" font-family="Helvetica,Arial,sans-serif" font-size="13" letter-spacing="1.5" fill="#2a1218" opacity="0.45">CO-DEVELOPED BY 8 SPECIALISTS · 6 MDs + 2 PhDs · KR + US</text>
+</svg>

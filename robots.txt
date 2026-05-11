@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /archive/
+Disallow: /assets/founders/PHOTO_GUIDE.md
+Disallow: /assets/og/README.md
+Disallow: /styles/
+
+Sitemap: https://glo-us.com/sitemap.xml
