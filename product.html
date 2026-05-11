@@ -124,6 +124,7 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 .b-foot{font-size:8px;font-weight:600;letter-spacing:1.4px;color:rgba(244,235,235,.5);text-transform:uppercase;text-align:center;line-height:1.5;position:relative;z-index:2;}
 .b-dots{display:flex;gap:4px;justify-content:center;margin-top:6px;position:relative;z-index:2;}
 .b-dots span{width:4px;height:4px;border-radius:50%;background:rgba(212,181,181,.55);}
+.bottle-img{position:relative;z-index:1;height:580px;width:auto;max-width:100%;filter:drop-shadow(0 32px 60px rgba(58,26,34,.30)) drop-shadow(0 10px 22px rgba(58,26,34,.20));pointer-events:none;user-select:none;}
 .phero-r{position:relative;display:flex;flex-direction:column;justify-content:center;}
 .ph-lbl{font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--accent);}
 .ph-h{font-family:'Fraunces',serif;font-weight:300;font-size:78px;line-height:.95;letter-spacing:-2.8px;margin:18px 0 0;color:var(--ink);}
@@ -409,6 +410,8 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
   .nav-i{padding:0 48px;}
   .nav-l{padding:6px 24px;gap:20px;}
   .phero-g,.how-g,.dt-head,.tg,.faq-g{grid-template-columns:1fr;gap:48px;}
+  .phero-l{min-height:520px;}
+  .bottle-img{height:500px;}
   .qspecs-g{grid-template-columns:repeat(3,1fr);}
   .test-g,.foot-g,.ing-grid.g4{grid-template-columns:repeat(2,1fr);}
   .ph-h{font-size:54px;letter-spacing:-2px;}
@@ -427,6 +430,8 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
   .nav-l{padding:6px 20px;}
   .logo{font-size:26px;}
   .phero{padding-top:120px;}
+  .phero-l{min-height:460px;}
+  .bottle-img{height:420px;}
   .test-g,.ing-grid.g4,.ing-grid.g2,.foot-g{grid-template-columns:1fr;}
   .qspecs-g{grid-template-columns:repeat(2,1fr);}
   .qs{border-right:none;border-bottom:1px solid var(--ink-line-2);padding:22px 18px;}
@@ -502,15 +507,7 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
       <div class="atom a3"><span class="atom-dot"></span>Niacinamide <em>250 mg</em></div>
       <div class="atom a4"><span class="atom-dot"></span>Collagen &lt;500 Da</div>
       <div class="atom a5"><span class="atom-dot"></span>HA · 3 MW</div>
-      <div class="bottle">
-        <div class="sheen"></div>
-        <div class="b-logo">glo<span class="dot">.</span></div>
-        <div class="b-mid">Skin longevity<br/>liquid shot</div>
-        <div class="b-flavor">— pineapple —</div>
-        <div class="b-code">GL-01</div>
-        <div class="b-foot">15 ml<br/>net</div>
-        <div class="b-dots"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-      </div>
+      <img class="bottle-img" src="assets/bottle/sachet.png" alt="GL-01 sachet · 15 ml liquid shot · pineapple" width="337" height="580"/>
     </div>
     <div class="phero-r">
       <div class="ph-lbl">GL-01 · Skin longevity</div>
