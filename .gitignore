@@ -4,8 +4,9 @@ CLAUDE.md
 # Old project iteration (Rx telehealth pivot, not deployed)
 archive/
 
-# Heavy video backup — not referenced anywhere in production
+# Heavy video backups — not referenced anywhere in production
 assets/video/hero-fluid-orig.mp4
+assets/video/skin-transform-orig.mp4
 
 # OS metadata
 .DS_Store
