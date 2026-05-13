@@ -833,12 +833,6 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
         <div class="doc-creds"><span>PhD</span><span>Skin reverse-aging</span><span>+ 1 MD · US</span></div>
       </div>
     </div>
-    <div class="adv-stats">
-      <div class="adv-stat"><div class="adv-stat-n"><em>8</em><span class="u"> specialists</span></div><div class="adv-stat-l">6 MDs (한국 dermatology + plastic surgery + 1 US dermatology) + 2 PhDs (skin reverse-aging research, Seoul + US).</div></div>
-      <div class="adv-stat"><div class="adv-stat-n">8<span class="u"> actives</span></div><div class="adv-stat-l">각 성분을 발표된 임상에서 효과를 보인 그 용량으로.</div></div>
-      <div class="adv-stat"><div class="adv-stat-n"><em>4</em><span class="u"> yrs</span></div><div class="adv-stat-l">처방 설계, dose calibration, biomarker review에 들어간 시간.</div></div>
-      <div class="adv-stat"><div class="adv-stat-n"><em>0</em></div><div class="adv-stat-l">Proprietary blends. 모든 용량을 milligram으로 적습니다.</div></div>
-    </div>
     <div style="margin-top:48px;text-align:center;">
       <a href="/ko/about.html" class="btn-p">Meet the 8 specialists &rarr;</a>
     </div>
@@ -853,17 +847,6 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
     <p class="wait-sub">지금 원료 수입 후 국내 조제 절차 마무리 단계와 2차 clinical 검증을 진행 중입니다. 한정 수량이기에 미리 이메일을 남겨주시면, GL-01 오픈 시 선착 순으로 구매 링크 보내드리겠습니다.</p>
     <form class="wait-form" id="wait-form" novalidate>
       <div class="wait-field">
-        <label class="wait-label" for="wait-priority">지금 가장 신경 쓰이는 부분</label>
-        <select class="wait-select" id="wait-priority" name="priority" required>
-          <option value="" disabled selected>한 가지 선택</option>
-          <option value="hydration">Hydration · 장벽이 건조하고 메이크업이 잘 안 먹어요</option>
-          <option value="tone">Tone · 기미, 잡티, 톤 불균형이 신경 쓰여요</option>
-          <option value="firmness">Firmness · 잔주름, 탄성, 구조감이 걱정돼요</option>
-          <option value="defense">Oxidative defense · 장기적인 케어 레이어</option>
-          <option value="all">All four · 프로토콜이 필요해요</option>
-        </select>
-      </div>
-      <div class="wait-field">
         <label class="wait-label" for="wait-email">Email</label>
         <input class="wait-email" id="wait-email" name="email" type="email" placeholder="you@domain.com" autocomplete="email" required/>
       </div>
@@ -872,7 +855,7 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
     </form>
     <div class="wait-success" id="wait-success" role="status" aria-live="polite">
       <h3>You're on the list.</h3>
-      <p><b id="wait-priority-out">선택하신 우선순위</b>에 맞는 science brief를 일주일 안에 보내드립니다. GL-01 오픈 시 first-shipment access도 같은 이메일로 전달됩니다.</p>
+      <p>GL-01 오픈 시 first-shipment access를 가장 먼저 보내드립니다. 일주일 안에 사이언스 브리프도 같은 이메일로 받아보실 수 있어요.</p>
     </div>
   </div>
 </section>
@@ -930,12 +913,9 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
   const success=document.getElementById('wait-success');
   if(!form||!success)return;
 
-  const labels={hydration:'수분',tone:'톤',firmness:'탄력',defense:'산화 방어','all':'4×8 프로토콜 전체'};
   const submitBtn=form.querySelector('.wait-submit');
 
-  const showSuccess=(priority)=>{
-    const out=document.getElementById('wait-priority-out');
-    if(out)out.textContent=labels[priority]||'your priority';
+  const showSuccess=()=>{
     form.classList.add('is-hidden');
     success.classList.add('is-shown');
     success.scrollIntoView({block:'center',behavior:'smooth'});
@@ -949,7 +929,7 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
     }catch(_){}
   };
 
-  const buildKlaviyoBody=(email,priority)=>({
+  const buildKlaviyoBody=(email)=>({
     data:{
       type:'subscription',
       attributes:{
@@ -960,7 +940,6 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
             attributes:{
               email:email,
               properties:{
-                skin_priority:priority,
                 source:'waitlist',
                 locale:'ko'
               }
@@ -977,9 +956,8 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
   form.addEventListener('submit',async e=>{
     e.preventDefault();
     const email=form.email.value.trim();
-    const priority=form.priority.value;
-    if(!email||!priority)return;
-    const payload={email,priority,source:'waitlist',ts:new Date().toISOString()};
+    if(!email)return;
+    const payload={email,source:'waitlist',locale:'ko',ts:new Date().toISOString()};
 
     submitBtn.disabled=true;
     submitBtn.textContent='등록 중…';
@@ -993,7 +971,7 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
             'Content-Type':'application/json',
             'revision':'2024-10-15'
           },
-          body:JSON.stringify(buildKlaviyoBody(email,priority))
+          body:JSON.stringify(buildKlaviyoBody(email))
         }
       );
       /* Klaviyo returns 202 Accepted on success. Anything 2xx is fine. */
@@ -1001,11 +979,11 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
         const detail=await res.text().catch(()=>'(no body)');
         throw new Error('klaviyo '+res.status+' '+detail);
       }
-      showSuccess(priority);
+      showSuccess();
     }catch(err){
       console.warn('[waitlist] klaviyo submit failed, saved locally:',err);
       fallbackLocal(payload);
-      showSuccess(priority);
+      showSuccess();
     }
   });
 })();
