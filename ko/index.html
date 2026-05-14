@@ -367,7 +367,7 @@ body{padding-top:0;}
 .final::before{content:'';position:absolute;top:-180px;right:-180px;width:520px;height:520px;background:radial-gradient(circle,rgba(212,181,181,.5),transparent 70%);opacity:.7;}
 .final-i{position:relative;text-align:center;max-width:920px;margin:0 auto;padding:0 64px;}
 .final-lbl{font-size:11px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:rgba(244,235,235,.7);margin-bottom:22px;}
-.final h2{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:108px;line-height:1.08;letter-spacing:-4.5px;color:var(--cream);}
+.final h2{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:108px;line-height:1.15;letter-spacing:-4.5px;color:var(--cream);}
 .final h2 em{font-style:italic;color:var(--bg-3);}
 .final-sub{font-size:17px;line-height:1.6;color:rgba(244,235,235,.85);margin:28px auto 0;max-width:560px;}
 .final-btn{display:inline-block;background:var(--cream);color:var(--burg-600);padding:20px 44px;font-weight:600;font-size:15px;margin-top:36px;transition:background .2s,transform .15s;border-radius:100px;}
@@ -481,6 +481,8 @@ html[lang="ko"] body,html[lang="ko"] input,html[lang="ko"] select,html[lang="ko"
 html[lang="ko"] body{font-synthesis:none;}
 html[lang="ko"] h1,html[lang="ko"] h2,html[lang="ko"] h3,html[lang="ko"] .logo,html[lang="ko"] .foot-logo,html[lang="ko"] .bottle-logo,html[lang="ko"] .b-logo{font-family:'Fraunces','Noto Serif KR',serif;letter-spacing:-.025em;}
 html[lang="ko"] em,html[lang="ko"] .ey em,html[lang="ko"] .card-title em,html[lang="ko"] h1 em,html[lang="ko"] h2 em{font-style:normal;color:var(--accent);font-weight:400;}
+/* Dark-bg em — keep cream/light instead of forcing var(--accent) which disappears on burgundy */
+html[lang="ko"] .final h2 em,html[lang="ko"] .ai-l h2 em{color:var(--bg-3);font-style:normal;font-weight:300;}
 html[lang="ko"] .thesis-tag,html[lang="ko"] .test-q,html[lang="ko"] .prod-name,html[lang="ko"] .ftag,html[lang="ko"] .foot-tag,html[lang="ko"] .hero-attrib-q{font-family:'Fraunces','Noto Serif KR',serif;font-style:normal;}
 html[lang="ko"] .test-q em{font-style:normal;color:var(--accent);}
 /* Korean body copy benefits from slightly looser line-height */
