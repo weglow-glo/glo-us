@@ -320,10 +320,8 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 .final::before{content:'';position:absolute;top:-160px;right:-160px;width:480px;height:480px;background:radial-gradient(circle,rgba(212,181,181,.5),transparent 70%);opacity:.7;}
 .final-i{position:relative;text-align:center;max-width:880px;margin:0 auto;padding:0 64px;}
 .final-lbl{font-size:11px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:rgba(244,235,235,.7);margin-bottom:20px;}
-.final h2{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:96px;line-height:1.1;letter-spacing:-3.8px;color:var(--cream);background:linear-gradient(110deg,var(--cream) 0%,var(--cream) 35%,#f5d4b0 50%,var(--cream) 65%,var(--cream) 100%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;animation:finalShimmer 5.5s ease-in-out infinite;}
-.final h2 em{font-style:italic;}
-@keyframes finalShimmer{0%,100%{background-position:120% 0;}50%{background-position:-120% 0;}}
-@media (prefers-reduced-motion:reduce){.final h2{animation:none;background:none;-webkit-text-fill-color:var(--cream);color:var(--cream);}}
+.final h2{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:96px;line-height:1.1;letter-spacing:-3.8px;color:var(--cream);}
+.final h2 em{font-style:italic;color:var(--bg-3);}
 .final-sub{font-size:17px;line-height:1.6;color:rgba(244,235,235,.85);margin:26px auto 0;max-width:520px;}
 .final-btn{display:inline-block;background:var(--cream);color:var(--burg-600);padding:20px 44px;font-weight:600;font-size:15px;margin-top:34px;transition:background .2s,transform .15s;border-radius:100px;}
 .final-btn:hover{background:#fff;transform:translateY(-1px);}
