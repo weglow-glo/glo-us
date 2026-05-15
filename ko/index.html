@@ -232,7 +232,7 @@ body{padding-top:0;}
 /* ===========================================
    AI SECTION — bordeaux (THE impact section)
    =========================================== */
-.ai-sec{padding:140px 0;background:var(--bordeaux);color:var(--cream);position:relative;overflow:hidden;}
+.ai-sec{padding:104px 0;background:var(--bordeaux);color:var(--cream);position:relative;overflow:hidden;}
 .ai-sec::before{content:'';position:absolute;top:-50px;left:0;width:760px;height:760px;background:radial-gradient(circle,rgba(216,106,74,.5),rgba(184,135,135,.25) 35%,transparent 60%);pointer-events:none;}
 .ai-sec::after{content:'';position:absolute;bottom:-150px;right:-50px;width:680px;height:680px;background:radial-gradient(circle,rgba(232,191,170,.42),rgba(212,181,181,.2) 40%,transparent 65%);pointer-events:none;}
 .ai-bg-orb-1{position:absolute;top:25%;right:5%;width:480px;height:480px;background:radial-gradient(circle,rgba(216,106,74,.38),transparent 60%);pointer-events:none;}
@@ -243,7 +243,7 @@ body{padding-top:0;}
 .ai-l p{font-size:16px;line-height:1.78;color:rgba(244,235,235,.94);margin-top:26px;letter-spacing:-.05px;max-width:520px;}
 .ai-l p em{font-family:'Fraunces','Noto Serif KR',serif;font-style:italic;color:#f0d4b8;}
 .ai-stats{display:grid;grid-template-columns:1fr;gap:14px;}
-.ai-stat{background:rgba(255,250,245,.07);backdrop-filter:saturate(180%) blur(32px);-webkit-backdrop-filter:saturate(180%) blur(32px);border:1px solid rgba(240,212,184,.22);padding:30px 34px;display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:center;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,0,0,.14);}
+.ai-stat{background:rgba(255,250,245,.07);backdrop-filter:saturate(180%) blur(32px);-webkit-backdrop-filter:saturate(180%) blur(32px);border:1px solid rgba(240,212,184,.22);padding:24px 28px;display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;border-radius:14px;box-shadow:0 16px 50px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,0,0,.14);}
 .ai-stat-n{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:56px;line-height:.9;color:#f0d4b8;letter-spacing:-2px;min-width:140px;}
 .ai-stat-n em{font-style:italic;}
 .ai-stat-n .u{font-family:'Inter','Pretendard Variable',Pretendard,sans-serif;font-weight:500;font-size:13.5px;color:rgba(244,235,235,.78);letter-spacing:0;display:block;margin-top:10px;}
@@ -684,40 +684,33 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
   <div class="ai-bg-orb-2"></div>
   <div class="ctr ai-inner">
     <div class="ai-l">
-      <div class="ey lt clay"><span class="dash"></span>How we got to this exact formulation</div>
-      <h2>8명의 전문가와<br/><em>AI driven 데이터 측정으로 인한</em> 최종본.</h2>
-      <p>8가지 성분이 임상 등급 용량에서 <em>충돌 없이</em> 작용하게 만드는 건 임상 질문이 아니라 — 조합의 문제입니다. 8명의 전문가라도 직관으로 풀기엔 데이터가 너무 많아요. 그래서 AI-driven biotech가 하는 방식을 따랐습니다.</p>
-      <p>gl-01의 모든 용량, 비율, 상호작용은 발표된 임상 데이터에 대해 시뮬레이션됐고 — 그 다음 의료진이 검토, 조정, 최종 샘플링을 했습니다. AI를 통해 30년 연구 결과를 1년으로 좁혔고, <em>gl-01을 만들어 냈습니다.</em></p>
+      <div class="ey lt clay"><span class="dash"></span>How this formulation got made</div>
+      <h2>전문가 8인.<br/>하나의 <em>computational</em> backbone.</h2>
+      <p>8가지 성분을 임상 용량에서 충돌 없이 배치하는 건 — 조합 문제입니다. AI가 search space를 좁히고, <em>임상의가 결정했습니다.</em></p>
     </div>
     <div class="ai-stats">
       <div class="ai-stat">
-        <div class="ai-stat-n"><em>2억</em><span class="u">개의 물질 후보 데이터</span></div>
+        <div class="ai-stat-n"><em>2억</em><span class="u">data points</span></div>
         <div class="ai-stat-r">
           <div class="ai-stat-l">01 · The dataset</div>
-          <div class="ai-stat-t">피부과의 공증된<em>임상 데이터.</em></em></div>
-          <div class="ai-stat-d">8가지 성분 패밀리에 대한 발표된 복용 시 반응도 곡선, 생체 이용률 연구, 상호 작용 데이터 — peer-reviewed 논문에서 추출해 연산 검색용으로 구조화했습니다.</div>
+          <div class="ai-stat-t">Clinical data, <em>indexed.</em></div>
         </div>
       </div>
       <div class="ai-stat">
-        <div class="ai-stat-n"><em>30억</em><span class="u">번의 시뮬레이션</span></div>
+        <div class="ai-stat-n"><em>30억</em><span class="u">simulations</span></div>
         <div class="ai-stat-r">
           <div class="ai-stat-l">02 · The search</div>
-          <div class="ai-stat-t">30억개의 <em>조합을 통한</em> 모델링.</div>
-          <div class="ai-stat-d">Dose, ratio, MW fraction, absorption window, drug-drug interaction matrix. 30억 개 구성을 시뮬레이션해 임상 검토할 가치가 있는 소수의 후보를 추렸습니다.</div>
+          <div class="ai-stat-t">30억 조합을 <em>modeled.</em></div>
         </div>
       </div>
       <div class="ai-stat">
-        <div class="ai-stat-n"><em>8명</em><span class="u">의 전문가들</span></div>
+        <div class="ai-stat-n"><em>8</em><span class="u">specialists · 4 yrs</span></div>
         <div class="ai-stat-r">
           <div class="ai-stat-l">03 · The judgment</div>
-          <div class="ai-stat-t">엄격한 <em>전문가들의</em> 검토작업.</div>
-          <div class="ai-stat-d">6명의 전문의(한국 임상의 + 미국 dermatologist 1명) + 2명의 박사(skin reverse-aging specialists)분들이 시뮬레이션 결과 후보를 검토했습니다.</div>
+          <div class="ai-stat-t">Then <em>clinicians</em> chose.</div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="ctr">
-    <p class="ai-foot"><strong>현재 미국에선 AI가 통한 바이오 연구, 특히 역 노화에 대한 기술 발전 속도는 우리도 모르는 사이 100년을 앞당겼습니다.</strong> 단순 AI 챗봇의 활용이 아닌, 8명의 임상의가 10년치 dose-calibration(선량 교정/선량 검량, 함량 배합 및 조합) 작업을 몇 달 안에 도출 가능하게 만든 시뮬레이션 AI를 활용했습니다.</p>
   </div>
 </section>
 
