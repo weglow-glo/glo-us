@@ -106,11 +106,18 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 .atom-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
 .atom em{font-style:italic;color:var(--ink);font-weight:500;font-family:'Fraunces',serif;font-size:11px;letter-spacing:0;}
 .atom-line{position:absolute;height:1px;background:linear-gradient(90deg,rgba(138,74,82,.35),transparent);pointer-events:none;}
-.atom.a1{top:8%;left:6%;animation-delay:.1s;}
-.atom.a2{top:22%;right:8%;animation-delay:.25s;}
-.atom.a3{top:46%;left:2%;animation-delay:.4s;}
-.atom.a4{top:62%;right:4%;animation-delay:.55s;}
-.atom.a5{bottom:8%;left:10%;animation-delay:.7s;}
+.atom.a1{top:4%;left:10%;animation-delay:.1s;}
+.atom.a2{top:12%;right:4%;animation-delay:.2s;}
+.atom.a3{top:26%;left:0;animation-delay:.3s;}
+.atom.a4{top:34%;right:0;animation-delay:.4s;}
+.atom.a5{top:52%;left:4%;animation-delay:.5s;}
+.atom.a6{top:60%;right:2%;animation-delay:.6s;}
+.atom.a7{bottom:20%;left:8%;animation-delay:.7s;}
+.atom.a8{bottom:14%;right:6%;animation-delay:.8s;}
+.atom.a9{bottom:2%;left:32%;animation-delay:.9s;}
+.atom.featured{background:var(--accent);border-color:var(--accent);color:var(--cream);box-shadow:0 8px 24px rgba(138,74,82,.32);font-weight:700;}
+.atom.featured .atom-dot{background:var(--cream);}
+.atom.featured em{color:var(--cream);font-weight:600;}
 @keyframes atomFade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 .bottle{width:108px;height:560px;transform:rotateY(-5deg) rotateX(2deg);transform-style:preserve-3d;background:linear-gradient(155deg,rgba(255,255,255,.07) 0%,transparent 18%,transparent 82%,rgba(0,0,0,.2) 100%),linear-gradient(160deg,#5a2229 0%,#3a1a22 50%,#2a1218 100%);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;box-shadow:0 4px 8px rgba(58,26,34,.18),0 14px 28px rgba(58,26,34,.22),0 36px 70px rgba(58,26,34,.32),0 70px 140px rgba(58,26,34,.42),inset 0 1px 2px rgba(212,181,181,.22),inset -1px 0 3px rgba(0,0,0,.28);padding:60px 8px 38px;position:relative;}
 .bottle::before{content:'';position:absolute;top:0;left:0;right:0;height:16px;background:repeating-linear-gradient(90deg,transparent 0 5px,rgba(20,15,20,.34) 5px 6px),linear-gradient(180deg,rgba(244,235,235,.12),transparent);border-radius:8px 8px 0 0;}
@@ -471,6 +478,7 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px;}
 .btn-p:focus-visible,.btn-nav:focus-visible,.final-btn:focus-visible,.buy-btn:focus-visible,.final-link:focus-visible{outline:2px solid var(--cream);outline-offset:3px;}
 .nav-links a[aria-current="page"]{color:var(--ink);}
+.patent-icon{display:inline-block;width:13px;height:13px;vertical-align:-2px;color:var(--accent);flex-shrink:0;}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important;}
 }
@@ -504,10 +512,14 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
   <div class="ctr phero-g">
     <div class="phero-l">
       <div class="atom a1"><span class="atom-dot"></span>Glutathione <em>250 mg</em></div>
-      <div class="atom a2"><span class="atom-dot"></span>Tightening-PB <em>10 mg</em></div>
-      <div class="atom a3"><span class="atom-dot"></span>Niacinamide <em>300 mg</em></div>
-      <div class="atom a4"><span class="atom-dot"></span>Collagen <em>300 Da</em></div>
-      <div class="atom a5"><span class="atom-dot"></span>HA complex <em>120 mg</em></div>
+      <div class="atom a2 featured"><span class="atom-dot"></span>Tightening-PB <em>10 mg</em></div>
+      <div class="atom a3"><span class="atom-dot"></span>L-Cystine <em>200 mg</em></div>
+      <div class="atom a4"><span class="atom-dot"></span>Niacinamide <em>300 mg</em></div>
+      <div class="atom a5"><span class="atom-dot"></span>White tomato <em>200 mg</em></div>
+      <div class="atom a6"><span class="atom-dot"></span>Collagen <em>300 Da</em></div>
+      <div class="atom a7"><span class="atom-dot"></span>HA complex <em>120 mg</em></div>
+      <div class="atom a8"><span class="atom-dot"></span>Milk ceramide <em>1.5 mg</em></div>
+      <div class="atom a9"><span class="atom-dot"></span>Haematococcus <em>5 mg</em></div>
       <img class="bottle-img" src="assets/bottle/sachet.png" alt="GL-01 sachet · 15 ml liquid shot · pineapple" width="308" height="580"/>
     </div>
     <div class="phero-r">
@@ -541,7 +553,7 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
     <div class="qs"><div class="qs-lbl">Format</div><div class="qs-val">Liquid shot</div><div class="qs-sub">15 ml sachet · 30 ct</div></div>
     <div class="qs"><div class="qs-lbl">How to use</div><div class="qs-val">1 daily</div><div class="qs-sub">AM or PM · 2 are even better</div></div>
     <div class="qs"><div class="qs-lbl">Flavor</div><div class="qs-val">Pineapple</div><div class="qs-sub">no added sugar · vegan</div></div>
-    <div class="qs"><div class="qs-lbl">Patented complex</div><div class="qs-val">Tightening-PB</div><div class="qs-sub">glo proprietary · KR 10-2911449</div></div>
+    <div class="qs"><div class="qs-lbl">Patented complex</div><div class="qs-val">Tightening-PB</div><div class="qs-sub">glo proprietary · <svg class="patent-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="7" r="4.5"/><path d="M8 7.2l1.5 1.5L12 5.7"/><path d="M7 11l-1.6 6 4.6-1.8 4.6 1.8L13 11"/></svg> 10-2911449</div></div>
     <div class="qs"><div class="qs-lbl">When you'll notice</div><div class="qs-val">4 → 8 → 12 wk</div><div class="qs-sub">hydration → tone → firmness</div></div>
     <div class="qs"><div class="qs-lbl">Made in</div><div class="qs-val">USA</div><div class="qs-sub">cGMP · Prop. 65 compliant</div></div>
     <div class="qs"><div class="qs-lbl">Tested</div><div class="qs-val">Heavy metals · micro · potency</div><div class="qs-sub">3rd-party, every batch</div></div>

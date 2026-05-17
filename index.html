@@ -134,11 +134,18 @@ body{padding-top:0;}
 .atom{position:absolute;display:flex;align-items:center;gap:8px;font-size:10px;font-weight:600;letter-spacing:.3px;color:var(--ink-mute);background:rgba(255,250,250,.75);backdrop-filter:saturate(180%) blur(12px);-webkit-backdrop-filter:saturate(180%) blur(12px);border:1px solid rgba(212,181,181,.4);border-radius:100px;padding:6px 12px 6px 8px;box-shadow:0 6px 20px rgba(58,26,34,.07);opacity:0;animation:atomFade .9s ease forwards;white-space:nowrap;}
 .atom-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;}
 .atom em{font-style:italic;color:var(--ink);font-weight:500;font-family:'Fraunces',serif;font-size:11px;letter-spacing:0;}
-.atom.a1{top:14%;left:18%;animation-delay:.2s;}
-.atom.a2{top:22%;right:14%;animation-delay:.35s;}
-.atom.a3{top:46%;left:10%;animation-delay:.5s;}
-.atom.a4{top:52%;right:8%;animation-delay:.65s;}
-.atom.a5{bottom:18%;left:24%;animation-delay:.8s;}
+.atom.a1{top:6%;left:14%;animation-delay:.15s;}
+.atom.a2{top:14%;right:6%;animation-delay:.25s;}
+.atom.a3{top:28%;left:0;animation-delay:.35s;}
+.atom.a4{top:36%;right:0;animation-delay:.45s;}
+.atom.a5{top:54%;left:6%;animation-delay:.55s;}
+.atom.a6{top:62%;right:4%;animation-delay:.65s;}
+.atom.a7{bottom:18%;left:10%;animation-delay:.75s;}
+.atom.a8{bottom:12%;right:8%;animation-delay:.85s;}
+.atom.a9{bottom:0;left:34%;animation-delay:.95s;}
+.atom.featured{background:var(--accent);border-color:var(--accent);color:var(--cream);box-shadow:0 8px 24px rgba(138,74,82,.32);font-weight:700;}
+.atom.featured .atom-dot{background:var(--cream);}
+.atom.featured em{color:var(--cream);font-weight:600;}
 @keyframes atomFade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
 /* hero background video — abstract liquid behind bottle */
@@ -515,10 +522,14 @@ footer{background:var(--bd);padding:68px 0 32px;color:rgba(242,232,216,.62);}
         </video>
       </div>
       <div class="atom a1"><span class="atom-dot"></span>Glutathione <em>250 mg</em></div>
-      <div class="atom a2"><span class="atom-dot"></span>Tightening-PB <em>10 mg</em></div>
-      <div class="atom a3"><span class="atom-dot"></span>Niacinamide <em>300 mg</em></div>
-      <div class="atom a4"><span class="atom-dot"></span>Collagen <em>300 Da</em></div>
-      <div class="atom a5"><span class="atom-dot"></span>HA complex <em>120 mg</em></div>
+      <div class="atom a2 featured"><span class="atom-dot"></span>Tightening-PB <em>10 mg</em></div>
+      <div class="atom a3"><span class="atom-dot"></span>L-Cystine <em>200 mg</em></div>
+      <div class="atom a4"><span class="atom-dot"></span>Niacinamide <em>300 mg</em></div>
+      <div class="atom a5"><span class="atom-dot"></span>White tomato <em>200 mg</em></div>
+      <div class="atom a6"><span class="atom-dot"></span>Collagen <em>300 Da</em></div>
+      <div class="atom a7"><span class="atom-dot"></span>HA complex <em>120 mg</em></div>
+      <div class="atom a8"><span class="atom-dot"></span>Milk ceramide <em>1.5 mg</em></div>
+      <div class="atom a9"><span class="atom-dot"></span>Haematococcus <em>5 mg</em></div>
       <img class="bottle-img" src="assets/bottle/sachet.png" alt="GL-01 sachet · 15 ml liquid shot · pineapple" width="286" height="540"/>
     </div>
   </div>
