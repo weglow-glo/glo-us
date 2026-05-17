@@ -487,7 +487,13 @@ footer{background:var(--bd);padding:68px 0 32px;color:rgba(242,232,216,.62);}
 .nav-r .lang-tog:hover{color:var(--ink);}
 .nav-r .lang-tog.active{color:var(--ink);font-weight:600;}
 .lang-sep{color:var(--ink-faint);font-size:10px;align-self:center;padding:0 1px;}
-.patent-icon{display:inline-block;width:15px;height:15px;vertical-align:-3px;color:var(--accent);margin:0 4px 0 2px;flex-shrink:0;}
+.patent-icon{display:inline-block;width:15px;height:15px;vertical-align:-3px;color:var(--accent);margin:0;flex-shrink:0;}
+/* Emphasize patent + Tightening-PB callouts across the page */
+.hero-trust span b.bld{font-weight:700;color:var(--ink);}
+.thesis-stat.feat span{color:var(--accent);font-weight:700;}
+.pb.feat{font-weight:700;color:var(--accent);}
+.pb.feat .pb-d{background:var(--accent);}
+.spec-v .glo-pat{font-weight:700;color:var(--accent);}
 
 /* === KOREAN TYPOGRAPHY OVERRIDE ===
    Latin chars cascade to Fraunces / Inter (first in stack);
@@ -501,6 +507,7 @@ html[lang="ko"] body,html[lang="ko"] input,html[lang="ko"] select,html[lang="ko"
 html[lang="ko"] body{font-synthesis:none;}
 html[lang="ko"] h1,html[lang="ko"] h2,html[lang="ko"] h3,html[lang="ko"] .logo,html[lang="ko"] .foot-logo,html[lang="ko"] .bottle-logo,html[lang="ko"] .b-logo{font-family:'Fraunces','Noto Serif KR',serif;letter-spacing:-.025em;}
 html[lang="ko"] em,html[lang="ko"] .ey em,html[lang="ko"] .card-title em,html[lang="ko"] h1 em,html[lang="ko"] h2 em{font-style:normal;color:var(--accent);font-weight:400;}
+html[lang="ko"] .hero-sub em,html[lang="ko"] p em{font-style:normal;color:var(--accent);font-weight:700;}
 /* Dark-bg em — keep cream/light instead of forcing var(--accent) which disappears on burgundy */
 html[lang="ko"] .final h2 em,html[lang="ko"] .ai-l h2 em{color:var(--bg-3);font-style:normal;font-weight:300;}
 html[lang="ko"] .ai-stat-n em,html[lang="ko"] .ai-stat-t em{color:var(--cream);font-style:normal;font-weight:400;}
@@ -575,7 +582,7 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
   <div class="ctr hero-trust">
     <span>임상으로 입증된 9가지 성분</span>
     <span>6명의 전문의와 2명의 의학박사 팀 공동연구</span>
-    <span>glo 특허 복합물 · <svg class="patent-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="7" r="4.5"/><path d="M8 7.2l1.5 1.5L12 5.7"/><path d="M7 11l-1.6 6 4.6-1.8 4.6 1.8L13 11"/></svg>10-2911449</span>
+    <span><b class="bld">glo 특허 복합물</b>·<svg class="patent-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="7" r="4.5"/><path d="M8 7.2l1.5 1.5L12 5.7"/><path d="M7 11l-1.6 6 4.6-1.8 4.6 1.8L13 11"/></svg><b class="bld">10-2911449</b></span>
     <span>시험기관 검증</span>
   </div>
 </section>
@@ -590,7 +597,7 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
       <div class="thesis-stats">
         <div class="thesis-stat"><b>4</b><span>메커니즘</span></div>
         <div class="thesis-stat"><b>9</b><span>활성 성분</span></div>
-        <div class="thesis-stat"><b>1</b><span>glo 특허 복합물</span></div>
+        <div class="thesis-stat feat"><b>1</b><span>glo 특허 복합물</span></div>
         <div class="thesis-stat"><b>10</b><span>임상 근거</span></div>
       </div>
     </div>
@@ -748,7 +755,7 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
           <div class="pb"><span class="pb-d"></span>300 mg niacinamide · Ph. Eur. 11.0</div>
           <div class="pb"><span class="pb-d"></span>120 mg HA complex</div>
           <div class="pb"><span class="pb-d"></span>100 mg 300 Da cod skin collagen</div>
-          <div class="pb"><span class="pb-d"></span>10 mg Tightening-PB · glo 특허</div>
+          <div class="pb feat"><span class="pb-d"></span>10 mg Tightening-PB · glo 특허</div>
           <div class="pb"><span class="pb-d"></span>5 mg Haematococcus astaxanthin</div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;">
@@ -764,7 +771,7 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
           <div class="spec"><div class="spec-k">Format</div><div class="spec-v">1포 · 15 ml · 30포로 구성 (1개월)</div></div>
           <div class="spec"><div class="spec-k">Flavor</div><div class="spec-v"><em>파인애플 맛</em> · 무가당</div></div>
           <div class="spec"><div class="spec-k">Serving</div><div class="spec-v"><em>1포</em>· 오전 or 저녁</div></div>
-          <div class="spec"><div class="spec-k">특허 복합물</div><div class="spec-v"><em>Tightening-PB</em> · glo 특허 · KR 10-2911449</div></div>
+          <div class="spec"><div class="spec-k">특허 복합물</div><div class="spec-v"><em>Tightening-PB</em> · <span class="glo-pat">glo 특허</span> ·<svg class="patent-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="7" r="4.5"/><path d="M8 7.2l1.5 1.5L12 5.7"/><path d="M7 11l-1.6 6 4.6-1.8 4.6 1.8L13 11"/></svg><b>10-2911449</b></div></div>
           <div class="spec"><div class="spec-k">Tested</div><div class="spec-v">Heavy metals · microbiology · potency · 3rd-party</div></div>
           <div class="spec"><div class="spec-k">Notice by</div><div class="spec-v"><em>4 wk</em> hydration · <em>8 wk</em> tone · <em>12 wk</em> firmness</div></div>
         </div>
