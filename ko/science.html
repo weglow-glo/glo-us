@@ -111,11 +111,13 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 .shero{padding:140px 0 90px;position:relative;overflow:hidden;background:var(--bg-1);}
 .shero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 30%,rgba(138,74,82,.1),transparent 55%),radial-gradient(ellipse at 10% 70%,rgba(212,181,181,.28),transparent 60%);pointer-events:none;}
 .shero-g{position:relative;display:grid;grid-template-columns:1.5fr 1fr;gap:80px;align-items:end;}
-.shero h1{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:108px;line-height:.94;letter-spacing:-4.2px;color:var(--ink);}
+.shero h1{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:108px;line-height:1.18;letter-spacing:-4.2px;color:var(--ink);}
 .shero h1 em{font-style:italic;color:var(--accent);}
 .shero-sub{font-size:17px;line-height:1.7;color:var(--ink-soft);max-width:540px;margin-top:30px;}
 .shero-side{position:relative;background:rgba(255,250,250,.6);backdrop-filter:saturate(180%) blur(18px);-webkit-backdrop-filter:saturate(180%) blur(18px);border:1px solid rgba(212,181,181,.4);padding:32px 32px 28px;border-radius:8px;box-shadow:0 16px 50px rgba(58,26,34,.07),inset 0 1px 0 rgba(255,255,255,.5);}
-.shero-trust{display:flex;gap:12px;margin-top:60px;padding-top:26px;border-top:1px solid var(--ink-line);font-size:12px;font-weight:500;color:var(--ink-soft);flex-wrap:wrap;justify-content:space-between;}
+.shero-trust{display:flex;justify-content:space-between;margin-top:96px;padding-top:30px;border-top:1px solid var(--ink-line);font-size:14px;font-weight:500;color:var(--ink-soft);gap:20px;flex-wrap:wrap;letter-spacing:-.01em;}
+.shero-trust>span{display:inline-flex;align-items:center;padding-left:0 !important;gap:16px !important;}
+.shero-trust>span::before{content:'';width:22px !important;height:22px !important;border-radius:50%;background-color:var(--accent);background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3.4 3.4L15.2 7.2' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:14px;flex-shrink:0;margin-right:24px !important;display:inline-block;}
 
 /* ===========================================
    THESIS — light, top divider
@@ -126,9 +128,9 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 .thesis h2{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:54px;line-height:1.18;letter-spacing:-1.8px;color:var(--ink);}
 .thesis h2 em{font-style:italic;color:var(--accent);}
 .thesis p{font-size:16px;line-height:1.8;color:var(--ink-soft);max-width:680px;margin-top:24px;}
-.thesis-stats{display:flex;gap:36px;margin-top:28px;padding-top:22px;border-top:1px solid var(--ink-line);flex-wrap:wrap;}
-.thesis-stat b{font-family:'Fraunces','Noto Serif KR',serif;font-size:30px;font-weight:300;display:block;line-height:1;color:var(--ink);}
-.thesis-stat span{font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--ink-mute);text-transform:uppercase;margin-top:4px;display:block;}
+.thesis-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:36px;margin-top:40px;padding-top:32px;border-top:1px solid var(--ink-line);}
+.thesis-stat b{font-family:'Fraunces','Noto Serif KR',serif;font-size:44px;font-weight:300;display:block;line-height:1;color:var(--ink);}
+.thesis-stat span{font-size:11px;font-weight:700;letter-spacing:.8px;color:var(--ink-mute);text-transform:uppercase;margin-top:10px;display:block;line-height:1.4;}
 
 /* ===========================================
    MECHANISMS — light, mixed cards
@@ -384,7 +386,7 @@ footer{background:var(--burg-800);padding:60px 0 30px;color:rgba(244,235,235,.6)
   .nav-l{padding:6px 24px;gap:20px;}
   .toc-i{padding:8px 16px;gap:16px;}
   .shero-g,.thesis-g,.actives-head,.vhead,.tgh{grid-template-columns:1fr;gap:48px;}
-  .mech-g,.three,.docs,.tg4,.foot-g,.ig.g4{grid-template-columns:repeat(2,1fr);}
+  .mech-g,.three,.docs,.tg4,.foot-g,.ig.g4,.thesis-stats{grid-template-columns:repeat(2,1fr);}
   .path{padding:32px 24px 28px;}
   .path-name{font-size:28px;letter-spacing:-1px;}
   .path-flow{flex-direction:column;}
