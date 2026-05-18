@@ -146,8 +146,9 @@ body{padding-top:0;}
 .atom.a7{bottom:18%;left:10%;animation-delay:.75s;}
 .atom.a8{bottom:12%;right:8%;animation-delay:.85s;}
 .atom.a9{bottom:2%;left:14%;animation-delay:.95s;}
-.atom.featured{z-index:3;}
-.atom.featured::before{content:'';position:absolute;inset:-1px;border-radius:100px;padding:1.5px;background:linear-gradient(135deg,var(--burg-50) 0%,var(--accent) 35%,var(--burg-400) 65%,var(--burg-50) 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
+.atom.featured{z-index:3;background:linear-gradient(135deg,rgba(244,235,235,.78) 0%,rgba(232,213,213,.85) 25%,rgba(212,181,181,.72) 50%,rgba(232,213,213,.85) 75%,rgba(244,235,235,.78) 100%);background-size:220% 220%;animation:atomFade .8s ease forwards,featShimmer 7s ease-in-out infinite;}
+@keyframes featShimmer{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+@media (prefers-reduced-motion:reduce){.atom.featured{animation:atomFade .8s ease forwards;background:rgba(255,250,250,.78);}}
 @keyframes atomFade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
 /* hero background video — abstract liquid behind bottle */
