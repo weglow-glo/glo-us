@@ -157,6 +157,8 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 .qs-lbl{font-size:9px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--ink-mute);margin-bottom:8px;}
 .qs-val{font-family:'Fraunces',serif;font-style:italic;font-size:20px;color:var(--ink);letter-spacing:-.3px;line-height:1.15;}
 .qs-sub{font-size:11px;color:var(--ink-mute);margin-top:4px;}
+.qs-sub.is-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.2;}
+.qs-sub.is-row .qs-dot{color:var(--ink-mute);opacity:.6;}
 
 /* ===========================================
    TIMELINE — light, frosted (early signal vs longevity)
@@ -554,7 +556,7 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
     <div class="qs"><div class="qs-lbl">Format</div><div class="qs-val">Liquid shot</div><div class="qs-sub">15 ml sachet · 30 ct</div></div>
     <div class="qs"><div class="qs-lbl">How to use</div><div class="qs-val">1 daily</div><div class="qs-sub">AM or PM · 2 are even better</div></div>
     <div class="qs"><div class="qs-lbl">Flavor</div><div class="qs-val">Pineapple</div><div class="qs-sub">no added sugar · vegan</div></div>
-    <div class="qs"><div class="qs-lbl">Patented complex</div><div class="qs-val">Tightening-PB Complex®</div><div class="qs-sub">glo proprietary ·<span class="patent-pair"><svg class="patent-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="7" r="4.5"/><path d="M8 7.2l1.5 1.5L12 5.7"/><path d="M7 11l-1.6 6 4.6-1.8 4.6 1.8L13 11"/></svg>10-2911449</span></div></div>
+    <div class="qs"><div class="qs-lbl">Patented complex</div><div class="qs-val">Tightening-PB Complex®</div><div class="qs-sub is-row"><span>glo proprietary</span><span class="qs-dot" aria-hidden="true">·</span><span class="patent-pair"><svg class="patent-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="7" r="4.5"/><path d="M8 7.2l1.5 1.5L12 5.7"/><path d="M7 11l-1.6 6 4.6-1.8 4.6 1.8L13 11"/></svg><span>10-2911449</span></span></div></div>
     <div class="qs"><div class="qs-lbl">When you'll notice</div><div class="qs-val">4 → 8 → 12 wk</div><div class="qs-sub">hydration → tone → firmness</div></div>
     <div class="qs"><div class="qs-lbl">Made in</div><div class="qs-val">USA</div><div class="qs-sub">cGMP · Prop. 65 compliant</div></div>
     <div class="qs"><div class="qs-lbl">Tested</div><div class="qs-val">Heavy metals · micro · potency</div><div class="qs-sub">3rd-party, every batch</div></div>
