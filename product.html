@@ -3,6 +3,27 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
+<script>
+/* Korean browser auto-redirect to /ko/.
+   Runs before fonts/styles parse to minimize flash.
+   Opt-out: ?lang=en (sticky via localStorage). Force KR: ?lang=ko. */
+(function(){
+  try{
+    var p=location.pathname;
+    if(p.indexOf('/ko/')===0)return;
+    var q=location.search.toLowerCase();
+    if(q.indexOf('lang=en')!==-1){localStorage.setItem('glo_lang','en');return;}
+    if(q.indexOf('lang=ko')!==-1){localStorage.removeItem('glo_lang');}
+    else if(localStorage.getItem('glo_lang')==='en')return;
+    var langs=navigator.languages||[navigator.language||''];
+    var isKo=false;
+    for(var i=0;i<langs.length;i++){if((langs[i]||'').toLowerCase().indexOf('ko')===0){isKo=true;break;}}
+    if(!isKo)return;
+    var target=(p===''||p==='/'||p==='/index.html')?'/ko/':'/ko'+p;
+    location.replace(target+location.search+location.hash);
+  }catch(_){}
+})();
+</script>
 <title>glo GL-01 — Skin Longevity Protocol</title>
 <meta name="description" content="GL-01: 9 actives across 4 mechanisms — including the glo-patented Tightening-PB Complex® (KR 10-2911449). Every milligram printed. A single daily 15 ml liquid shot — $79/month subscription, free shipping over $50, 90-day refund."/>
 <link rel="canonical" href="https://glo-us.com/product.html"/>
