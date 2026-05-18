@@ -292,6 +292,8 @@ body{padding-top:0;}
 .pb-d{width:5px;height:5px;border-radius:50%;background:var(--burg-600);flex-shrink:0;}
 .prod-price{font-family:'Fraunces','Noto Serif KR',serif;font-size:34px;font-style:italic;font-weight:400;color:var(--ink);}
 .prod-price span{font-size:13px;opacity:.65;font-style:normal;font-family:'Inter',sans-serif;}
+.prod-price-row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;}
+.prod-price-orig{font-size:13px;font-weight:600;color:rgba(20,15,20,.62);white-space:nowrap;}
 .prod-r{background:var(--paper-2);color:var(--ink);padding:64px 52px;display:flex;flex-direction:column;justify-content:center;border-left:1px solid var(--ink-line);}
 .prod-ey{font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--clay);}
 .prod-h{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:54px;line-height:1.18;letter-spacing:-2px;margin:18px 0 0;color:var(--ink);}
@@ -440,6 +442,16 @@ footer{background:var(--bd);padding:68px 0 32px;color:rgba(242,232,216,.62);}
   .tl-head{gap:32px;}
   .cards,.tl-grid,.docs,.sci-tease-g,.adv-stats,.foot-g,.prod-g{grid-template-columns:1fr;}
   .ai-stat{grid-template-columns:1fr;gap:12px;}
+  /* Product preview — tighten padding + stack spec rows so KR text doesn't clip on narrow phones */
+  .prod-l,.prod-r{padding:48px 24px;min-height:auto;}
+  .prod-r{border-left:none;border-top:1px solid var(--ink-line);padding-top:48px;}
+  .prod-h{font-size:38px;letter-spacing:-1.4px;}
+  .spec{grid-template-columns:1fr;gap:4px;padding:14px 0;}
+  .spec-k{font-size:10.5px;}
+  .spec-v{font-size:13.5px;}
+  .prod-price{font-size:30px;}
+  .prod-summary{gap:18px;}
+  .prod-summary-l{font-size:64px;letter-spacing:-2.4px;}
 }
 
 /* ===========================================
@@ -763,9 +775,9 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
           <div class="pb feat"><span class="pb-d"></span>10 mg Tightening-PB Complex® · glo 특허</div>
           <div class="pb"><span class="pb-d"></span>5 mg Haematococcus astaxanthin</div>
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <div class="prod-price-row">
           <div class="prod-price">₩89,000<span> / 월</span></div>
-          <div style="font-size:13px;font-weight:600;color:rgba(20,15,20,.62);">₩99,000 정상판매가</div>
+          <div class="prod-price-orig">₩99,000 정상판매가</div>
         </div>
       </div>
       <div class="prod-r">
