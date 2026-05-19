@@ -23,6 +23,11 @@ desktop.ini
 # Archive zips (deployment artifacts kept local)
 *.zip
 
+# Kakao Business review submission PDF (private — generated locally)
+kakao-review.pdf
+_kakao-review-build.py
+_verify.py
+
 # Logs / env
 *.log
 .env
