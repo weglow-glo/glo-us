@@ -51,6 +51,17 @@
   </url>
   <url>
     <loc>https://glo-us.com/about.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://glo-us.com/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://glo-us.com/ko/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://glo-us.com/about.html"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://glo-us.com/ko/about.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://glo-us.com/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://glo-us.com/ko/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://glo-us.com/about.html"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

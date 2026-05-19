@@ -3,9 +3,33 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
+<script>
+/* Korean browser auto-redirect to /ko/.
+   Runs before fonts/styles parse to minimize flash.
+   Opt-out: ?lang=en (sticky via localStorage). Force KR: ?lang=ko. */
+(function(){
+  try{
+    var p=location.pathname;
+    if(p.indexOf('/ko/')===0)return;
+    var q=location.search.toLowerCase();
+    if(q.indexOf('lang=en')!==-1){localStorage.setItem('glo_lang','en');return;}
+    if(q.indexOf('lang=ko')!==-1){localStorage.removeItem('glo_lang');}
+    else if(localStorage.getItem('glo_lang')==='en')return;
+    var langs=navigator.languages||[navigator.language||''];
+    var isKo=false;
+    for(var i=0;i<langs.length;i++){if((langs[i]||'').toLowerCase().indexOf('ko')===0){isKo=true;break;}}
+    if(!isKo)return;
+    var target=(p===''||p==='/'||p==='/index.html')?'/ko/':'/ko'+p;
+    location.replace(target+location.search+location.hash);
+  }catch(_){}
+})();
+</script>
 <title>glo — About the practice</title>
 <meta name="description" content="Eight specialists, four years of formulation. Six Korean MDs in Seoul + two PhDs in skin reverse-aging research. The clinical team behind glo GL-01."/>
 <link rel="canonical" href="https://glo-us.com/about.html"/>
+<link rel="alternate" hreflang="en" href="https://glo-us.com/about.html"/>
+<link rel="alternate" hreflang="ko" href="https://glo-us.com/ko/about.html"/>
+<link rel="alternate" hreflang="x-default" href="https://glo-us.com/about.html"/>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
 <meta name="theme-color" content="#3a1a22"/>
 <meta property="og:type" content="article"/>
