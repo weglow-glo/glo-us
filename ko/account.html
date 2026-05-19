@@ -134,6 +134,9 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 .kakao-note{margin:18px 0 24px;padding:16px 20px;background:rgba(254,229,0,.14);border:1px solid rgba(254,229,0,.45);border-radius:12px;font-size:13px;line-height:1.7;color:rgba(58,26,34,.85);}
 .kakao-note b{color:var(--burg-600);font-weight:700;}
 .kakao-note .kakao-chip{margin:0 2px;vertical-align:baseline;}
+/* Placeholder / 마스킹 처리된 더미 값 — Kakao review용 */
+.masked{display:inline-block;background:rgba(42,18,24,0.05);color:var(--ink-mute);padding:3px 10px;border-radius:6px;font-size:13px;font-style:italic;letter-spacing:-.01em;font-family:inherit;border:1px dashed rgba(42,18,24,0.18);}
+.opt-tag{display:inline-block;background:rgba(138,74,82,0.08);color:var(--accent);padding:2px 7px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:.6px;margin-left:6px;vertical-align:middle;}
 
 /* FOOTER */
 footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6);}
@@ -203,7 +206,7 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
       </div>
     </div>
     <div class="nav-r">
-      <a href="/ko/account.html" aria-current="page">김O서 ▾</a>
+      <a href="/ko/account.html" aria-current="page">회원 ▾</a>
       <a href="/ko/product.html#buy" class="btn-nav">얼리버드</a>
     </div>
   </div>
@@ -213,13 +216,13 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
   <section class="ahero">
     <div class="ahero-i">
       <div class="ey"><span class="dash"></span>My account</div>
-      <h1><em>안녕하세요,</em><br/>김O서님.</h1>
+      <h1><em>안녕하세요,</em><br/>회원님.</h1>
       <p class="ahero-sub">카카오 간편가입으로 연동된 정보를 확인하고, 배송지 · 구독 · 주문 내역을 관리하세요.</p>
 
       <div class="profile-strip">
-        <div class="profile-avatar" aria-hidden="true">김</div>
+        <div class="profile-avatar" aria-hidden="true">●</div>
         <div class="profile-text">
-          <div class="profile-greet">반가워요, <b>김O서</b>님</div>
+          <div class="profile-greet">반가워요, <b>회원</b>님</div>
           <div class="profile-meta"><b>카카오 연동 계정</b> · 가입일 2026.05.19 · 멤버 ID glo-2611</div>
         </div>
         <span class="kakao-chip" aria-label="카카오 연동 계정">
@@ -229,7 +232,7 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
       </div>
 
       <div class="kakao-note">
-        <b>아래 정보는 회원님이 동의하신 카카오 항목에서 자동으로 가져왔습니다.</b> 카카오 계정에서 변경하면 다음 로그인 시 자동 반영되며, 직접 수정하려면 각 항목의 '수정' 버튼을 눌러주세요. 동의 철회는 카카오톡 → 더보기 → 설정 → 카카오 계정 → 연결된 서비스 관리에서 가능합니다.
+        <b>아래 화면은 실제 회원 데이터가 표시되는 마이페이지 영역의 검수용 예시입니다.</b> 본 페이지에 노출된 모든 개인정보(닉네임·이름·이메일·전화번호·배송지 등)는 카카오 검수 정책에 따라 마스킹 처리된 더미 데이터이며, 실제 회원 가입 후에는 회원이 카카오에서 동의한 항목이 해당 위치에 표시됩니다. 동의 철회는 카카오톡 → 더보기 → 설정 → 카카오 계정 → 연결된 서비스 관리에서 가능합니다.
       </div>
     </div>
   </section>
@@ -246,22 +249,22 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
           </div>
           <div class="field">
             <div class="field-k">닉네임</div>
-            <div class="field-v italic">김O서</div>
+            <div class="field-v"><span class="masked">마스킹 처리된 닉네임</span></div>
             <div class="field-tag"><span class="kakao-chip"><svg class="kakao-chip-icon" viewBox="0 0 18 18" aria-hidden="true"><path fill="#191919" d="M9 0.5C4.0294 0.5 0 3.694 0 7.625c0 2.5443 1.6731 4.7775 4.1719 6.029-.1813.6797-.661 2.474-.7563 2.864-.119.4856.1781.4794.375.349.1545-.1025 2.4575-1.668 3.453-2.346.5719.0848 1.1656.13 1.7563.13 4.9706 0 9-3.194 9-7.125S13.9706 0.5 9 0.5z"/></svg>카카오</span></div>
           </div>
           <div class="field">
-            <div class="field-k">이름</div>
-            <div class="field-v">김O서<small>주문서 받는사람 / 배송 라벨에 표시</small></div>
+            <div class="field-k">이름 <span class="opt-tag">선택</span></div>
+            <div class="field-v"><span class="masked">마스킹 처리된 이름</span><small>주문서 받는사람 / 배송 라벨에 표시 · 미동의 시 결제 단계에서 직접 입력</small></div>
             <div class="field-tag"><span class="kakao-chip"><svg class="kakao-chip-icon" viewBox="0 0 18 18" aria-hidden="true"><path fill="#191919" d="M9 0.5C4.0294 0.5 0 3.694 0 7.625c0 2.5443 1.6731 4.7775 4.1719 6.029-.1813.6797-.661 2.474-.7563 2.864-.119.4856.1781.4794.375.349.1545-.1025 2.4575-1.668 3.453-2.346.5719.0848 1.1656.13 1.7563.13 4.9706 0 9-3.194 9-7.125S13.9706 0.5 9 0.5z"/></svg>카카오</span></div>
           </div>
           <div class="field">
             <div class="field-k">이메일</div>
-            <div class="field-v">m******.k**@k*****.com<small>가입 확인 · 주문 영수증 · 출시 알림 수신</small></div>
+            <div class="field-v"><span class="masked">마스킹 처리된 이메일 주소</span><small>가입 확인 · 주문 영수증 · 출시 알림 수신</small></div>
             <div class="field-tag"><span class="kakao-chip"><svg class="kakao-chip-icon" viewBox="0 0 18 18" aria-hidden="true"><path fill="#191919" d="M9 0.5C4.0294 0.5 0 3.694 0 7.625c0 2.5443 1.6731 4.7775 4.1719 6.029-.1813.6797-.661 2.474-.7563 2.864-.119.4856.1781.4794.375.349.1545-.1025 2.4575-1.668 3.453-2.346.5719.0848 1.1656.13 1.7563.13 4.9706 0 9-3.194 9-7.125S13.9706 0.5 9 0.5z"/></svg>카카오</span></div>
           </div>
           <div class="field">
             <div class="field-k">전화번호</div>
-            <div class="field-v">010-****-5678<small>배송 알림 SMS · 고객센터 문의 응대</small></div>
+            <div class="field-v"><span class="masked">마스킹 처리된 전화번호</span><small>배송 알림 SMS · 고객센터 문의 응대</small></div>
             <div class="field-tag"><span class="kakao-chip"><svg class="kakao-chip-icon" viewBox="0 0 18 18" aria-hidden="true"><path fill="#191919" d="M9 0.5C4.0294 0.5 0 3.694 0 7.625c0 2.5443 1.6731 4.7775 4.1719 6.029-.1813.6797-.661 2.474-.7563 2.864-.119.4856.1781.4794.375.349.1545-.1025 2.4575-1.668 3.453-2.346.5719.0848 1.1656.13 1.7563.13 4.9706 0 9-3.194 9-7.125S13.9706 0.5 9 0.5z"/></svg>카카오</span></div>
           </div>
         </div>
@@ -278,9 +281,9 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
           </div>
           <div class="addr">
             <span class="addr-default">기본</span>
-            <div class="addr-name">김O서</div>
-            <div class="addr-line">서울특별시 성동구 왕십리로 38, 위글로우오피스텔 301호 (04766)</div>
-            <div class="addr-phone">010-****-5678</div>
+            <div class="addr-name"><span class="masked">마스킹 처리된 받는사람 이름</span></div>
+            <div class="addr-line" style="margin-top:8px;"><span class="masked">마스킹 처리된 배송지 주소 (우편번호 포함)</span></div>
+            <div class="addr-phone" style="margin-top:6px;"><span class="masked">마스킹 처리된 전화번호</span></div>
           </div>
           <p style="font-size:12px;color:var(--ink-mute);line-height:1.7;margin-top:6px;">카카오 계정에 등록된 기본 배송지를 가져왔습니다. 다른 주소로 배송받으려면 결제 단계에서 변경하거나, '배송지 관리'에서 새 주소를 추가하세요.</p>
         </div>
