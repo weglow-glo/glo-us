@@ -27,6 +27,7 @@ desktop.ini
 kakao-review.pdf
 _kakao-review-build.py
 _verify.py
+_verify-pdf.py
 
 # Logs / env
 *.log
