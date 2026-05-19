@@ -56,6 +56,17 @@
   </url>
   <url>
     <loc>https://glo-us.com/privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://glo-us.com/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://glo-us.com/ko/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://glo-us.com/privacy.html"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://glo-us.com/ko/privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://glo-us.com/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://glo-us.com/ko/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://glo-us.com/privacy.html"/>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
