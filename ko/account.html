@@ -216,13 +216,13 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
   <section class="ahero">
     <div class="ahero-i">
       <div class="ey"><span class="dash"></span>My account</div>
-      <h1><em>안녕하세요,</em><br/>회원님.</h1>
+      <h1><em>안녕하세요,</em><br/><span data-field="h1-name">회원</span>님.</h1>
       <p class="ahero-sub">카카오 간편가입으로 연동된 정보를 확인하고, 배송지 · 구독 · 주문 내역을 관리하세요.</p>
 
       <div class="profile-strip">
         <div class="profile-avatar" aria-hidden="true">●</div>
         <div class="profile-text">
-          <div class="profile-greet">반가워요, <b>회원</b>님</div>
+          <div class="profile-greet">반가워요, <b data-field="greeting">회원</b>님</div>
           <div class="profile-meta"><b>카카오 연동 계정</b> · 가입일 2026.05.19 · 멤버 ID glo-2611</div>
         </div>
         <span class="kakao-chip" aria-label="카카오 연동 계정">
@@ -249,22 +249,22 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
           </div>
           <div class="field">
             <div class="field-k">닉네임</div>
-            <div class="field-v"><span class="masked">마스킹 처리된 닉네임</span></div>
+            <div class="field-v"><span class="masked" data-field="nickname">마스킹 처리된 닉네임</span></div>
             <div class="field-tag"><span class="kakao-chip"><svg class="kakao-chip-icon" viewBox="0 0 18 18" aria-hidden="true"><path fill="#191919" d="M9 0.5C4.0294 0.5 0 3.694 0 7.625c0 2.5443 1.6731 4.7775 4.1719 6.029-.1813.6797-.661 2.474-.7563 2.864-.119.4856.1781.4794.375.349.1545-.1025 2.4575-1.668 3.453-2.346.5719.0848 1.1656.13 1.7563.13 4.9706 0 9-3.194 9-7.125S13.9706 0.5 9 0.5z"/></svg>카카오</span></div>
           </div>
           <div class="field">
             <div class="field-k">이름 <span class="opt-tag">선택</span></div>
-            <div class="field-v"><span class="masked">마스킹 처리된 이름</span><small>주문서 받는사람 / 배송 라벨에 표시 · 미동의 시 결제 단계에서 직접 입력</small></div>
+            <div class="field-v"><span class="masked" data-field="name">마스킹 처리된 이름</span><small>주문서 받는사람 / 배송 라벨에 표시 · 미동의 시 결제 단계에서 직접 입력</small></div>
             <div class="field-tag"><span class="kakao-chip"><svg class="kakao-chip-icon" viewBox="0 0 18 18" aria-hidden="true"><path fill="#191919" d="M9 0.5C4.0294 0.5 0 3.694 0 7.625c0 2.5443 1.6731 4.7775 4.1719 6.029-.1813.6797-.661 2.474-.7563 2.864-.119.4856.1781.4794.375.349.1545-.1025 2.4575-1.668 3.453-2.346.5719.0848 1.1656.13 1.7563.13 4.9706 0 9-3.194 9-7.125S13.9706 0.5 9 0.5z"/></svg>카카오</span></div>
           </div>
           <div class="field">
             <div class="field-k">이메일</div>
-            <div class="field-v"><span class="masked">마스킹 처리된 이메일 주소</span><small>가입 확인 · 주문 영수증 · 출시 알림 수신</small></div>
+            <div class="field-v"><span class="masked" data-field="email">마스킹 처리된 이메일 주소</span><small>가입 확인 · 주문 영수증 · 출시 알림 수신</small></div>
             <div class="field-tag"><span class="kakao-chip"><svg class="kakao-chip-icon" viewBox="0 0 18 18" aria-hidden="true"><path fill="#191919" d="M9 0.5C4.0294 0.5 0 3.694 0 7.625c0 2.5443 1.6731 4.7775 4.1719 6.029-.1813.6797-.661 2.474-.7563 2.864-.119.4856.1781.4794.375.349.1545-.1025 2.4575-1.668 3.453-2.346.5719.0848 1.1656.13 1.7563.13 4.9706 0 9-3.194 9-7.125S13.9706 0.5 9 0.5z"/></svg>카카오</span></div>
           </div>
           <div class="field">
             <div class="field-k">전화번호</div>
-            <div class="field-v"><span class="masked">마스킹 처리된 전화번호</span><small>배송 알림 SMS · 고객센터 문의 응대</small></div>
+            <div class="field-v"><span class="masked" data-field="phone">마스킹 처리된 전화번호</span><small>배송 알림 SMS · 고객센터 문의 응대</small></div>
             <div class="field-tag"><span class="kakao-chip"><svg class="kakao-chip-icon" viewBox="0 0 18 18" aria-hidden="true"><path fill="#191919" d="M9 0.5C4.0294 0.5 0 3.694 0 7.625c0 2.5443 1.6731 4.7775 4.1719 6.029-.1813.6797-.661 2.474-.7563 2.864-.119.4856.1781.4794.375.349.1545-.1025 2.4575-1.668 3.453-2.346.5719.0848 1.1656.13 1.7563.13 4.9706 0 9-3.194 9-7.125S13.9706 0.5 9 0.5z"/></svg>카카오</span></div>
           </div>
         </div>
@@ -281,9 +281,9 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
           </div>
           <div class="addr">
             <span class="addr-default">기본</span>
-            <div class="addr-name"><span class="masked">마스킹 처리된 받는사람 이름</span></div>
-            <div class="addr-line" style="margin-top:8px;"><span class="masked">마스킹 처리된 배송지 주소 (우편번호 포함)</span></div>
-            <div class="addr-phone" style="margin-top:6px;"><span class="masked">마스킹 처리된 전화번호</span></div>
+            <div class="addr-name"><span class="masked" data-field="addr-name">마스킹 처리된 받는사람 이름</span></div>
+            <div class="addr-line" style="margin-top:8px;"><span class="masked" data-field="addr-line">마스킹 처리된 배송지 주소 (우편번호 포함)</span></div>
+            <div class="addr-phone" style="margin-top:6px;"><span class="masked" data-field="addr-phone">마스킹 처리된 전화번호</span></div>
           </div>
           <p style="font-size:12px;color:var(--ink-mute);line-height:1.7;margin-top:6px;">카카오 계정에 등록된 기본 배송지를 가져왔습니다. 다른 주소로 배송받으려면 결제 단계에서 변경하거나, '배송지 관리'에서 새 주소를 추가하세요.</p>
         </div>
@@ -381,20 +381,123 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
   <div class="foot-bot"><div>© 2026 (주)위글로우</div><div style="display:flex;gap:14px;"><a href="/ko/privacy.html">개인정보처리방침</a><a href="/ko/terms.html">이용약관</a></div></div>
 </footer>
 
-<script>
-/* Logout placeholder — when Supabase auth lands:
-   await supabase.auth.signOut();
-   then redirect home. */
-(function(){
-  var btn = document.getElementById('logout-btn');
-  if(!btn) return;
-  btn.addEventListener('click', function(){
-    if(confirm('로그아웃 하시겠어요?')){
-      /* TODO: supabase.auth.signOut() */
-      window.location.href = '/ko/';
+<script type="module">
+import { getProfile, signOut } from '/assets/js/glo-auth.js';
+
+/* ------------------------------------------------------------
+   Auth guard + data binding.
+   ------------------------------------------------------------ */
+(async () => {
+  let profile = null;
+  try {
+    profile = await getProfile();
+  } catch (err) {
+    console.error('[glo] getProfile failed:', err);
+  }
+
+  if (!profile) {
+    /* Not logged in — bounce to login */
+    window.location.replace('/ko/login.html');
+    return;
+  }
+
+  /* Helper: fill data-field placeholders with real Kakao data.
+     If the value is absent (selective consent missed), keep the
+     field visible but show a soft '미동의' fallback. */
+  const fill = (field, value, opts) => {
+    opts = opts || {};
+    const targets = document.querySelectorAll(`[data-field="${field}"]`);
+    targets.forEach((el) => {
+      el.classList.remove('masked');
+      el.style.background = '';
+      el.style.border = '';
+      el.style.padding = '';
+      el.style.borderRadius = '';
+      el.style.fontStyle = '';
+      el.style.letterSpacing = '';
+      if (value) {
+        el.textContent = value;
+        el.style.color = '';
+      } else {
+        el.textContent = opts.fallback || '— 미동의';
+        el.style.color = 'var(--ink-faint)';
+        el.style.fontSize = '13px';
+      }
+    });
+  };
+
+  fill('nickname', profile.nickname || '');
+  fill('email', profile.email || '');
+  fill('phone', profile.phone || '');
+  fill('name', profile.name || '', { fallback: '미동의 (결제 시 직접 입력)' });
+  fill('greeting', profile.nickname || '회원');
+  fill('h1-name', profile.nickname || '회원');
+
+  /* Shipping address (optional consent) */
+  if (profile.address) {
+    fill('addr-name', profile.address.receiver || profile.name || profile.nickname || '');
+    const line = [profile.address.base, profile.address.detail]
+                   .filter(Boolean).join(' ').trim()
+                 + (profile.address.zone ? ` (${profile.address.zone})` : '');
+    fill('addr-line', line);
+    fill('addr-phone', profile.address.phone || profile.phone || '');
+  } else {
+    fill('addr-name', '', { fallback: '— 배송지 미등록' });
+    fill('addr-line', '', { fallback: '결제 단계에서 직접 입력하실 수 있어요' });
+    fill('addr-phone', '', { fallback: '—' });
+  }
+
+  /* Avatar — show Kakao profile image if available, else
+     first character of nickname. */
+  const avatarEl = document.querySelector('.profile-avatar');
+  if (avatarEl) {
+    if (profile.avatar) {
+      avatarEl.style.backgroundImage = `url("${profile.avatar}")`;
+      avatarEl.style.backgroundSize = 'cover';
+      avatarEl.style.backgroundPosition = 'center';
+      avatarEl.textContent = '';
+    } else {
+      const ch = (profile.nickname || '회원').trim().charAt(0);
+      avatarEl.textContent = ch || '회';
     }
-  });
+  }
+
+  /* Replace the placeholder review notice with one that fits a
+     real session: how to manage consent / revoke. */
+  const note = document.querySelector('.kakao-note');
+  if (note) {
+    note.innerHTML = '<b>카카오 계정에서 동의한 정보를 가져왔어요.</b> 변경하려면 카카오톡 → 더보기 → 설정 → 카카오 계정 → 연결된 서비스 관리에서 동의 항목을 수정해주세요. 동의 철회 시 다음 로그인부터 새 동의 절차가 진행됩니다.';
+  }
+
+  /* Profile meta — show real join date + last 4 of user id */
+  try {
+    const metaEl = document.querySelector('.profile-meta');
+    if (metaEl && profile.createdAt) {
+      const d = new Date(profile.createdAt);
+      const ymd = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+      const shortId = profile.id ? `glo-${profile.id.slice(-4)}` : '';
+      metaEl.innerHTML = `<b>카카오 연동 계정</b> · 가입일 ${ymd}${shortId ? ' · 멤버 ID ' + shortId : ''}`;
+    }
+  } catch (_) { /* keep static value */ }
 })();
+
+/* ------------------------------------------------------------
+   Logout — real Supabase signOut.
+   ------------------------------------------------------------ */
+const logoutBtn = document.getElementById('logout-btn');
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', async () => {
+    if (!confirm('로그아웃 하시겠어요?')) return;
+    logoutBtn.disabled = true;
+    logoutBtn.textContent = '로그아웃 중…';
+    try {
+      await signOut();
+    } catch (err) {
+      console.error('[glo] signOut failed:', err);
+    }
+    window.location.href = '/ko/';
+  });
+}
 </script>
 </body>
 </html>

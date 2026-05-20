@@ -184,34 +184,47 @@ footer{background:var(--burg-800);padding:48px 0 28px;color:rgba(244,235,235,.55
   <div class="foot-bot"><div>© 2026 (주)위글로우</div><div style="display:flex;gap:14px;"><a href="/ko/privacy.html">개인정보처리방침</a><a href="/ko/terms.html">이용약관</a></div></div>
 </footer>
 
-<script>
-/* ============================================================
-   KAKAO LOGIN — placeholder until Supabase + Kakao OAuth is wired.
+<script type="module">
+import { signInWithKakao, getProfile } from '/assets/js/glo-auth.js';
 
-   When backend is live, replace the click handler with:
-
-     const { data, error } = await supabase.auth.signInWithOAuth({
-       provider: 'kakao',
-       options: { redirectTo: 'https://glo-us.com/ko/' }
-     });
-
-   Until then, clicking the button just reveals the 'preparing' notice
-   that points the user to the waitlist.
-   ============================================================ */
-(function(){
-  var btn = document.getElementById('kakao-login');
-  var notice = document.getElementById('kakao-notice');
-  if(!btn || !notice) return;
-
-  btn.addEventListener('click', function(){
-    notice.classList.add('is-shown');
-    btn.setAttribute('aria-expanded', 'true');
-    /* Smoothly scroll notice into view on small screens */
-    setTimeout(function(){
-      notice.scrollIntoView({ block:'nearest', behavior:'smooth' });
-    }, 100);
-  });
+/* If user is already signed in, skip the login screen */
+(async () => {
+  try {
+    const profile = await getProfile();
+    if (profile) {
+      window.location.replace('/ko/account.html');
+    }
+  } catch (_) { /* fall through to manual login */ }
 })();
+
+const btn = document.getElementById('kakao-login');
+const notice = document.getElementById('kakao-notice');
+if (btn && notice) {
+  const label = btn.querySelector('span:last-child');
+  const originalLabel = label ? label.textContent : '카카오로 시작하기';
+
+  btn.addEventListener('click', async () => {
+    notice.classList.remove('is-shown');
+    btn.disabled = true;
+    btn.style.opacity = '.7';
+    btn.style.cursor = 'wait';
+    if (label) label.textContent = '카카오로 이동 중…';
+
+    try {
+      const { error } = await signInWithKakao('https://glo-us.com/ko/account.html');
+      if (error) throw error;
+      /* On success Supabase redirects to Kakao; this line should not run. */
+    } catch (err) {
+      console.error('[glo] Kakao OAuth failed:', err);
+      notice.innerHTML = '<b>로그인에 실패했어요.</b> 잠시 후 다시 시도해주세요. 문제가 지속되면 고객센터 <a href="tel:02-467-1024">02-467-1024</a>로 연락 주세요.';
+      notice.classList.add('is-shown');
+      btn.disabled = false;
+      btn.style.opacity = '';
+      btn.style.cursor = '';
+      if (label) label.textContent = originalLabel;
+    }
+  });
+}
 </script>
 </body>
 </html>
