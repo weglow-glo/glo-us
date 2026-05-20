@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>glo — 마이페이지</title>
-<meta name="description" content="glo 마이페이지 — 본인 정보, 배송지, 구독, 주문 내역 관리."/>
+<meta name="description" content="glo 마이페이지 — 본인 정보, 구독, 주문 내역 관리."/>
 <meta name="robots" content="noindex"/>
 <link rel="canonical" href="https://glo-us.com/ko/account.html"/>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
@@ -89,12 +89,6 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 .field-tag{justify-self:end;}
 
 /* Address block */
-.addr{padding:14px 16px;background:var(--bg-3);border:1px solid var(--ink-line);border-radius:10px;margin-top:6px;font-size:14px;line-height:1.65;color:var(--ink);position:relative;}
-.addr-name{font-weight:600;color:var(--ink);}
-.addr-line{color:var(--ink-soft);margin-top:4px;font-size:13.5px;}
-.addr-phone{color:var(--ink-soft);margin-top:2px;font-size:13.5px;font-variant-numeric:tabular-nums;}
-.addr-default{position:absolute;top:14px;right:14px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);background:rgba(138,74,82,.1);padding:3px 10px;border-radius:100px;}
-
 /* Subscription card */
 .sub-status{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink-soft);}
 .sub-dot{width:8px;height:8px;border-radius:50%;background:var(--ink-mute);}
@@ -217,7 +211,7 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
     <div class="ahero-i">
       <div class="ey"><span class="dash"></span>My account</div>
       <h1><em>안녕하세요,</em><br/><span data-field="h1-name">회원</span>님.</h1>
-      <p class="ahero-sub">카카오 간편가입으로 연동된 정보를 확인하고, 배송지 · 구독 · 주문 내역을 관리하세요.</p>
+      <p class="ahero-sub">카카오 간편가입으로 연동된 정보를 확인하고, 구독 · 주문 내역을 관리하세요.</p>
 
       <div class="profile-strip">
         <div class="profile-avatar" aria-hidden="true">●</div>
@@ -232,7 +226,7 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
       </div>
 
       <div class="kakao-note">
-        <b>아래 화면은 실제 회원 데이터가 표시되는 마이페이지 영역의 검수용 예시입니다.</b> 본 페이지에 노출된 모든 개인정보(닉네임·이름·이메일·전화번호·배송지 등)는 카카오 검수 정책에 따라 마스킹 처리된 더미 데이터이며, 실제 회원 가입 후에는 회원이 카카오에서 동의한 항목이 해당 위치에 표시됩니다. 동의 철회는 카카오톡 → 더보기 → 설정 → 카카오 계정 → 연결된 서비스 관리에서 가능합니다.
+        <b>아래 화면은 실제 회원 데이터가 표시되는 마이페이지 영역의 검수용 예시입니다.</b> 본 페이지에 노출된 모든 개인정보(닉네임·이메일·전화번호 등)는 카카오 검수 정책에 따라 마스킹 처리된 더미 데이터이며, 실제 회원 가입 후에는 회원이 카카오에서 동의한 항목이 해당 위치에 표시됩니다. 동의 철회는 카카오톡 → 더보기 → 설정 → 카카오 계정 → 연결된 서비스 관리에서 가능합니다.
       </div>
     </div>
   </section>
@@ -253,11 +247,6 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
             <div class="field-tag"><span class="kakao-chip"><svg class="kakao-chip-icon" viewBox="0 0 18 18" aria-hidden="true"><path fill="#191919" d="M9 0.5C4.0294 0.5 0 3.694 0 7.625c0 2.5443 1.6731 4.7775 4.1719 6.029-.1813.6797-.661 2.474-.7563 2.864-.119.4856.1781.4794.375.349.1545-.1025 2.4575-1.668 3.453-2.346.5719.0848 1.1656.13 1.7563.13 4.9706 0 9-3.194 9-7.125S13.9706 0.5 9 0.5z"/></svg>카카오</span></div>
           </div>
           <div class="field">
-            <div class="field-k">이름 <span class="opt-tag">선택</span></div>
-            <div class="field-v"><span class="masked" data-field="name">마스킹 처리된 이름</span><small>주문서 받는사람 / 배송 라벨에 표시 · 미동의 시 결제 단계에서 직접 입력</small></div>
-            <div class="field-tag"><span class="kakao-chip"><svg class="kakao-chip-icon" viewBox="0 0 18 18" aria-hidden="true"><path fill="#191919" d="M9 0.5C4.0294 0.5 0 3.694 0 7.625c0 2.5443 1.6731 4.7775 4.1719 6.029-.1813.6797-.661 2.474-.7563 2.864-.119.4856.1781.4794.375.349.1545-.1025 2.4575-1.668 3.453-2.346.5719.0848 1.1656.13 1.7563.13 4.9706 0 9-3.194 9-7.125S13.9706 0.5 9 0.5z"/></svg>카카오</span></div>
-          </div>
-          <div class="field">
             <div class="field-k">이메일</div>
             <div class="field-v"><span class="masked" data-field="email">마스킹 처리된 이메일 주소</span><small>가입 확인 · 주문 영수증 · 출시 알림 수신</small></div>
             <div class="field-tag"><span class="kakao-chip"><svg class="kakao-chip-icon" viewBox="0 0 18 18" aria-hidden="true"><path fill="#191919" d="M9 0.5C4.0294 0.5 0 3.694 0 7.625c0 2.5443 1.6731 4.7775 4.1719 6.029-.1813.6797-.661 2.474-.7563 2.864-.119.4856.1781.4794.375.349.1545-.1025 2.4575-1.668 3.453-2.346.5719.0848 1.1656.13 1.7563.13 4.9706 0 9-3.194 9-7.125S13.9706 0.5 9 0.5z"/></svg>카카오</span></div>
@@ -267,25 +256,6 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
             <div class="field-v"><span class="masked" data-field="phone">마스킹 처리된 전화번호</span><small>배송 알림 SMS · 고객센터 문의 응대</small></div>
             <div class="field-tag"><span class="kakao-chip"><svg class="kakao-chip-icon" viewBox="0 0 18 18" aria-hidden="true"><path fill="#191919" d="M9 0.5C4.0294 0.5 0 3.694 0 7.625c0 2.5443 1.6731 4.7775 4.1719 6.029-.1813.6797-.661 2.474-.7563 2.864-.119.4856.1781.4794.375.349.1545-.1025 2.4575-1.668 3.453-2.346.5719.0848 1.1656.13 1.7563.13 4.9706 0 9-3.194 9-7.125S13.9706 0.5 9 0.5z"/></svg>카카오</span></div>
           </div>
-        </div>
-
-        <!-- 기본 배송지 -->
-        <div class="ac-card">
-          <div class="ac-card-head">
-            <h2>기본 <em>배송지</em></h2>
-            <a class="ac-card-edit" href="#">배송지 관리</a>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;font-size:13px;color:var(--ink-soft);">
-            <span class="kakao-chip"><svg class="kakao-chip-icon" viewBox="0 0 18 18" aria-hidden="true"><path fill="#191919" d="M9 0.5C4.0294 0.5 0 3.694 0 7.625c0 2.5443 1.6731 4.7775 4.1719 6.029-.1813.6797-.661 2.474-.7563 2.864-.119.4856.1781.4794.375.349.1545-.1025 2.4575-1.668 3.453-2.346.5719.0848 1.1656.13 1.7563.13 4.9706 0 9-3.194 9-7.125S13.9706 0.5 9 0.5z"/></svg>카카오 배송지 연동</span>
-            <span style="font-size:11.5px;color:var(--ink-mute);">결제 시 자동 입력</span>
-          </div>
-          <div class="addr">
-            <span class="addr-default">기본</span>
-            <div class="addr-name"><span class="masked" data-field="addr-name">마스킹 처리된 받는사람 이름</span></div>
-            <div class="addr-line" style="margin-top:8px;"><span class="masked" data-field="addr-line">마스킹 처리된 배송지 주소 (우편번호 포함)</span></div>
-            <div class="addr-phone" style="margin-top:6px;"><span class="masked" data-field="addr-phone">마스킹 처리된 전화번호</span></div>
-          </div>
-          <p style="font-size:12px;color:var(--ink-mute);line-height:1.7;margin-top:6px;">카카오 계정에 등록된 기본 배송지를 가져왔습니다. 다른 주소로 배송받으려면 결제 단계에서 변경하거나, '배송지 관리'에서 새 주소를 추가하세요.</p>
         </div>
 
         <!-- 정기구독 -->
@@ -429,23 +399,8 @@ import { getProfile, signOut } from '/assets/js/glo-auth.js';
   fill('nickname', profile.nickname || '');
   fill('email', profile.email || '');
   fill('phone', profile.phone || '');
-  fill('name', profile.name || '', { fallback: '미동의 (결제 시 직접 입력)' });
   fill('greeting', profile.nickname || '회원');
   fill('h1-name', profile.nickname || '회원');
-
-  /* Shipping address (optional consent) */
-  if (profile.address) {
-    fill('addr-name', profile.address.receiver || profile.name || profile.nickname || '');
-    const line = [profile.address.base, profile.address.detail]
-                   .filter(Boolean).join(' ').trim()
-                 + (profile.address.zone ? ` (${profile.address.zone})` : '');
-    fill('addr-line', line);
-    fill('addr-phone', profile.address.phone || profile.phone || '');
-  } else {
-    fill('addr-name', '', { fallback: '— 배송지 미등록' });
-    fill('addr-line', '', { fallback: '결제 단계에서 직접 입력하실 수 있어요' });
-    fill('addr-phone', '', { fallback: '—' });
-  }
 
   /* Avatar — show Kakao profile image if available, else
      first character of nickname. */
