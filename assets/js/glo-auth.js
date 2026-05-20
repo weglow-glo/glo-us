@@ -71,7 +71,14 @@ export async function getProfile() {
 
    Name + shipping_address are not collected at signup — the
    user will provide them at checkout instead.
+
+   channel_public_id surfaces a 'glo 카카오톡 채널 추가' checkbox
+   on the consent screen (default-checked). Users who don't
+   uncheck it become channel friends as part of signup, which
+   is the path we'll use to broadcast the 50% launch discount.
    ------------------------------------------------------------ */
+const GLO_KAKAO_CHANNEL_ID = '_VvUsX';
+
 export async function signInWithKakao(redirectTo) {
   const target = redirectTo
               || (typeof window !== 'undefined'
@@ -83,6 +90,9 @@ export async function signInWithKakao(redirectTo) {
     options: {
       redirectTo: target,
       scopes: 'phone_number',
+      queryParams: {
+        channel_public_id: GLO_KAKAO_CHANNEL_ID,
+      },
     },
   });
 }
