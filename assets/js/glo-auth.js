@@ -213,6 +213,217 @@ function escapeHtml(s) {
     .replace(/'/g, '&#39;');
 }
 
+/* ============================================================
+   EARLY-BIRD APPLICATION
+   ============================================================ */
+
+/* Check whether the current user has already applied for early-bird.
+   Returns { applied: bool, appliedAt: string|null, user: object|null }. */
+export async function getEarlyBirdStatus() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { applied: false, user: null };
+
+  const { data, error } = await supabase
+    .from('early_bird_applications')
+    .select('id, applied_at')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error('[glo] earlybird status check failed:', error);
+    return { applied: false, user, error };
+  }
+  return { applied: !!data, appliedAt: data ? data.applied_at : null, user };
+}
+
+/* Insert an early-bird application for the current user.
+   Returns { ok: true, data } on success
+        OR { ok: false, already: true } if user already applied
+        OR throws on other errors. */
+export async function applyForEarlyBird() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('not_authenticated');
+
+  const meta = user.user_metadata || {};
+  const row = {
+    user_id: user.id,
+    kakao_nickname: meta.nickname || meta.preferred_username || meta.full_name || meta.name || null,
+    kakao_email: user.email || meta.email || null,
+    kakao_phone: meta.phone || meta.phone_number || null,
+    kakao_user_id: meta.sub || meta.provider_id || null,
+    user_metadata: meta,
+  };
+
+  const { data, error } = await supabase
+    .from('early_bird_applications')
+    .insert(row)
+    .select()
+    .single();
+
+  if (error) {
+    /* 23505 = unique_violation — user already applied */
+    if (error.code === '23505') return { ok: false, already: true };
+    throw error;
+  }
+  return { ok: true, data };
+}
+
+/* ============================================================
+   MODAL — centered, frosted-glass card.
+   showGloModal({ icon, title, body, cta, onClose })
+   ============================================================ */
+
+let modalInjected = false;
+
+function injectModal() {
+  if (modalInjected) return;
+  modalInjected = true;
+
+  const el = document.createElement('div');
+  el.id = 'glo-modal';
+  el.className = 'glo-modal';
+  el.setAttribute('aria-hidden', 'true');
+  el.innerHTML = `
+    <div class="glo-modal-backdrop" data-close></div>
+    <div class="glo-modal-card" role="dialog" aria-modal="true" aria-labelledby="glo-modal-title">
+      <button class="glo-modal-close" type="button" aria-label="닫기" data-close>&times;</button>
+      <div class="glo-modal-icon" aria-hidden="true"></div>
+      <h2 class="glo-modal-title" id="glo-modal-title"></h2>
+      <p class="glo-modal-body"></p>
+      <button class="glo-modal-cta" type="button" data-close>확인</button>
+    </div>
+  `;
+  document.body.appendChild(el);
+
+  /* Wire close handlers (backdrop, X, CTA button, Esc) */
+  el.querySelectorAll('[data-close]').forEach((btn) => {
+    btn.addEventListener('click', hideGloModal);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && el.classList.contains('is-open')) hideGloModal();
+  });
+
+  const style = document.createElement('style');
+  style.id = 'glo-modal-styles';
+  style.textContent = `
+    .glo-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:24px;font-family:'Inter','Pretendard Variable',Pretendard,sans-serif;}
+    .glo-modal.is-open{display:flex;}
+    .glo-modal-backdrop{position:absolute;inset:0;background:rgba(42,18,24,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:gloFadeIn .35s ease forwards;}
+    .glo-modal-card{position:relative;z-index:1;background:linear-gradient(180deg,rgba(255,250,250,.98) 0%,rgba(243,234,234,.96) 100%);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border:1px solid rgba(212,181,181,.45);border-radius:22px;padding:56px 40px 36px;max-width:440px;width:100%;text-align:center;box-shadow:0 32px 80px rgba(58,26,34,.25),0 8px 24px rgba(58,26,34,.12),inset 0 1px 0 rgba(255,255,255,.6);animation:gloCardIn .5s cubic-bezier(.34,1.18,.64,1) forwards;}
+    .glo-modal-close{position:absolute;top:14px;right:14px;background:transparent;border:none;font-size:26px;line-height:1;color:rgba(42,18,24,.42);cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;font-family:inherit;}
+    .glo-modal-close:hover{background:rgba(42,18,24,.08);color:rgba(42,18,24,.85);}
+    .glo-modal-close:focus-visible{outline:2px solid #8a4a52;outline-offset:2px;}
+    .glo-modal-icon{font-size:60px;margin-bottom:10px;line-height:1;letter-spacing:-1px;}
+    .glo-modal-title{font-family:'Fraunces','Noto Serif KR',serif;font-weight:400;font-size:28px;line-height:1.35;letter-spacing:-.5px;color:#2a1218;margin:0 0 16px;}
+    .glo-modal-title em{font-style:normal;color:#8a4a52;font-weight:500;}
+    .glo-modal-body{font-size:14.5px;line-height:1.8;color:rgba(42,18,24,.78);margin:0 0 30px;letter-spacing:-.01em;}
+    .glo-modal-body b{color:#8a4a52;font-weight:700;}
+    .glo-modal-cta{background:#3a1a22;color:#f4ebeb;border:none;padding:14px 40px;font-family:inherit;font-size:14px;font-weight:600;border-radius:100px;cursor:pointer;letter-spacing:-.01em;transition:background .2s,transform .15s;box-shadow:0 6px 18px rgba(58,26,34,.18);}
+    .glo-modal-cta:hover{background:#5a2229;transform:translateY(-1px);box-shadow:0 8px 22px rgba(58,26,34,.22);}
+    .glo-modal-cta:focus-visible{outline:2px solid #f4ebeb;outline-offset:3px;}
+    @keyframes gloFadeIn{from{opacity:0;}to{opacity:1;}}
+    @keyframes gloCardIn{from{opacity:0;transform:translateY(20px) scale(.95);}to{opacity:1;transform:translateY(0) scale(1);}}
+    @media (max-width:640px){
+      .glo-modal-card{padding:44px 24px 28px;border-radius:18px;}
+      .glo-modal-title{font-size:23px;}
+      .glo-modal-icon{font-size:48px;}
+      .glo-modal-body{font-size:13.5px;}
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+export function showGloModal(opts) {
+  injectModal();
+  const el = document.getElementById('glo-modal');
+  el.querySelector('.glo-modal-icon').textContent = opts.icon || '✨';
+  el.querySelector('.glo-modal-title').innerHTML = opts.title || '';
+  el.querySelector('.glo-modal-body').innerHTML = opts.body || '';
+  el.querySelector('.glo-modal-cta').textContent = opts.cta || '확인';
+  el.classList.add('is-open');
+  el.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+
+  /* Focus the CTA button for keyboard users */
+  setTimeout(() => {
+    const cta = el.querySelector('.glo-modal-cta');
+    if (cta) cta.focus();
+  }, 60);
+}
+
+export function hideGloModal() {
+  const el = document.getElementById('glo-modal');
+  if (!el) return;
+  el.classList.remove('is-open');
+  el.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+/* ============================================================
+   CLICK INTERCEPTOR — any link to /ko/login.html.
+   Logged-in users get the early-bird signup modal instead of
+   being redirected to the login page.
+   ============================================================ */
+
+async function handleEarlyBirdClick(e) {
+  const link = e.target.closest('a[href="/ko/login.html"], a[href="https://glo-us.com/ko/login.html"]');
+  if (!link) return;
+
+  /* Stop default navigation while we decide. If user is logged out,
+     we'll re-trigger navigation manually. */
+  e.preventDefault();
+
+  /* Fast local check first — getSession() reads from storage. */
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    /* Not logged in — keep the original behavior */
+    window.location.href = '/ko/login.html';
+    return;
+  }
+
+  /* Logged in. Show a brief loading state? For now go straight. */
+  let profile;
+  try {
+    profile = await getProfile();
+  } catch (_) { profile = null; }
+  const displayName = (profile && profile.nickname) || '회원';
+
+  /* Has the user already applied? Try the insert; the unique
+     constraint will short-circuit duplicates without a separate
+     SELECT round-trip. */
+  try {
+    const result = await applyForEarlyBird();
+    if (result.already) {
+      showGloModal({
+        icon: '🌿',
+        title: '이미 <em>얼리버드</em>로<br/>등록되어 있어요',
+        body: `<b>${escapeHtml(displayName)}</b>님은 이미 얼리버드 신청이 완료되었어요. 제품 오픈 시 채널톡으로 <b>50% 할인 링크</b>를 보내드릴게요.`,
+        cta: '확인',
+      });
+    } else {
+      showGloModal({
+        icon: '🎉',
+        title: '<em>얼리버드 신청</em>이<br/>완료되었어요',
+        body: `정상 판매가에서 <b>50% 할인</b>받을 수 있는 얼리버드 신청이 완료되었어요. 제품 오픈 시 채널톡으로 50% 할인 링크를 보내드릴게요. 🌿`,
+        cta: '확인',
+      });
+    }
+  } catch (err) {
+    console.error('[glo] earlybird apply failed:', err);
+    showGloModal({
+      icon: '😢',
+      title: '신청에 <em>실패</em>했어요',
+      body: '잠시 후 다시 시도해주세요. 문제가 지속되면 고객센터 <b>02-467-1024</b>로 연락 주세요.',
+      cta: '확인',
+    });
+  }
+}
+
+if (typeof document !== 'undefined') {
+  /* Use capture phase so we run before any inline handlers */
+  document.addEventListener('click', handleEarlyBirdClick, true);
+}
+
 /* Run nav swap on DOMContentLoaded + re-run on every auth change */
 if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') {
