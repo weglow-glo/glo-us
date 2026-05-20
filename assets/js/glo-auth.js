@@ -300,6 +300,10 @@ function injectModal() {
       <div class="glo-modal-icon" aria-hidden="true"></div>
       <h2 class="glo-modal-title" id="glo-modal-title"></h2>
       <p class="glo-modal-body"></p>
+      <a class="glo-modal-cta-primary" target="_blank" rel="noopener" style="display:none;">
+        <svg class="glo-modal-cta-icon" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#191919" d="M9 0.5C4.0294 0.5 0 3.694 0 7.625c0 2.5443 1.6731 4.7775 4.1719 6.029-.1813.6797-.661 2.474-.7563 2.864-.119.4856.1781.4794.375.349.1545-.1025 2.4575-1.668 3.453-2.346.5719.0848 1.1656.13 1.7563.13 4.9706 0 9-3.194 9-7.125S13.9706 0.5 9 0.5z"/></svg>
+        <span class="glo-modal-cta-primary-label"></span>
+      </a>
       <button class="glo-modal-cta" type="button" data-close>확인</button>
     </div>
   `;
@@ -308,6 +312,10 @@ function injectModal() {
   /* Wire close handlers (backdrop, X, CTA button, Esc) */
   el.querySelectorAll('[data-close]').forEach((btn) => {
     btn.addEventListener('click', hideGloModal);
+  });
+  /* Primary CTA closes modal after a moment so the new tab opens */
+  el.querySelector('.glo-modal-cta-primary').addEventListener('click', () => {
+    setTimeout(hideGloModal, 200);
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && el.classList.contains('is-open')) hideGloModal();
@@ -328,9 +336,17 @@ function injectModal() {
     .glo-modal-title em{font-style:normal;color:#8a4a52;font-weight:500;}
     .glo-modal-body{font-size:14.5px;line-height:1.8;color:rgba(42,18,24,.78);margin:0 0 30px;letter-spacing:-.01em;}
     .glo-modal-body b{color:#8a4a52;font-weight:700;}
-    .glo-modal-cta{background:#3a1a22;color:#f4ebeb;border:none;padding:14px 40px;font-family:inherit;font-size:14px;font-weight:600;border-radius:100px;cursor:pointer;letter-spacing:-.01em;transition:background .2s,transform .15s;box-shadow:0 6px 18px rgba(58,26,34,.18);}
-    .glo-modal-cta:hover{background:#5a2229;transform:translateY(-1px);box-shadow:0 8px 22px rgba(58,26,34,.22);}
-    .glo-modal-cta:focus-visible{outline:2px solid #f4ebeb;outline-offset:3px;}
+    .glo-modal-cta-primary{display:none;align-items:center;justify-content:center;gap:8px;background:#FEE500;color:rgba(0,0,0,.85);border:none;padding:15px 28px;font-family:inherit;font-size:14.5px;font-weight:700;border-radius:12px;cursor:pointer;letter-spacing:-.02em;text-decoration:none;transition:background .18s,transform .12s,box-shadow .18s;box-shadow:0 8px 24px rgba(254,229,0,.22),0 2px 6px rgba(0,0,0,.06);margin-bottom:12px;}
+    .glo-modal-cta-primary[href]{display:inline-flex;}
+    .glo-modal-cta-primary:hover{background:#FDDC00;transform:translateY(-1px);box-shadow:0 12px 30px rgba(254,229,0,.28),0 4px 10px rgba(0,0,0,.08);}
+    .glo-modal-cta-primary:focus-visible{outline:3px solid rgba(254,229,0,.55);outline-offset:2px;}
+    .glo-modal-cta-icon{width:18px;height:18px;flex-shrink:0;}
+    .glo-modal-cta{background:transparent;color:rgba(42,18,24,.5);border:none;padding:6px 16px;font-family:inherit;font-size:13px;font-weight:500;border-radius:100px;cursor:pointer;letter-spacing:-.01em;transition:color .2s,background .2s;}
+    .glo-modal-cta:hover{color:rgba(42,18,24,.85);background:rgba(42,18,24,.05);}
+    .glo-modal-cta:focus-visible{outline:2px solid #8a4a52;outline-offset:2px;}
+    /* When no primary CTA, restore .glo-modal-cta to bold default style */
+    .glo-modal-card:not(:has(.glo-modal-cta-primary[href])) .glo-modal-cta{background:#3a1a22;color:#f4ebeb;padding:14px 40px;font-size:14px;font-weight:600;box-shadow:0 6px 18px rgba(58,26,34,.18);}
+    .glo-modal-card:not(:has(.glo-modal-cta-primary[href])) .glo-modal-cta:hover{background:#5a2229;color:#f4ebeb;transform:translateY(-1px);box-shadow:0 8px 22px rgba(58,26,34,.22);}
     @keyframes gloFadeIn{from{opacity:0;}to{opacity:1;}}
     @keyframes gloCardIn{from{opacity:0;transform:translateY(20px) scale(.95);}to{opacity:1;transform:translateY(0) scale(1);}}
     @media (max-width:640px){
@@ -350,14 +366,28 @@ export function showGloModal(opts) {
   el.querySelector('.glo-modal-title').innerHTML = opts.title || '';
   el.querySelector('.glo-modal-body').innerHTML = opts.body || '';
   el.querySelector('.glo-modal-cta').textContent = opts.cta || '확인';
+
+  /* Primary CTA (Kakao yellow button) — optional */
+  const primary = el.querySelector('.glo-modal-cta-primary');
+  const primaryLabel = el.querySelector('.glo-modal-cta-primary-label');
+  if (opts.primaryHref && opts.primaryLabel) {
+    primary.setAttribute('href', opts.primaryHref);
+    primary.setAttribute('target', opts.primaryTarget || '_blank');
+    primaryLabel.textContent = opts.primaryLabel;
+  } else {
+    primary.removeAttribute('href');
+    primary.style.display = '';
+    primaryLabel.textContent = '';
+  }
+
   el.classList.add('is-open');
   el.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
 
-  /* Focus the CTA button for keyboard users */
+  /* Focus primary CTA if present, else the close button */
   setTimeout(() => {
-    const cta = el.querySelector('.glo-modal-cta');
-    if (cta) cta.focus();
+    const focusTarget = (opts.primaryHref ? primary : el.querySelector('.glo-modal-cta'));
+    if (focusTarget) focusTarget.focus();
   }, 60);
 }
 
@@ -407,15 +437,19 @@ async function handleEarlyBirdClick(e) {
       showGloModal({
         icon: '🌿',
         title: '이미 <em>얼리버드</em>로<br/>등록되어 있어요',
-        body: `<b>${escapeHtml(displayName)}</b>님은 이미 얼리버드 신청이 완료되었어요.<br/><br/>제품 오픈 시 채널톡으로 <b>50% 할인 링크</b>를 보내드릴게요.`,
-        cta: '확인',
+        body: `<b>${escapeHtml(displayName)}</b>님은 이미 얼리버드 신청이 완료되었어요.<br/><br/>아직 <b>glo 카카오톡 채널</b>을 추가하지 않으셨다면, 지금 추가하셔야 출시 시 <b>50% 할인 링크</b>를 받으실 수 있어요.`,
+        primaryHref: 'http://pf.kakao.com/_VvUsX/friend',
+        primaryLabel: 'glo 카카오톡 채널 추가하기',
+        cta: '나중에',
       });
     } else {
       showGloModal({
         icon: '🎉',
         title: '<em>얼리버드 신청</em>이<br/>완료되었어요',
-        body: `정상 판매가에서 <b>50% 할인</b>받을 수 있는 얼리버드 신청이 완료되었어요.<br/><br/>제품 오픈 시 채널톡으로 50% 할인 링크를 보내드릴게요. 🌿`,
-        cta: '확인',
+        body: `정상 판매가에서 <b>50% 할인</b>받을 수 있는 얼리버드 신청이 완료되었어요.<br/><br/>출시 시 <b>50% 할인 링크</b>는 <b>glo 카카오톡 채널</b>로 발송됩니다. 아래 버튼으로 채널을 추가해주세요. 🌿`,
+        primaryHref: 'http://pf.kakao.com/_VvUsX/friend',
+        primaryLabel: 'glo 카카오톡 채널 추가하기',
+        cta: '나중에',
       });
     }
   } catch (err) {
