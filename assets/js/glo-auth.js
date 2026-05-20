@@ -134,13 +134,21 @@ async function attachNav() {
 
   const profile = await getProfile();
 
-  /* Find the login link (text node '로그인' OR href ends with /login.html) */
+  /* Find the login link OR the static '회원 ▼' placeholder on the
+     account page. Matches:
+       - text exactly '로그인'
+       - href ending with /login.html
+       - href ending with /account.html (placeholder before swap)
+       - text containing a dropdown caret (▾ / ▼ — leftover state) */
   const links = Array.from(navR.querySelectorAll('a'));
   const loginLink = links.find(a => {
+    if (a.classList.contains('btn-nav')) return false;
     const txt = (a.textContent || '').trim();
     const href = a.getAttribute('href') || '';
-    return !a.classList.contains('btn-nav')
-        && (txt === '로그인' || href.endsWith('/login.html'));
+    return txt === '로그인'
+        || href.endsWith('/login.html')
+        || href.endsWith('/account.html')
+        || /[▾▼]/.test(txt);
   });
   const existingMenu = navR.querySelector('.user-menu');
 
