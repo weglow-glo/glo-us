@@ -397,14 +397,14 @@ async function handleEarlyBirdClick(e) {
       showGloModal({
         icon: '🌿',
         title: '이미 <em>얼리버드</em>로<br/>등록되어 있어요',
-        body: `<b>${escapeHtml(displayName)}</b>님은 이미 얼리버드 신청이 완료되었어요. 제품 오픈 시 채널톡으로 <b>50% 할인 링크</b>를 보내드릴게요.`,
+        body: `<b>${escapeHtml(displayName)}</b>님은 이미 얼리버드 신청이 완료되었어요.<br/><br/>제품 오픈 시 채널톡으로 <b>50% 할인 링크</b>를 보내드릴게요.`,
         cta: '확인',
       });
     } else {
       showGloModal({
         icon: '🎉',
         title: '<em>얼리버드 신청</em>이<br/>완료되었어요',
-        body: `정상 판매가에서 <b>50% 할인</b>받을 수 있는 얼리버드 신청이 완료되었어요. 제품 오픈 시 채널톡으로 50% 할인 링크를 보내드릴게요. 🌿`,
+        body: `정상 판매가에서 <b>50% 할인</b>받을 수 있는 얼리버드 신청이 완료되었어요.<br/><br/>제품 오픈 시 채널톡으로 50% 할인 링크를 보내드릴게요. 🌿`,
         cta: '확인',
       });
     }
