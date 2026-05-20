@@ -64,7 +64,15 @@ export async function getProfile() {
 
 /* ------------------------------------------------------------
    signInWithKakao(redirectTo) — kick off the OAuth flow.
-   Kakao scope params are comma-separated per Kakao's spec.
+
+   Supabase's gotrue backend auto-includes these default Kakao
+   scopes: account_email, profile_image, profile_nickname.
+   So we only specify the *additional* scopes we approved on
+   top — duplicating the defaults caused Kakao to throw KOE205
+   (Bad Request — duplicate / invalid scope) on the OAuth URL.
+
+   Space-separated per OAuth 2.0 spec (Kakao accepts both space
+   and comma; Supabase passes them through verbatim).
    ------------------------------------------------------------ */
 export async function signInWithKakao(redirectTo) {
   const target = redirectTo
@@ -76,7 +84,7 @@ export async function signInWithKakao(redirectTo) {
     provider: 'kakao',
     options: {
       redirectTo: target,
-      scopes: 'profile_nickname,profile_image,account_email,phone_number,name,shipping_address',
+      scopes: 'phone_number name shipping_address',
     },
   });
 }
