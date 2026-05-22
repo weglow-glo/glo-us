@@ -66,7 +66,7 @@ glo/
 
 **브라우저만으로 (가장 쉬움):**
 
-1. https://github.com/shinwook-k/glo-us 접속
+1. https://github.com/weglow-glo/glo-us 접속
 2. `ko/` 폴더 → `index.html` 클릭
 3. 우상단 **연필(✏️) 아이콘** 클릭 → 편집 모드
 4. `Ctrl+F`로 바꿀 문구 검색 → 수정
