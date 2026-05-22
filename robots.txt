@@ -4,5 +4,7 @@ Disallow: /archive/
 Disallow: /assets/founders/PHOTO_GUIDE.md
 Disallow: /assets/og/README.md
 Disallow: /styles/
+Disallow: /_styleguide.html
+Disallow: /CONTRIBUTING.md
 
 Sitemap: https://glo-us.com/sitemap.xml
