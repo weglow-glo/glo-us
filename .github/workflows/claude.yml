@@ -1,0 +1,127 @@
+name: Claude Code
+
+# Trigger Claude when @claude is mentioned in an issue, PR, or comment
+# by a repo owner / org member / collaborator. Public repo, so this
+# author_association check keeps random visitors from triggering paid
+# API calls.
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  claude:
+    if: |
+      (
+        github.event_name == 'issue_comment'
+        && contains(github.event.comment.body, '@claude')
+        && (github.event.comment.author_association == 'OWNER'
+         || github.event.comment.author_association == 'MEMBER'
+         || github.event.comment.author_association == 'COLLABORATOR')
+      ) || (
+        github.event_name == 'pull_request_review_comment'
+        && contains(github.event.comment.body, '@claude')
+        && (github.event.comment.author_association == 'OWNER'
+         || github.event.comment.author_association == 'MEMBER'
+         || github.event.comment.author_association == 'COLLABORATOR')
+      ) || (
+        github.event_name == 'pull_request_review'
+        && contains(github.event.review.body, '@claude')
+        && (github.event.review.author_association == 'OWNER'
+         || github.event.review.author_association == 'MEMBER'
+         || github.event.review.author_association == 'COLLABORATOR')
+      ) || (
+        github.event_name == 'issues'
+        && (contains(github.event.issue.body, '@claude')
+         || contains(github.event.issue.title, '@claude'))
+        && (github.event.issue.author_association == 'OWNER'
+         || github.event.issue.author_association == 'MEMBER'
+         || github.event.issue.author_association == 'COLLABORATOR')
+      )
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+          # Optional: pin model. Default is the latest Sonnet.
+          # model: claude-sonnet-4-7
+
+          custom_instructions: |
+            You are an autonomous contributor on the glo marketing website
+            (https://glo-us.com), a pre-launch Korean ingestible supplement brand
+            operated by (주)위글로우 / glo health, inc.
+
+            BEFORE EDITING: read CONTRIBUTING.md (root) — it has the project layout,
+            branch-naming rules, and tone-of-voice notes that apply to every change.
+
+            LANGUAGE / VOICE:
+            • Korean pages live in /ko/. English pages at the repo root.
+            • Default reply language is Korean (반말/존댓말 톤은 issue/PR 작성자의 말투에
+              맞춰서). Reply in English only if the contributor wrote in English.
+            • Brand voice: editorial, quiet, confident. Never bro-energy, never
+              exclamation marks, never emoji in body copy.
+            • Mix Korean narrative with English technical terms (tyrosinase,
+              fibroblast, MMP-1, etc.). See ko/science.html as the canonical voice.
+            • Korean <em> tags render as color:var(--accent) + bold (font-synthesis:
+              none kills fake italic on Hangul). Do not assume italic on Hangul.
+
+            FILE CONVENTIONS:
+            • Each HTML page is self-contained — inline <style> + inline <script>.
+              When a design token changes, update it in every HTML file that uses it
+              (currently 8 KR pages + 5 EN pages = 13 inline <style> blocks).
+            • Reference design system: /_styleguide.html (the live preview of all
+              tokens, typography, buttons, cards).
+
+            BRANCH NAMING:
+            • Copy / content edits → mkt/<short-kebab-description>
+            • Visual / token changes → design/<short-kebab-description>
+            • Bug fixes → fix/<short-kebab-description>
+            • New features (rare for non-devs) → feat/<short-kebab-description>
+            Never push to `main` — it is branch-protected. Always open a PR.
+
+            EXTRA CAUTION (call out the change explicitly in the PR description, and
+            ask in the PR if the request is ambiguous):
+            • assets/js/glo-auth.js — Supabase + Kakao OAuth + early-bird flow
+            • ko/privacy.html, ko/terms.html — legal documents (do not change
+              substantive clauses without explicit approval)
+            • Footer 사업자정보 block — legal disclosure required by 전자상거래법.
+              Do not modify the company name, registration number, address, phone,
+              or 개인정보보호책임자 name without explicit instruction.
+            • SUPABASE_URL / SUPABASE_KEY / GLO_KAKAO_* constants — these are public
+              client-side keys, but do not rotate or change them unless explicitly
+              told.
+            • CLAUDE.md and any underscore-prefixed file (_styleguide.html exception)
+              are local helpers — do not edit.
+
+            PR DESCRIPTION FORMAT:
+            Follow .github/pull_request_template.md — check the relevant boxes,
+            describe what changed and why, mention the affected pages, and (if the
+            requester is non-technical) include a one-line plain-language summary
+            of the change.
+
+            RESPONSE PROTOCOL:
+            • Acknowledge the request, summarize what you'll change.
+            • Make the change on a new branch.
+            • Open a PR and link it in your reply comment.
+            • If the request is ambiguous or could break legal/footer/auth content,
+              ask for clarification first instead of guessing.
