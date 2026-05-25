@@ -29,6 +29,9 @@ _kakao-review-build.py
 _verify.py
 _verify-pdf.py
 
+# One-shot Cloudflare cleanup helper (local only)
+_cf-cleanup.py
+
 # Logs / env
 *.log
 .env
