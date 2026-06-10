@@ -119,6 +119,20 @@ jobs:
             requester is non-technical) include a one-line plain-language summary
             of the change.
 
+            TARGET-PAGE SANITY CHECK (do this BEFORE editing anything):
+            • Map the request's described sections to the actual page that contains
+              them. Key tells: 패키지/캐니스터, 성분 카드(01~04 Complex), Dose
+              Validation 표, Ritual, FAQ, 리뷰 sections live on ko/product.html.
+              The waitlist/얼리버드 section, AI/simulation stats, advisors, and
+              science-teaser live on ko/index.html.
+            • If the file path named in the request contradicts the page
+              description or the listed sections (e.g. 'ko/index.html (상세페이지)'
+              while listing FAQ/리뷰 sections), STOP and ask the requester which
+              page they mean before touching any file. A wrong-page edit costs a
+              revert PR; a clarifying question costs one comment.
+            • This actually happened on issue #2 — treat it as the canonical
+              example of why this check exists.
+
             RESPONSE PROTOCOL:
             • Acknowledge the request, summarize what you'll change.
             • Make the change on a new branch.
