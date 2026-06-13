@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+/* ============================================================
+   glo — design tokens (ported from styles/brand.css)
+   Tailwind v4 @theme: each --color-* generates utilities
+   (bg-burg-600, text-accent, border-ink-line, …).
+   ============================================================ */
+@theme {
+  /* Backgrounds — white → soft rose tints */
+  --color-bg-1: #ffffff;
+  --color-bg-2: #faf7f7;
+  --color-bg-3: #f3eaea;
+  --color-bg-4: #e8d5d5;
+  --color-bg-warm: #faf6f3;
+
+  /* Burgundy scale */
+  --color-burg-50: #d4b5b5;
+  --color-burg-100: #b88787;
+  --color-burg-200: #8a4a52;
+  --color-burg-300: #6e3038;
+  --color-burg-400: #5a2229;
+  --color-burg-600: #3a1a22;
+  --color-burg-800: #2a1218;
+  --color-burg-900: #1a0f14;
+
+  /* Text / ink */
+  --color-ink: #2a1218;
+  --color-ink-soft: rgba(42, 18, 24, 0.72);
+  --color-ink-mute: rgba(42, 18, 24, 0.68);
+  --color-ink-faint: rgba(42, 18, 24, 0.35);
+  --color-ink-line: rgba(42, 18, 24, 0.1);
+  --color-ink-line-2: rgba(42, 18, 24, 0.06);
+
+  /* Brand accent (burgundy-rose, not orange) */
+  --color-accent: #8a4a52;
+  --color-accent-deep: #5a2229;
+  --color-cream: #f4ebeb;
+
+  /* Type families (var set by next/font in layout.tsx) */
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+    "Pretendard", "Malgun Gothic", "맑은 고딕", sans-serif;
+}
+
+/* RESET + base — kept in @layer base so Tailwind utilities (e.g. text-bg-1)
+   override these element rules. Unlayered CSS would beat utilities. */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    background: var(--color-bg-1);
+    color: var(--color-ink);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
+  }
+}
+
+/* A11Y — skip link, hidden until focused */
+.skip {
+  position: absolute;
+  top: -48px;
+  left: 8px;
+  z-index: 100;
+  background: var(--color-ink);
+  color: var(--color-cream);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  transition: top 0.2s;
+}
+.skip:focus {
+  top: 8px;
+}
+
+/* A11Y — focus only for keyboard users */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* A11Y — honor reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
