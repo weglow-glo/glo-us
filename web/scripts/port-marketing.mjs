@@ -100,8 +100,11 @@ function buildPage({ src, route, css, interactions }) {
     body = body.replace(re, to);
   }
 
-  const title = titleFrom(html);
-  const description = descFrom(html);
+  // Apply business-info rewrites to metadata too (description/title are
+  // extracted from the original <head>, not the rewritten body).
+  const applyBiz = (s) => BIZ_REWRITES.reduce((acc, [re, to]) => acc.replace(re, to), s);
+  const title = applyBiz(titleFrom(html));
+  const description = applyBiz(descFrom(html));
 
   // 5) Write co-located CSS.
   const dir = route ? join(OUT, route) : OUT;
