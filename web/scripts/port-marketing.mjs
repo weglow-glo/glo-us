@@ -1,0 +1,147 @@
+/**
+ * Lift-and-shift generator: turns the static ko/*.html marketing pages into
+ * Next.js routes under src/app/(marketing). Each source page's <style> block
+ * becomes a co-located .css file; its <body> markup is injected verbatim via
+ * dangerouslySetInnerHTML. Internal links + business info are rewired.
+ *
+ * Run from the repo root:  node web/scripts/port-marketing.mjs
+ *
+ * Idempotent — safe to re-run after editing the ko/ sources.
+ */
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { join } from "node:path";
+
+const REPO = process.cwd();
+const KO = join(REPO, "ko");
+const OUT = join(REPO, "web", "src", "app", "(marketing)");
+
+// route '' → '/', others → '/<route>'
+// `interactions` names a client component exported from (marketing)/_interactions.tsx
+// that re-attaches the page's original inline-script behavior.
+const PAGES = [
+  { src: "index.html", route: "", css: "landing" },
+  { src: "product.html", route: "product", css: "product", interactions: "ProductInteractions" },
+  { src: "science.html", route: "science", css: "science", interactions: "ScienceInteractions" },
+  { src: "about.html", route: "about", css: "about" },
+  { src: "privacy.html", route: "privacy", css: "privacy" },
+  { src: "terms.html", route: "terms", css: "terms" },
+  { src: "refund.html", route: "refund", css: "refund" },
+];
+
+// Order matters: rewrite specific *.html links before the bare /ko/ → / .
+const LINK_REWRITES = [
+  [/\/ko\/product\.html/g, "/product"],
+  [/\/ko\/science\.html/g, "/science"],
+  [/\/ko\/about\.html/g, "/about"],
+  [/\/ko\/login\.html/g, "/login"],
+  [/\/ko\/account\.html/g, "/account"],
+  [/\/ko\/privacy\.html/g, "/privacy"],
+  [/\/ko\/terms\.html/g, "/terms"],
+  [/\/ko\/refund\.html/g, "/refund"],
+  [/\/refund\.html/g, "/refund"],
+  [/\/ko\//g, "/"],
+  [/href="\/ko"/g, 'href="/"'],
+];
+
+// Business entity: old static site used (주)위글로우 — glo storefront is 메디랩스.
+const BIZ_REWRITES = [
+  [/\(주\)위글로우/g, "메디랩스"],
+  [/517-86-00666/g, "576-02-02004"],
+  [/제\s*2022-서울강남-00726호/g, "제2023-서울강남-01613호"],
+];
+
+function extract(re, html) {
+  const out = [];
+  let m;
+  while ((m = re.exec(html)) !== null) out.push(m[1]);
+  return out;
+}
+
+function titleFrom(html) {
+  const m = html.match(/<title>([\s\S]*?)<\/title>/);
+  return m ? m[1].trim() : "glo";
+}
+function descFrom(html) {
+  const m = html.match(/<meta name="description" content="([\s\S]*?)"\s*\/?>/);
+  return m ? m[1].trim() : "";
+}
+
+function buildPage({ src, route, css, interactions }) {
+  // Korean source preferred; fall back to repo root (e.g. refund.html is EN-only).
+  const koPath = join(KO, src);
+  const html = readFileSync(existsSync(koPath) ? koPath : join(REPO, src), "utf8");
+
+  // 1) CSS — concatenate every <style> block.
+  const styles = extract(/<style[^>]*>([\s\S]*?)<\/style>/g, html).join("\n\n");
+
+  // 2) Body inner HTML.
+  const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/);
+  let body = bodyMatch ? bodyMatch[1] : "";
+
+  // 3) Strip skip link (root layout already provides one) + all scripts.
+  body = body
+    .replace(/<a [^>]*class="skip"[^>]*>[\s\S]*?<\/a>/g, "")
+    .replace(/<script[\s\S]*?<\/script>/g, "")
+    .replace(/<script[^>]*\/>/g, "");
+
+  // 4a) Convert early-bird (waitlist) CTAs into live "구매하기" buttons that
+  //     go straight to /checkout. Matched by the "얼리버드" label so the real
+  //     "로그인" nav link is left untouched (rewired to /login below).
+  body = body.replace(
+    /<a\b([^>]*?)\bhref="[^"]*"([^>]*)>([^<]*얼리버드[^<]*)<\/a>/g,
+    (_m, pre, post, text) => {
+      const arrow = /(&rarr;|→)/.test(text) ? " &rarr;" : "";
+      return `<a${pre} href="/checkout"${post}>구매하기${arrow}</a>`;
+    },
+  );
+
+  // 4b) Rewire remaining links + business info.
+  for (const [re, to] of [...LINK_REWRITES, ...BIZ_REWRITES]) {
+    body = body.replace(re, to);
+  }
+
+  const title = titleFrom(html);
+  const description = descFrom(html);
+
+  // 5) Write co-located CSS.
+  const dir = route ? join(OUT, route) : OUT;
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, `${css}.css`), styles, "utf8");
+
+  // 6) Write page.tsx. JSON.stringify safely escapes the HTML string literal.
+  const importLine = interactions
+    ? `import "./${css}.css";\nimport { ${interactions} } from "../_interactions";`
+    : `import "./${css}.css";`;
+  const render = interactions
+    ? `  return (
+    <>
+      <div dangerouslySetInnerHTML={{ __html: HTML }} />
+      <${interactions} />
+    </>
+  );`
+    : `  return <div dangerouslySetInnerHTML={{ __html: HTML }} />;`;
+  const page = `${importLine}
+
+export const metadata = {
+  title: ${JSON.stringify(title)},
+  description: ${JSON.stringify(description)},
+};
+
+const HTML = ${JSON.stringify(body)};
+
+export default function Page() {
+${render}
+}
+`;
+  writeFileSync(join(dir, "page.tsx"), page, "utf8");
+  return { route: route || "/", cssBytes: styles.length, htmlBytes: body.length };
+}
+
+for (const p of PAGES) {
+  try {
+    const r = buildPage(p);
+    console.log(`✓ ${r.route}  (css ${r.cssBytes}B, html ${r.htmlBytes}B)`);
+  } catch (e) {
+    console.error(`✗ ${p.src}: ${e.message}`);
+  }
+}
