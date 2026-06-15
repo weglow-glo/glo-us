@@ -8,6 +8,8 @@
  * Commerce routes (/checkout, /login, /account) live OUTSIDE this group and
  * use Tailwind — the two styling worlds stay separate.
  */
+import NavAuth from "./nav-auth";
+
 export default function MarketingLayout({
   children,
 }: {
@@ -15,6 +17,7 @@ export default function MarketingLayout({
 }) {
   return (
     <>
+      <NavAuth />
       {/* eslint-disable-next-line @next/next/no-page-custom-font */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
