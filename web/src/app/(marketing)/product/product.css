@@ -120,6 +120,15 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 .buy-price sub{font-size:16px;font-style:normal;font-family:'Inter',sans-serif;color:var(--ink-mute);}
 .buy-btn{display:block;width:100%;background:var(--burg-600);color:var(--cream);padding:18px;font-weight:600;font-size:15px;text-align:center;cursor:pointer;transition:background .2s;border:none;border-radius:100px;}
 .buy-btn:hover{background:var(--burg-400);}
+.opt-list{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.opt{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;padding:14px 16px;border:1.5px solid var(--ink-line);background:rgba(255,255,255,.5);border-radius:10px;cursor:pointer;transition:border-color .15s,background .15s;font-family:inherit;}
+.opt:hover{border-color:var(--burg-50);}
+.opt.active{border-color:var(--accent);background:rgba(243,234,234,.6);}
+.opt-name{font-size:14px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px;}
+.opt-name em{font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.5px;color:var(--cream);background:var(--accent);padding:2px 7px;border-radius:100px;}
+.opt-right{display:flex;align-items:center;gap:10px;}
+.opt-price{font-size:14px;font-weight:600;color:var(--ink);}
+.opt-disc{font-size:11px;font-weight:700;color:var(--accent);background:rgba(138,74,82,.1);padding:3px 8px;border-radius:100px;}
 .buy-fine{font-size:11px;color:var(--ink-mute);text-align:center;margin-top:14px;}
 
 /* QUICK SPECS */

@@ -1,29 +1,54 @@
 /**
- * Single source of truth for the GL-01 product.
- * Korea-first launch: KRW, one-time purchase (no subscription yet).
- *
- * Pre-order phase: sells now at 50% off; every order ships 7/2 as one batch.
- * Official launch 7/2 reverts to the regular price.
+ * Single source of truth for the GL-01 product + pre-order options.
+ * Korea-first launch: KRW, one-time pre-order (no subscription).
+ * Every order ships 7/2 as one batch; the regular price resumes at launch.
  */
 export const PRODUCT = {
   code: "GL-01",
   name: "glo GL-01",
-  /** pre-order (50% off) unit price in KRW */
-  price: 59500,
-  /** regular price after the 7/2 launch */
+  /** regular price per month after the 7/2 launch */
   regularPrice: 119000,
   currency: "KRW" as const,
 } as const;
 
-export const PREORDER = {
-  discountPct: 50,
-  /** all pre-orders ship together on this date */
-  shipDate: "7월 2일",
-  shipNote: "사전결제 상품 · 7월 2일 일괄배송",
-} as const;
+export type ProductOption = {
+  key: string;
+  months: number;
+  label: string;
+  /** pre-order sale price in KRW for the whole bundle */
+  price: number;
+  badge?: string;
+};
 
-export function orderName(quantity: number): string {
-  return quantity > 1 ? `${PRODUCT.name} ${quantity}개` : PRODUCT.name;
+/** Selectable duration bundles. Price is the trusted server-side amount. */
+export const OPTIONS: ProductOption[] = [
+  { key: "1m", months: 1, label: "1개월 분", price: 59500 },
+  { key: "2m", months: 2, label: "2개월 분", price: 113050 },
+  { key: "3m", months: 3, label: "3개월 분", price: 160650, badge: "BEST" },
+  { key: "4m", months: 4, label: "4개월 분", price: 202300 },
+  { key: "6m", months: 6, label: "6개월 분", price: 285600, badge: "최대 할인" },
+];
+
+export function getOption(key: string | undefined | null): ProductOption {
+  return OPTIONS.find((o) => o.key === key) ?? OPTIONS[0];
+}
+
+/** Regular (pre-discount) price for an option = months × monthly regular price. */
+export function regularOf(o: ProductOption): number {
+  return o.months * PRODUCT.regularPrice;
+}
+
+/** Discount percent vs the regular price (e.g. 52.5). */
+export function discountOf(o: ProductOption): number {
+  return Math.round((1 - o.price / regularOf(o)) * 1000) / 10;
+}
+
+export function formatPct(d: number): string {
+  return `${Number.isInteger(d) ? d : d.toFixed(1)}%`;
+}
+
+export function orderNameOf(o: ProductOption): string {
+  return `${PRODUCT.name} ${o.label}`;
 }
 
 export function formatKRW(value: number): string {
@@ -34,3 +59,9 @@ export function formatKRW(value: number): string {
 export function generateOrderId(): string {
   return `glo_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`;
 }
+
+export const PREORDER = {
+  /** all pre-orders ship together on this date */
+  shipDate: "7월 2일",
+  shipNote: "사전결제 상품 · 7월 2일 일괄배송",
+} as const;
