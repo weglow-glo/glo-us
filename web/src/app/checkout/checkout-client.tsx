@@ -161,10 +161,8 @@ export default function CheckoutClient({ initialOption }: { initialOption: strin
         </button>
       </div>
 
-      <h1 className="mt-8 font-display text-4xl font-light text-ink">결제</h1>
-
       {/* Order summary */}
-      <section className="mt-10 rounded-xl border border-ink-line bg-bg-2 p-6">
+      <section className="mt-8 rounded-xl border border-ink-line bg-bg-2 p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <span className="inline-block rounded-full bg-accent px-2.5 py-1 text-[11px] font-bold tracking-wide text-cream">
