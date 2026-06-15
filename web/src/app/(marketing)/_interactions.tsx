@@ -86,8 +86,27 @@ export function ProductInteractions() {
       faqHandlers.forEach(([el, h]) => el.removeEventListener("click", h)),
     );
 
-    // (Buy-option subscribe/one-time toggle removed — phase-1 is a single
-    // one-time purchase at ₩59,500; the buy button links straight to /checkout.)
+    // 5) Duration option cards → update selection + buy button target.
+    const opts = [...document.querySelectorAll<HTMLElement>(".opt[data-key]")];
+    const buyBtn = document.getElementById("buy-btn") as HTMLAnchorElement | null;
+    const optHandlers: Array<[HTMLElement, () => void]> = [];
+    opts.forEach((card) => {
+      const h = () => {
+        opts.forEach((c) => {
+          c.classList.remove("active");
+          c.setAttribute("aria-checked", "false");
+        });
+        card.classList.add("active");
+        card.setAttribute("aria-checked", "true");
+        const key = card.dataset.key;
+        if (buyBtn && key) buyBtn.href = `/checkout?option=${key}`;
+      };
+      card.addEventListener("click", h);
+      optHandlers.push([card, h]);
+    });
+    cleanups.push(() =>
+      optHandlers.forEach(([el, h]) => el.removeEventListener("click", h)),
+    );
 
     return () => cleanups.forEach((c) => c());
   }, []);

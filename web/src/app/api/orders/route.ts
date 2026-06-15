@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import {
-  PRODUCT,
-  orderName,
-  generateOrderId,
-} from "@/lib/product";
+import { PRODUCT, getOption, orderNameOf, generateOrderId } from "@/lib/product";
 
 /**
  * Create a pending order before launching the Toss payment widget.
@@ -14,7 +10,7 @@ import {
  */
 export async function POST(request: Request) {
   let body: {
-    quantity?: number;
+    option?: string;
     customerName?: string;
     customerEmail?: string;
     customerPhone?: string;
@@ -33,8 +29,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const quantity = Math.max(1, Math.min(10, Math.floor(body.quantity ?? 1)));
-  const amount = PRODUCT.price * quantity;
+  // Price + quantity come from the trusted option table, not the client.
+  const opt = getOption(body.option);
+  const amount = opt.price;
   const order_id = generateOrderId();
 
   // Attach the order to the logged-in user, if any (guest checkout allowed).
@@ -49,9 +46,9 @@ export async function POST(request: Request) {
     user_id: user?.id ?? null,
     status: "pending",
     product_code: PRODUCT.code,
-    quantity,
+    quantity: opt.months,
     amount,
-    order_name: orderName(quantity),
+    order_name: orderNameOf(opt),
     customer_name: body.customerName ?? null,
     customer_email: body.customerEmail ?? user?.email ?? null,
     customer_phone: body.customerPhone ?? null,
@@ -69,6 +66,6 @@ export async function POST(request: Request) {
   return NextResponse.json({
     orderId: order_id,
     amount,
-    orderName: orderName(quantity),
+    orderName: orderNameOf(opt),
   });
 }
