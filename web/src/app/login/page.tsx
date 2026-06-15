@@ -16,7 +16,7 @@ function LoginInner() {
     setLoading(true);
     setError(null);
     const supabase = createClient();
-    const next = params.get("next") ?? "/account";
+    const next = params.get("next") ?? "/";
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "kakao",
       options: {
