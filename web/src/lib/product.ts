@@ -23,10 +23,10 @@ export type ProductOption = {
 /** Selectable duration bundles. Price is the trusted server-side amount. */
 export const OPTIONS: ProductOption[] = [
   { key: "1m", months: 1, label: "1개월 분", price: 59500 },
-  { key: "2m", months: 2, label: "2개월 분", price: 113050 },
-  { key: "3m", months: 3, label: "3개월 분", price: 160650, badge: "BEST" },
+  { key: "2m", months: 2, label: "2개월 분", price: 113050, badge: "추천" },
+  { key: "3m", months: 3, label: "3개월 분", price: 160650, badge: "베스트" },
   { key: "4m", months: 4, label: "4개월 분", price: 202300 },
-  { key: "6m", months: 6, label: "6개월 분", price: 285600, badge: "최대 할인" },
+  { key: "6m", months: 6, label: "6개월 분", price: 285600 },
 ];
 
 export function getOption(key: string | undefined | null): ProductOption {
