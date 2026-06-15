@@ -61,7 +61,15 @@ export default async function AccountPage() {
         <Link href="/" className="font-display text-3xl font-light tracking-tight text-ink">
           glo<span className="italic text-accent">.</span>
         </Link>
-        <SignOutButton />
+        <div className="flex items-center gap-2">
+          <Link
+            href="/"
+            className="rounded-full border border-ink-line px-4 py-2 text-sm font-medium text-ink-soft transition hover:border-accent hover:text-accent"
+          >
+            ← 홈으로
+          </Link>
+          <SignOutButton />
+        </div>
       </div>
 
       <p className="mt-12 text-[11px] font-semibold uppercase tracking-[1.8px] text-ink-mute">

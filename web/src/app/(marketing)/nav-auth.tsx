@@ -28,12 +28,18 @@ export default function NavAuth() {
       const existing = navR.querySelector<HTMLElement>(".glo-usermenu");
 
       if (!user) {
-        // logged out — if a stale menu exists, restore the login link
+        // logged out — make sure a login link exists, and point it back to
+        // the current page so login returns here (not /account).
+        let link = loginLink;
         if (existing) {
           const a = document.createElement("a");
-          a.href = "/login";
           a.textContent = "로그인";
           existing.replaceWith(a);
+          link = a;
+        }
+        if (link) {
+          const here = location.pathname + location.search;
+          link.setAttribute("href", `/login?next=${encodeURIComponent(here)}`);
         }
         return;
       }
