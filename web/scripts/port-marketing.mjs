@@ -87,11 +87,13 @@ function buildPage({ src, route, css, interactions }) {
   // 4a) Convert early-bird (waitlist) CTAs into live "구매하기" buttons that
   //     go straight to /checkout. Matched by the "얼리버드" label so the real
   //     "로그인" nav link is left untouched (rewired to /login below).
+  // Non-product pages send buyers to the product detail (#buy) to pick an
+  // option first; only the product buy box links straight to /checkout.
   body = body.replace(
     /<a\b([^>]*?)\bhref="[^"]*"([^>]*)>([^<]*얼리버드[^<]*)<\/a>/g,
     (_m, pre, post, text) => {
       const arrow = /(&rarr;|→)/.test(text) ? " &rarr;" : "";
-      return `<a${pre} href="/checkout"${post}>구매하기${arrow}</a>`;
+      return `<a${pre} href="/product#buy"${post}>구매하기${arrow}</a>`;
     },
   );
 
