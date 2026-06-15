@@ -147,7 +147,7 @@ export default function CheckoutClient({ initialOption }: { initialOption: strin
   }
 
   return (
-    <main id="main" className="mx-auto max-w-2xl px-6 py-12">
+    <main id="main" className="mx-auto max-w-2xl px-6 pb-36 pt-12 sm:pb-12">
       {/* Top bar — logo home + back */}
       <div className="flex items-center justify-between">
         <Link href="/" className="font-display text-3xl font-light tracking-tight text-ink">
@@ -262,16 +262,21 @@ export default function CheckoutClient({ initialOption }: { initialOption: strin
         <p className="mt-4 rounded-md bg-bg-3 px-4 py-3 text-sm text-burg-400">{error}</p>
       )}
 
-      <button
-        onClick={handlePay}
-        disabled={!ready || submitting}
-        className="mt-6 w-full rounded-full bg-burg-600 px-8 py-4 text-sm font-semibold text-bg-1 transition hover:bg-burg-400 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {submitting ? "처리 중…" : `${formatKRW(amount)} 결제하기`}
-      </button>
-      <p className="mt-3 text-center text-xs text-ink-faint">
-        테스트 환경입니다. 실제 결제가 발생하지 않습니다.
-      </p>
+      {/* Pay button — floating bottom bar on mobile, inline on desktop */}
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-ink-line bg-bg-1/95 px-6 py-4 backdrop-blur sm:static sm:mt-6 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none">
+        <div className="mx-auto max-w-2xl">
+          <button
+            onClick={handlePay}
+            disabled={!ready || submitting}
+            className="w-full rounded-full bg-burg-600 px-8 py-4 text-sm font-semibold text-bg-1 transition hover:bg-burg-400 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {submitting ? "처리 중…" : `${formatKRW(amount)} 결제하기`}
+          </button>
+          <p className="mt-2 text-center text-xs text-ink-faint sm:mt-3">
+            테스트 환경입니다. 실제 결제가 발생하지 않습니다.
+          </p>
+        </div>
+      </div>
     </main>
   );
 }
