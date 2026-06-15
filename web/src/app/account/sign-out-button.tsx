@@ -1,24 +1,14 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-
+// Server-side sign out: clears the (possibly httpOnly) auth cookies and
+// redirects home. A plain form needs no client JS.
 export function SignOutButton() {
-  const router = useRouter();
-
-  async function signOut() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/");
-    router.refresh();
-  }
-
   return (
-    <button
-      onClick={signOut}
-      className="rounded-full border border-ink-line px-5 py-2.5 text-sm font-medium text-ink-soft transition hover:border-accent hover:text-accent"
-    >
-      로그아웃
-    </button>
+    <form method="post" action="/auth/signout">
+      <button
+        type="submit"
+        className="rounded-full border border-ink-line px-5 py-2.5 text-sm font-medium text-ink-soft transition hover:border-accent hover:text-accent"
+      >
+        로그아웃
+      </button>
+    </form>
   );
 }
