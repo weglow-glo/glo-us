@@ -18,6 +18,14 @@ export async function POST(request: Request) {
     customerName?: string;
     customerEmail?: string;
     customerPhone?: string;
+    shippingAddress?: {
+      recipient?: string;
+      phone?: string;
+      postcode?: string;
+      address?: string;
+      detail?: string;
+      memo?: string;
+    };
   };
   try {
     body = await request.json();
@@ -47,6 +55,7 @@ export async function POST(request: Request) {
     customer_name: body.customerName ?? null,
     customer_email: body.customerEmail ?? user?.email ?? null,
     customer_phone: body.customerPhone ?? null,
+    shipping_address: body.shippingAddress ?? null,
   });
 
   if (error) {

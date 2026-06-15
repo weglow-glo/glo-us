@@ -6,9 +6,22 @@ import {
   ANONYMOUS,
   type TossPaymentsWidgets,
 } from "@tosspayments/tosspayments-sdk";
-import { PRODUCT, PREORDER, orderName, formatKRW } from "@/lib/product";
+import { PRODUCT, PREORDER, formatKRW } from "@/lib/product";
 
 const CLIENT_KEY = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!;
+const DAUM_SRC =
+  "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+
+// Minimal shape of the Daum Postcode global we use.
+declare global {
+  interface Window {
+    daum?: {
+      Postcode: new (opts: {
+        oncomplete: (data: { zonecode: string; roadAddress: string; jibunAddress: string }) => void;
+      }) => { open: () => void };
+    };
+  }
+}
 
 export default function CheckoutPage() {
   const widgetsRef = useRef<TossPaymentsWidgets | null>(null);
@@ -17,14 +30,18 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [quantity, setQuantity] = useState(1);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [recipient, setRecipient] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [postcode, setPostcode] = useState("");
+  const [address, setAddress] = useState("");
+  const [detail, setDetail] = useState("");
+  const [memo, setMemo] = useState("");
 
   const amount = PRODUCT.price * quantity;
   const regularAmount = PRODUCT.regularPrice * quantity;
 
-  // Initialise the Toss widgets once.
+  // Load Toss widgets once.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -33,14 +50,8 @@ export default function CheckoutPage() {
       await widgets.setAmount({ currency: "KRW", value: PRODUCT.price });
       if (cancelled) return;
       await Promise.all([
-        widgets.renderPaymentMethods({
-          selector: "#payment-method",
-          variantKey: "DEFAULT",
-        }),
-        widgets.renderAgreement({
-          selector: "#agreement",
-          variantKey: "AGREEMENT",
-        }),
+        widgets.renderPaymentMethods({ selector: "#payment-method", variantKey: "DEFAULT" }),
+        widgets.renderAgreement({ selector: "#agreement", variantKey: "AGREEMENT" }),
       ]);
       if (cancelled) return;
       widgetsRef.current = widgets;
@@ -54,45 +65,73 @@ export default function CheckoutPage() {
     };
   }, []);
 
-  // Keep the widget amount in sync with quantity.
+  // Load Daum postcode script once.
+  useEffect(() => {
+    if (document.getElementById("daum-postcode")) return;
+    const s = document.createElement("script");
+    s.id = "daum-postcode";
+    s.src = DAUM_SRC;
+    s.async = true;
+    document.body.appendChild(s);
+  }, []);
+
+  // Keep widget amount in sync with quantity.
   useEffect(() => {
     if (!ready || !widgetsRef.current) return;
     widgetsRef.current.setAmount({ currency: "KRW", value: amount });
   }, [amount, ready]);
 
+  function openPostcode() {
+    if (!window.daum?.Postcode) {
+      setError("우편번호 서비스를 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
+      return;
+    }
+    new window.daum.Postcode({
+      oncomplete: (data) => {
+        setPostcode(data.zonecode);
+        setAddress(data.roadAddress || data.jibunAddress);
+        document.getElementById("addr-detail")?.focus();
+      },
+    }).open();
+  }
+
   async function handlePay() {
     if (!widgetsRef.current || submitting) return;
+
+    if (!recipient.trim() || !phone.trim() || !postcode || !address || !detail.trim()) {
+      setError("수령인, 연락처, 배송지 주소를 모두 입력해주세요.");
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
     try {
-      // 1) Create a pending order (amount computed server-side).
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           quantity,
-          customerName: name,
+          customerName: recipient,
           customerEmail: email,
           customerPhone: phone,
+          shippingAddress: { recipient, phone, postcode, address, detail, memo },
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "주문 생성 실패");
 
-      // 2) Launch the Toss payment window.
       await widgetsRef.current.requestPayment({
         orderId: data.orderId,
         orderName: data.orderName,
         successUrl: `${window.location.origin}/checkout/success`,
         failUrl: `${window.location.origin}/checkout/fail`,
         customerEmail: email || undefined,
-        customerName: name || undefined,
+        customerName: recipient || undefined,
         customerMobilePhone: phone || undefined,
       });
-      // requestPayment redirects on success; nothing runs after this.
+      // requestPayment redirects on success.
     } catch (e) {
       const message = e instanceof Error ? e.message : "결제 요청에 실패했습니다.";
-      // User-cancelled payments throw too — don't treat as a hard error.
       setError(message);
       setSubmitting(false);
     }
@@ -116,9 +155,7 @@ export default function CheckoutPage() {
             <p className="mt-1 text-sm text-ink-mute">15ml 데일리 샷 · 스킨 롱제비티</p>
           </div>
           <div className="flex items-center gap-3">
-            <label htmlFor="qty" className="text-sm text-ink-mute">
-              수량
-            </label>
+            <label htmlFor="qty" className="text-sm text-ink-mute">수량</label>
             <select
               id="qty"
               value={quantity}
@@ -126,21 +163,15 @@ export default function CheckoutPage() {
               className="rounded-md border border-ink-line bg-bg-1 px-3 py-2 text-sm text-ink"
             >
               {[1, 2, 3, 4, 5].map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
+                <option key={n} value={n}>{n}</option>
               ))}
             </select>
           </div>
         </div>
         <div className="mt-6 flex items-center justify-between border-t border-ink-line pt-4">
-          <span className="text-sm font-semibold uppercase tracking-wide text-ink-mute">
-            결제 금액
-          </span>
+          <span className="text-sm font-semibold uppercase tracking-wide text-ink-mute">결제 금액</span>
           <span className="flex items-baseline gap-2">
-            <span className="text-sm text-ink-faint line-through">
-              {formatKRW(regularAmount)}
-            </span>
+            <span className="text-sm text-ink-faint line-through">{formatKRW(regularAmount)}</span>
             <span className="font-display text-2xl text-ink">{formatKRW(amount)}</span>
           </span>
         </div>
@@ -152,23 +183,54 @@ export default function CheckoutPage() {
         </p>
       </section>
 
-      {/* Customer info */}
-      <section className="mt-8 grid gap-4">
-        <Field label="이름" value={name} onChange={setName} placeholder="홍길동" />
-        <Field
-          label="이메일"
-          value={email}
-          onChange={setEmail}
-          placeholder="you@example.com"
-          type="email"
-        />
-        <Field
-          label="휴대폰"
-          value={phone}
-          onChange={setPhone}
-          placeholder="01012345678"
-          type="tel"
-        />
+      {/* Shipping */}
+      <section className="mt-8">
+        <h2 className="mb-4 font-display text-xl text-ink">배송 정보</h2>
+        <div className="grid gap-4">
+          <Field label="수령인" value={recipient} onChange={setRecipient} placeholder="홍길동" />
+          <Field label="휴대폰" value={phone} onChange={setPhone} placeholder="01012345678" type="tel" />
+          <Field
+            label="이메일 (주문 확인용)"
+            value={email}
+            onChange={setEmail}
+            placeholder="you@example.com"
+            type="email"
+          />
+
+          <div>
+            <span className="mb-1.5 block text-sm font-medium text-ink-soft">주소</span>
+            <div className="flex gap-2">
+              <input
+                value={postcode}
+                readOnly
+                placeholder="우편번호"
+                className="w-32 rounded-md border border-ink-line bg-bg-2 px-4 py-3 text-sm text-ink outline-none"
+              />
+              <button
+                type="button"
+                onClick={openPostcode}
+                className="shrink-0 rounded-md border border-ink-line px-4 py-3 text-sm font-medium text-ink-soft transition hover:border-accent hover:text-accent"
+              >
+                우편번호 검색
+              </button>
+            </div>
+            <input
+              value={address}
+              readOnly
+              placeholder="기본 주소 (검색으로 입력)"
+              className="mt-2 w-full rounded-md border border-ink-line bg-bg-2 px-4 py-3 text-sm text-ink outline-none"
+            />
+            <input
+              id="addr-detail"
+              value={detail}
+              onChange={(e) => setDetail(e.target.value)}
+              placeholder="상세 주소 (동·호수 등)"
+              className="mt-2 w-full rounded-md border border-ink-line bg-bg-1 px-4 py-3 text-sm text-ink outline-none focus:border-accent"
+            />
+          </div>
+
+          <Field label="배송 메모 (선택)" value={memo} onChange={setMemo} placeholder="부재 시 문 앞에 두세요" />
+        </div>
       </section>
 
       {/* Toss widgets */}
@@ -176,9 +238,7 @@ export default function CheckoutPage() {
       <div id="agreement" className="mt-2" />
 
       {error && (
-        <p className="mt-4 rounded-md bg-bg-3 px-4 py-3 text-sm text-burg-400">
-          {error}
-        </p>
+        <p className="mt-4 rounded-md bg-bg-3 px-4 py-3 text-sm text-burg-400">{error}</p>
       )}
 
       <button

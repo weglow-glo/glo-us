@@ -19,6 +19,11 @@ Next.js 앱(`web/`)은 **Vercel**에 배포한다. 정적 사이트와 달리 �
 | `SUPABASE_SERVICE_ROLE_KEY` | **서버 전용 · 비밀** |
 | `NEXT_PUBLIC_TOSS_CLIENT_KEY` | 공개(위젯용) |
 | `TOSS_SECRET_KEY` | **서버 전용 · 비밀** |
+| `ADMIN_PASSWORD` | **서버 전용 · 비밀** — /admin Basic Auth 비밀번호 (강한 값으로) |
+
+> **관리자 페이지:** `https://<도메인>/admin` 접속 시 브라우저 Basic Auth 창이 뜸. 아이디는 아무거나, 비밀번호는 `ADMIN_PASSWORD` 값. 주문 목록·상세·배송처리(송장)·CSV 내보내기 제공.
+
+> **DB 마이그레이션:** Supabase SQL Editor에서 `web/supabase/migrations/`의 `0001_init.sql`, **`0002_fulfillment.sql`**(배송/송장 컬럼)을 순서대로 실행. 0002 미적용 시 /admin 주문목록이 `tracking_number does not exist` 에러.
 
 값은 로컬 `web/.env.local` 참고 (이 파일은 커밋 금지). 이메일(Resend)은 비활성화 — `RESEND_API_KEY` 미설정 시 발송 자동 skip.
 
