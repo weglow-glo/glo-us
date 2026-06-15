@@ -130,6 +130,12 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 .opt-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .opt-price{font-size:13px;font-weight:600;color:var(--ink);}
 .opt-disc{font-size:10px;font-weight:700;color:var(--accent);background:rgba(138,74,82,.1);padding:2px 6px;border-radius:100px;min-width:46px;text-align:center;box-sizing:border-box;flex-shrink:0;}
+.buy-float{display:none;}
+@media(max-width:640px){
+  .buy-float{display:block;position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid var(--ink-line);padding:12px 16px;}
+  .buy-float-btn{display:block;width:100%;background:var(--burg-600);color:var(--cream);padding:16px;font-weight:600;font-size:15px;text-align:center;border-radius:100px;}
+  body{padding-bottom:88px;}
+}
 @media(max-width:640px){
   .opt{padding:12px;gap:8px;}
   .opt-name{font-size:12px;gap:5px;}

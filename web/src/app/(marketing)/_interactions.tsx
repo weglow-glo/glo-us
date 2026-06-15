@@ -86,9 +86,12 @@ export function ProductInteractions() {
       faqHandlers.forEach(([el, h]) => el.removeEventListener("click", h)),
     );
 
-    // 5) Duration option cards → update selection + buy button target.
+    // 5) Duration option cards → update selection + buy button targets
+    //    (in-box button and the mobile floating bar).
     const opts = [...document.querySelectorAll<HTMLElement>(".opt[data-key]")];
     const buyBtn = document.getElementById("buy-btn") as HTMLAnchorElement | null;
+    const buyFloatBtn = document.getElementById("buy-float-btn") as HTMLAnchorElement | null;
+    const buyFloatPrice = document.getElementById("buy-float-price");
     const optHandlers: Array<[HTMLElement, () => void]> = [];
     opts.forEach((card) => {
       const h = () => {
@@ -99,7 +102,12 @@ export function ProductInteractions() {
         card.classList.add("active");
         card.setAttribute("aria-checked", "true");
         const key = card.dataset.key;
-        if (buyBtn && key) buyBtn.href = `/checkout?option=${key}`;
+        const price = card.querySelector<HTMLElement>(".opt-price")?.textContent ?? "";
+        if (key) {
+          if (buyBtn) buyBtn.href = `/checkout?option=${key}`;
+          if (buyFloatBtn) buyFloatBtn.href = `/checkout?option=${key}`;
+        }
+        if (buyFloatPrice && price) buyFloatPrice.textContent = price;
       };
       card.addEventListener("click", h);
       optHandlers.push([card, h]);
