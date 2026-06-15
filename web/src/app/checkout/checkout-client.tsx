@@ -161,11 +161,9 @@ export default function CheckoutClient({ initialOption }: { initialOption: strin
         </button>
       </div>
 
-      <h1 className="mt-8 font-display text-4xl font-light text-ink">결제</h1>
-
       {/* Order summary */}
-      <section className="mt-10 rounded-xl border border-ink-line bg-bg-2 p-6">
-        <div className="flex items-start justify-between gap-4">
+      <section className="mt-8 rounded-xl border border-ink-line bg-bg-2 p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <span className="inline-block rounded-full bg-accent px-2.5 py-1 text-[11px] font-bold tracking-wide text-cream">
               사전할인 {formatPct(discount)}
@@ -174,12 +172,14 @@ export default function CheckoutClient({ initialOption }: { initialOption: strin
             <p className="mt-1 text-sm text-ink-mute">15ml 데일리 샷 · 스킨 롱제비티</p>
           </div>
           <div className="flex items-center gap-2">
-            <label htmlFor="opt" className="text-sm text-ink-mute">구성</label>
+            <label htmlFor="opt" className="shrink-0 whitespace-nowrap text-sm text-ink-mute">
+              구성
+            </label>
             <select
               id="opt"
               value={optionKey}
               onChange={(e) => setOptionKey(e.target.value)}
-              className="rounded-md border border-ink-line bg-bg-1 px-3 py-2 text-sm text-ink"
+              className="w-full rounded-md border border-ink-line bg-bg-1 px-3 py-2 text-sm text-ink sm:w-auto"
             >
               {OPTIONS.map((o) => (
                 <option key={o.key} value={o.key}>
