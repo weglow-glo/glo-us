@@ -3,70 +3,95 @@
 import { useEffect } from "react";
 
 /**
- * Marketing pages are static HTML with a hardcoded "로그인" nav link.
- * This swaps it for a user menu when signed in. Auth is checked via the
- * server (/api/me) so it works even if the auth cookie isn't JS-readable;
- * logout posts to /auth/signout (server clears the cookie).
+ * Swaps the static "로그인" nav link for a user menu when signed in.
+ *
+ * Perceived-speed: the last-known user is cached in localStorage and applied
+ * instantly on load (no flicker on repeat navigations); /api/me then confirms
+ * in the background. Auth is read server-side so it works with httpOnly cookies.
  */
+type NavUser = { name: string; avatar: string | null };
+const CACHE_KEY = "glo_nav_user";
+
 export default function NavAuth() {
   useEffect(() => {
     let docClick: (() => void) | null = null;
 
-    (async () => {
+    const render = (user: NavUser | null) => {
       const navR = document.querySelector<HTMLElement>(".nav-r");
       if (!navR) return;
+      const hasMenu = !!navR.querySelector(".glo-usermenu");
 
-      const loginLink =
-        navR.querySelector<HTMLElement>('a[href^="/login"]') ||
-        [...navR.querySelectorAll<HTMLElement>("a")].find(
-          (a) => a.textContent?.trim() === "로그인",
-        );
+      if (user) {
+        if (hasMenu) return; // already showing — no re-render, no flicker
+        injectStyles();
+        const loginLink =
+          navR.querySelector<HTMLElement>('a[href^="/login"]') ||
+          [...navR.querySelectorAll<HTMLElement>("a")].find((a) => a.textContent?.trim() === "로그인");
+        const initial = escapeHtml(user.name.slice(0, 1));
+        const avatar = user.avatar
+          ? `<span class="glo-um-avatar" style="background-image:url('${escapeHtml(user.avatar)}')"></span>`
+          : `<span class="glo-um-avatar">${initial}</span>`;
 
-      let user: { name: string; avatar: string | null } | null = null;
-      try {
-        const res = await fetch("/api/me", { cache: "no-store" });
-        user = (await res.json()).user;
-      } catch {
-        user = null;
-      }
+        const menu = document.createElement("div");
+        menu.className = "glo-usermenu";
+        menu.innerHTML = `
+          <button class="glo-um-trigger" type="button" aria-haspopup="menu" aria-expanded="false">${avatar}<span class="glo-um-name">${escapeHtml(user.name)}</span> ▾</button>
+          <div class="glo-um-dd" role="menu">
+            <a href="/account" role="menuitem">마이페이지</a>
+            <form method="post" action="/auth/signout"><button type="submit" class="glo-um-logout" role="menuitem">로그아웃</button></form>
+          </div>`;
+        if (loginLink) loginLink.replaceWith(menu);
+        else navR.insertBefore(menu, navR.firstChild);
 
-      if (!user) {
-        // logged out — make the login link return to the current page
-        if (loginLink) {
-          const here = location.pathname + location.search;
-          loginLink.setAttribute("href", `/login?next=${encodeURIComponent(here)}`);
+        const trigger = menu.querySelector<HTMLElement>(".glo-um-trigger")!;
+        const dd = menu.querySelector<HTMLElement>(".glo-um-dd")!;
+        trigger.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const open = dd.classList.toggle("open");
+          trigger.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+        docClick = () => dd.classList.remove("open");
+        document.addEventListener("click", docClick);
+      } else {
+        // logged out — restore login link (with return path) if a menu is shown
+        const menu = navR.querySelector<HTMLElement>(".glo-usermenu");
+        const here = location.pathname + location.search;
+        if (menu) {
+          const a = document.createElement("a");
+          a.href = `/login?next=${encodeURIComponent(here)}`;
+          a.textContent = "로그인";
+          menu.replaceWith(a);
+        } else {
+          const loginLink =
+            navR.querySelector<HTMLElement>('a[href^="/login"]') ||
+            [...navR.querySelectorAll<HTMLElement>("a")].find((a) => a.textContent?.trim() === "로그인");
+          if (loginLink) loginLink.setAttribute("href", `/login?next=${encodeURIComponent(here)}`);
         }
-        return;
       }
+    };
 
-      injectStyles();
-      const initial = escapeHtml(user.name.slice(0, 1));
-      const avatar = user.avatar
-        ? `<span class="glo-um-avatar" style="background-image:url('${escapeHtml(user.avatar)}')"></span>`
-        : `<span class="glo-um-avatar">${initial}</span>`;
+    // 1) Optimistic: apply cached state instantly.
+    let cached: NavUser | null = null;
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      if (raw) cached = JSON.parse(raw);
+    } catch {}
+    render(cached);
 
-      const menu = document.createElement("div");
-      menu.className = "glo-usermenu";
-      menu.innerHTML = `
-        <button class="glo-um-trigger" type="button" aria-haspopup="menu" aria-expanded="false">${avatar}<span class="glo-um-name">${escapeHtml(user.name)}</span> ▾</button>
-        <div class="glo-um-dd" role="menu">
-          <a href="/account" role="menuitem">마이페이지</a>
-          <form method="post" action="/auth/signout"><button type="submit" class="glo-um-logout" role="menuitem">로그아웃</button></form>
-        </div>`;
-
-      if (loginLink) loginLink.replaceWith(menu);
-      else navR.insertBefore(menu, navR.firstChild);
-
-      const trigger = menu.querySelector<HTMLElement>(".glo-um-trigger")!;
-      const dd = menu.querySelector<HTMLElement>(".glo-um-dd")!;
-      trigger.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const open = dd.classList.toggle("open");
-        trigger.setAttribute("aria-expanded", open ? "true" : "false");
-      });
-      docClick = () => dd.classList.remove("open");
-      document.addEventListener("click", docClick);
-    })();
+    // 2) Confirm with the server.
+    fetch("/api/me", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => {
+        const user: NavUser | null = d.user ?? null;
+        try {
+          if (user) localStorage.setItem(CACHE_KEY, JSON.stringify(user));
+          else localStorage.removeItem(CACHE_KEY);
+        } catch {}
+        // Only re-render if the state changed vs what we optimistically showed.
+        const showingMenu = !!document.querySelector(".nav-r .glo-usermenu");
+        if (!!user !== showingMenu) render(user);
+      })
+      .catch(() => {});
 
     return () => {
       if (docClick) document.removeEventListener("click", docClick);
