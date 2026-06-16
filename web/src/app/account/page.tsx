@@ -47,9 +47,13 @@ export default async function AccountPage() {
   const email = user.email ?? meta.email ?? null;
 
   // RLS (orders_select_own) restricts this to the current user's orders.
+  // Hide `pending` rows — an order is created the moment 결제하기 is pressed
+  // (Toss needs an orderId up front), so abandoned/retried attempts would
+  // otherwise linger here as "결제 대기" ghosts.
   const { data: orders } = await supabase
     .from("orders")
     .select("order_id, order_name, status, amount, created_at")
+    .neq("status", "pending")
     .order("created_at", { ascending: false })
     .returns<Order[]>();
 
