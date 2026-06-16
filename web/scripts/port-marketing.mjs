@@ -48,6 +48,8 @@ const BIZ_REWRITES = [
   [/\(주\)위글로우/g, "메디랩스"],
   [/517-86-00666/g, "576-02-02004"],
   [/제\s*2022-서울강남-00726호/g, "제2023-서울강남-01613호"],
+  // TEMP business address (placeholder until the registered address is confirmed)
+  [/서울시 성동구 왕십리로 38, 3층/g, "서울시 강남구 압구정로42길 12, 5층"],
 ];
 
 function extract(re, html) {

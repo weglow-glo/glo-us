@@ -104,7 +104,27 @@
   border-radius: 4px;
 }
 
+/* Checkout validation toast — fade/slide in, hold, fade/slide out */
+@keyframes glo-toast-inout {
+  0% { opacity: 0; transform: translate(-50%, -12px); }
+  8% { opacity: 1; transform: translate(-50%, 0); }
+  88% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -12px); }
+}
+.glo-toast {
+  transform: translate(-50%, -12px);
+  animation: glo-toast-inout 2.5s ease both;
+}
+
 /* A11Y — honor reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  /* keep the toast readable (no fade) for the full dwell instead of flashing */
+  .glo-toast {
+    animation: none;
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

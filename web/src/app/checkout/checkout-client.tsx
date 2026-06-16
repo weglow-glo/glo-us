@@ -32,7 +32,17 @@ declare global {
   }
 }
 
-export default function CheckoutClient({ initialOption }: { initialOption: string }) {
+export default function CheckoutClient({
+  initialOption,
+  defaultName = "",
+  defaultPhone = "",
+  accountEmail = "",
+}: {
+  initialOption: string;
+  defaultName?: string;
+  defaultPhone?: string;
+  accountEmail?: string;
+}) {
   const router = useRouter();
   const widgetsRef = useRef<TossPaymentsWidgets | null>(null);
   const [ready, setReady] = useState(false);
@@ -45,13 +55,30 @@ export default function CheckoutClient({ initialOption }: { initialOption: strin
   const regularAmount = regularOf(opt);
   const discount = discountOf(opt);
 
-  const [recipient, setRecipient] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
+  // Prefill from the signed-in Kakao account (nickname only — phone/address
+  // aren't shared by Kakao without extra approved consent scopes).
+  const [recipient, setRecipient] = useState(defaultName);
+  const [phone, setPhone] = useState(defaultPhone);
   const [postcode, setPostcode] = useState("");
   const [address, setAddress] = useState("");
   const [detail, setDetail] = useState("");
   const [memo, setMemo] = useState("");
+
+  // Field-level validation highlight + auto-dismissing top toast.
+  const [invalid, setInvalid] = useState<Record<string, boolean>>({});
+  const clearInvalid = (k: string) =>
+    setInvalid((s) => (s[k] ? { ...s, [k]: false } : s));
+
+  const [toast, setToast] = useState<{ id: number; msg: string } | null>(null);
+  const toastSeq = useRef(0);
+  const toastTimer = useRef<number | undefined>(undefined);
+  const showToast = (msg: string) => {
+    clearTimeout(toastTimer.current);
+    toastSeq.current += 1;
+    setToast({ id: toastSeq.current, msg }); // keyed remount re-runs the CSS animation
+    toastTimer.current = window.setTimeout(() => setToast(null), 2500);
+  };
+  useEffect(() => () => clearTimeout(toastTimer.current), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -100,6 +127,7 @@ export default function CheckoutClient({ initialOption }: { initialOption: strin
       oncomplete: (data) => {
         setPostcode(data.zonecode);
         setAddress(data.roadAddress || data.jibunAddress);
+        clearInvalid("address");
         document.getElementById("addr-detail")?.focus();
       },
     }).open();
@@ -108,8 +136,14 @@ export default function CheckoutClient({ initialOption }: { initialOption: strin
   async function handlePay() {
     if (!widgetsRef.current || submitting) return;
 
-    if (!recipient.trim() || !phone.trim() || !postcode || !address || !detail.trim()) {
-      setError("수령인, 연락처, 배송지 주소를 모두 입력해주세요.");
+    const miss: Record<string, boolean> = {};
+    if (!recipient.trim()) miss.recipient = true;
+    if (!phone.trim()) miss.phone = true;
+    if (!postcode || !address) miss.address = true;
+    if (!detail.trim()) miss.detail = true;
+    if (Object.keys(miss).length > 0) {
+      setInvalid(miss);
+      showToast("수령인, 연락처, 배송지 주소를 모두 입력해주세요.");
       return;
     }
 
@@ -122,7 +156,7 @@ export default function CheckoutClient({ initialOption }: { initialOption: strin
         body: JSON.stringify({
           option: optionKey,
           customerName: recipient,
-          customerEmail: email,
+          customerEmail: accountEmail,
           customerPhone: phone,
           shippingAddress: { recipient, phone, postcode, address, detail, memo },
         }),
@@ -135,7 +169,7 @@ export default function CheckoutClient({ initialOption }: { initialOption: strin
         orderName: data.orderName,
         successUrl: `${window.location.origin}/checkout/success`,
         failUrl: `${window.location.origin}/checkout/fail`,
-        customerEmail: email || undefined,
+        customerEmail: accountEmail || undefined,
         customerName: recipient || undefined,
         customerMobilePhone: phone || undefined,
       });
@@ -148,6 +182,17 @@ export default function CheckoutClient({ initialOption }: { initialOption: strin
 
   return (
     <main id="main" className="mx-auto w-full max-w-3xl px-4 pb-36 pt-10 sm:px-6 sm:pb-12">
+      {/* Auto-dismissing validation toast — fades in/out at the top */}
+      {toast && (
+        <div
+          key={toast.id}
+          role="alert"
+          className="glo-toast fixed left-1/2 top-4 z-[60] max-w-[calc(100%-2rem)] whitespace-nowrap rounded-xl border border-ink-line bg-bg-1 px-5 py-3 text-sm font-medium text-burg-400 shadow-[0_12px_40px_rgba(58,26,34,0.18)]"
+        >
+          {toast.msg}
+        </div>
+      )}
+
       {/* Top bar — logo home + back */}
       <div className="flex items-center justify-between">
         <Link href="/" className="font-display text-3xl font-light tracking-tight text-ink">
@@ -208,14 +253,26 @@ export default function CheckoutClient({ initialOption }: { initialOption: strin
       <section className="mt-8">
         <h2 className="mb-4 font-display text-xl text-ink">배송 정보</h2>
         <div className="grid gap-4">
-          <Field label="수령인" value={recipient} onChange={setRecipient} placeholder="홍길동" />
-          <Field label="휴대폰" value={phone} onChange={setPhone} placeholder="01012345678" type="tel" />
           <Field
-            label="이메일 (주문 확인용)"
-            value={email}
-            onChange={setEmail}
-            placeholder="you@example.com"
-            type="email"
+            label="수령인"
+            value={recipient}
+            onChange={(v) => {
+              setRecipient(v);
+              clearInvalid("recipient");
+            }}
+            placeholder="홍길동"
+            error={invalid.recipient}
+          />
+          <Field
+            label="휴대폰"
+            value={phone}
+            onChange={(v) => {
+              setPhone(v);
+              clearInvalid("phone");
+            }}
+            placeholder="01012345678"
+            type="tel"
+            error={invalid.phone}
           />
 
           <div>
@@ -225,7 +282,9 @@ export default function CheckoutClient({ initialOption }: { initialOption: strin
                 value={postcode}
                 readOnly
                 placeholder="우편번호"
-                className="w-32 rounded-md border border-ink-line bg-bg-2 px-4 py-3 text-sm text-ink outline-none"
+                className={`w-32 rounded-md border bg-bg-2 px-4 py-3 text-sm text-ink outline-none ${
+                  invalid.address ? "border-red-500 bg-red-50" : "border-ink-line"
+                }`}
               />
               <button
                 type="button"
@@ -239,14 +298,21 @@ export default function CheckoutClient({ initialOption }: { initialOption: strin
               value={address}
               readOnly
               placeholder="기본 주소 (검색으로 입력)"
-              className="mt-2 w-full rounded-md border border-ink-line bg-bg-2 px-4 py-3 text-sm text-ink outline-none"
+              className={`mt-2 w-full rounded-md border bg-bg-2 px-4 py-3 text-sm text-ink outline-none ${
+                invalid.address ? "border-red-500 bg-red-50" : "border-ink-line"
+              }`}
             />
             <input
               id="addr-detail"
               value={detail}
-              onChange={(e) => setDetail(e.target.value)}
+              onChange={(e) => {
+                setDetail(e.target.value);
+                clearInvalid("detail");
+              }}
               placeholder="상세 주소 (동·호수 등)"
-              className="mt-2 w-full rounded-md border border-ink-line bg-bg-1 px-4 py-3 text-sm text-ink outline-none focus:border-accent"
+              className={`mt-2 w-full rounded-md border px-4 py-3 text-sm text-ink outline-none focus:border-accent ${
+                invalid.detail ? "border-red-500 bg-red-50" : "border-ink-line bg-bg-1"
+              }`}
             />
           </div>
 
@@ -289,12 +355,14 @@ function Field({
   onChange,
   placeholder,
   type = "text",
+  error = false,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   type?: string;
+  error?: boolean;
 }) {
   return (
     <label className="block">
@@ -304,7 +372,9 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-md border border-ink-line bg-bg-1 px-4 py-3 text-sm text-ink outline-none focus:border-accent"
+        className={`w-full rounded-md border px-4 py-3 text-sm text-ink outline-none focus:border-accent ${
+          error ? "border-red-500 bg-red-50" : "border-ink-line bg-bg-1"
+        }`}
       />
     </label>
   );
