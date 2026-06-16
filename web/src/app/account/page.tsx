@@ -56,7 +56,7 @@ export default async function AccountPage() {
   const list = orders ?? [];
 
   return (
-    <main id="main" className="mx-auto max-w-2xl px-6 py-20">
+    <main id="main" className="mx-auto max-w-2xl px-6 py-12">
       <div className="flex items-center justify-between">
         <Link href="/" className="font-display text-3xl font-light tracking-tight text-ink">
           glo<span className="italic text-accent">.</span>
@@ -72,7 +72,7 @@ export default async function AccountPage() {
         </div>
       </div>
 
-      <p className="mt-12 text-[11px] font-semibold uppercase tracking-[1.8px] text-ink-mute">
+      <p className="mt-8 text-[11px] font-semibold uppercase tracking-[1.8px] text-ink-mute">
         <span className="mr-2 inline-block h-px w-6 bg-accent align-middle" />
         My page
       </p>
@@ -82,7 +82,7 @@ export default async function AccountPage() {
       {email && <p className="mt-3 text-sm text-ink-soft">{email}</p>}
 
       {/* Orders */}
-      <section className="mt-12">
+      <section className="mt-10">
         <h2 className="font-display text-2xl font-light text-ink">주문 내역</h2>
 
         {list.length === 0 ? (
