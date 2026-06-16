@@ -73,7 +73,7 @@ function rewrite(s) {
     /<a\b([^>]*?)\bhref="[^"]*"([^>]*)>([^<]*얼리버드[^<]*)<\/a>/g,
     (_m, pre, post, text) => {
       const arrow = /(&rarr;|→)/.test(text) ? " &rarr;" : "";
-      return `<a${pre} href="/product#buy"${post}>구매하기${arrow}</a>`;
+      return `<a${pre} href="/product#buy"${post}>GL-01 구매하기${arrow}</a>`;
     },
   );
   for (const [re, to] of [...LINK_REWRITES, ...BIZ_REWRITES]) s = s.replace(re, to);

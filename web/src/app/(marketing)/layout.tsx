@@ -6,8 +6,10 @@
  *
  * Commerce routes (/checkout, /login, /account) live OUTSIDE this group.
  */
+import "./_chrome.css";
 import NavAuth from "./nav-auth";
 import ChromeBehaviors from "./_chrome-client";
+import ScrollTop from "./_scroll-top";
 import { NAV_HTML, FOOTER_HTML } from "./_chrome";
 
 export default function MarketingLayout({
@@ -35,6 +37,7 @@ export default function MarketingLayout({
 
       <NavAuth />
       <ChromeBehaviors />
+      <ScrollTop />
     </>
   );
 }
