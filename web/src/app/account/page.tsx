@@ -56,7 +56,7 @@ export default async function AccountPage() {
   const list = orders ?? [];
 
   return (
-    <main id="main" className="w-full px-4 py-10 sm:px-6">
+    <main id="main" className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
       <div className="flex items-center justify-between">
         <Link href="/" className="font-display text-3xl font-light tracking-tight text-ink">
           glo<span className="italic text-accent">.</span>

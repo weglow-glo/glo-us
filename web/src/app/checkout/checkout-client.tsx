@@ -147,7 +147,7 @@ export default function CheckoutClient({ initialOption }: { initialOption: strin
   }
 
   return (
-    <main id="main" className="w-full px-4 pb-36 pt-10 sm:px-6 sm:pb-12">
+    <main id="main" className="mx-auto w-full max-w-3xl px-4 pb-36 pt-10 sm:px-6 sm:pb-12">
       {/* Top bar — logo home + back */}
       <div className="flex items-center justify-between">
         <Link href="/" className="font-display text-3xl font-light tracking-tight text-ink">
