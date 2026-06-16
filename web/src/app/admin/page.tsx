@@ -57,6 +57,18 @@ export default async function AdminPage({
     .from("orders")
     .select("id", { count: "exact", head: true })
     .eq("status", "paid");
+
+  // Total settled revenue — paid orders that weren't canceled/refunded
+  // (i.e. paid + any fulfillment stage). Failed/pending/canceled/refunded excluded.
+  const SETTLED = ["paid", "preparing", "shipped", "delivered"];
+  const { data: revenueRows } = await admin
+    .from("orders")
+    .select("amount, status")
+    .in("status", SETTLED)
+    .limit(10000)
+    .returns<{ amount: number; status: string }[]>();
+  const totalRevenue = (revenueRows ?? []).reduce((sum, r) => sum + (r.amount ?? 0), 0);
+  const settledCount = revenueRows?.length ?? 0;
   const exportHref = status ? `/admin/export?status=${status}` : "/admin/export";
 
   return (
@@ -71,6 +83,17 @@ export default async function AdminPage({
         >
           CSV 내보내기
         </a>
+      </div>
+
+      {/* Settled revenue */}
+      <div className="mt-5 flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-xl border border-ink-line bg-bg-2 px-6 py-5">
+        <span className="text-sm font-semibold uppercase tracking-wide text-ink-mute">
+          총 결제완료 금액
+        </span>
+        <span className="font-display text-3xl font-light text-ink">
+          {formatKRW(totalRevenue)}
+        </span>
+        <span className="text-sm text-ink-faint">결제 {settledCount}건 · 취소·환불 제외</span>
       </div>
 
       {/* Status filter */}
