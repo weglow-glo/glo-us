@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatKRW } from "@/lib/product";
 import { STATUS_LABEL, type OrderStatus } from "./status";
-import { bulkTracking } from "./actions";
+import { bulkTracking, bulkPrepareAll } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +51,24 @@ export default async function AdminPage({
     .limit(500)
     .returns<Row[]>();
   const orders = data ?? [];
+
+  // How many orders are awaiting fulfillment (for the bulk-prepare button).
+  const { count: paidCount } = await admin
+    .from("orders")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "paid");
+
+  // Total settled revenue — paid orders that weren't canceled/refunded
+  // (i.e. paid + any fulfillment stage). Failed/pending/canceled/refunded excluded.
+  const SETTLED = ["paid", "preparing", "shipped", "delivered"];
+  const { data: revenueRows } = await admin
+    .from("orders")
+    .select("amount, status")
+    .in("status", SETTLED)
+    .limit(10000)
+    .returns<{ amount: number; status: string }[]>();
+  const totalRevenue = (revenueRows ?? []).reduce((sum, r) => sum + (r.amount ?? 0), 0);
+  const settledCount = revenueRows?.length ?? 0;
   const exportHref = status ? `/admin/export?status=${status}` : "/admin/export";
 
   return (
@@ -65,6 +83,17 @@ export default async function AdminPage({
         >
           CSV 내보내기
         </a>
+      </div>
+
+      {/* Settled revenue */}
+      <div className="mt-5 flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-xl border border-ink-line bg-bg-2 px-6 py-5">
+        <span className="text-sm font-semibold uppercase tracking-wide text-ink-mute">
+          총 결제완료 금액
+        </span>
+        <span className="font-display text-3xl font-light text-ink">
+          {formatKRW(totalRevenue)}
+        </span>
+        <span className="text-sm text-ink-faint">결제 {settledCount}건 · 취소·환불 제외</span>
       </div>
 
       {/* Status filter */}
@@ -87,8 +116,24 @@ export default async function AdminPage({
         })}
       </div>
 
+      {/* Bulk: move all paid orders → 배송준비중 */}
+      <form
+        action={bulkPrepareAll}
+        className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ink-line bg-bg-2 px-5 py-4"
+      >
+        <div className="text-sm text-ink-soft">
+          결제완료 <b className="text-ink">{paidCount ?? 0}건</b>을 한 번에 배송준비중으로 전환합니다.
+        </div>
+        <button
+          disabled={!paidCount}
+          className="rounded-full bg-burg-600 px-5 py-2 text-sm font-semibold text-bg-1 transition hover:bg-burg-400 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          결제완료 → 배송준비중 일괄 전환
+        </button>
+      </form>
+
       {/* Bulk tracking registration */}
-      <details className="mt-6 rounded-xl border border-ink-line bg-bg-2 p-5">
+      <details className="mt-4 rounded-xl border border-ink-line bg-bg-2 p-5">
         <summary className="cursor-pointer text-sm font-semibold text-ink">
           송장번호 일괄 등록
         </summary>
