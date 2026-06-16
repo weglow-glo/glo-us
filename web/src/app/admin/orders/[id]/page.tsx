@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatKRW } from "@/lib/product";
 import { STATUS_LABEL, type OrderStatus } from "../../status";
-import { markShipped, markPreparing } from "../../actions";
+import { markShipped, markPreparing, markDelivered } from "../../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +33,7 @@ type Order = {
   approved_at: string | null;
   tracking_number: string | null;
   shipped_at: string | null;
+  delivered_at: string | null;
   created_at: string;
 };
 
@@ -97,8 +98,18 @@ export default async function OrderDetailPage({
         <Row k="현재 상태" v={s.label} />
         <Row k="송장번호" v={order.tracking_number || "—"} />
         <Row k="발송일시" v={fmtDate(order.shipped_at)} />
+        <Row k="배송완료일시" v={fmtDate(order.delivered_at)} />
 
         <div className="mt-4 flex flex-col gap-3 border-t border-ink-line pt-4">
+          {/* 1) 배송준비중 */}
+          <form action={markPreparing}>
+            <input type="hidden" name="id" value={order.id} />
+            <button className="rounded-md border border-ink-line px-4 py-2 text-sm font-medium text-ink-soft transition hover:border-accent hover:text-accent">
+              배송준비중으로 표시
+            </button>
+          </form>
+
+          {/* 2) 송장 등록 → 배송중 */}
           <form action={markShipped} className="flex items-end gap-2">
             <input type="hidden" name="id" value={order.id} />
             <label className="flex-1">
@@ -111,14 +122,15 @@ export default async function OrderDetailPage({
               />
             </label>
             <button className="rounded-md bg-burg-600 px-4 py-2 text-sm font-semibold text-bg-1 transition hover:bg-burg-400">
-              배송완료 처리
+              송장 등록 · 배송중
             </button>
           </form>
 
-          <form action={markPreparing}>
+          {/* 3) 배송완료 */}
+          <form action={markDelivered}>
             <input type="hidden" name="id" value={order.id} />
-            <button className="rounded-md border border-ink-line px-4 py-2 text-sm font-medium text-ink-soft transition hover:border-accent hover:text-accent">
-              배송준비중으로 표시
+            <button className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-cream transition hover:bg-burg-400">
+              배송완료 처리
             </button>
           </form>
         </div>
