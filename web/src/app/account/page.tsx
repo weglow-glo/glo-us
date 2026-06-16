@@ -2,9 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { formatKRW } from "@/lib/product";
+import { statusLabel, type OrderStatus } from "@/lib/order-status";
 import { SignOutButton } from "./sign-out-button";
-
-type OrderStatus = "pending" | "paid" | "failed" | "canceled" | "refunded";
 
 type Order = {
   order_id: string;
@@ -12,14 +11,6 @@ type Order = {
   status: OrderStatus;
   amount: number;
   created_at: string;
-};
-
-const STATUS: Record<OrderStatus, { label: string; className: string }> = {
-  pending: { label: "결제 대기", className: "bg-bg-3 text-ink-mute" },
-  paid: { label: "결제 완료", className: "bg-burg-600 text-cream" },
-  failed: { label: "결제 실패", className: "bg-bg-3 text-burg-400" },
-  canceled: { label: "취소됨", className: "bg-bg-3 text-ink-mute" },
-  refunded: { label: "환불됨", className: "bg-bg-3 text-ink-mute" },
 };
 
 function formatDate(iso: string): string {
@@ -47,9 +38,13 @@ export default async function AccountPage() {
   const email = user.email ?? meta.email ?? null;
 
   // RLS (orders_select_own) restricts this to the current user's orders.
+  // Hide `pending` rows — an order is created the moment 결제하기 is pressed
+  // (Toss needs an orderId up front), so abandoned/retried attempts would
+  // otherwise linger here as "결제 대기" ghosts.
   const { data: orders } = await supabase
     .from("orders")
     .select("order_id, order_name, status, amount, created_at")
+    .neq("status", "pending")
     .order("created_at", { ascending: false })
     .returns<Order[]>();
 
@@ -98,30 +93,33 @@ export default async function AccountPage() {
         ) : (
           <ul className="mt-6 space-y-3">
             {list.map((order) => {
-              const status = STATUS[order.status] ?? STATUS.pending;
+              const status = statusLabel(order.status);
               return (
-                <li
-                  key={order.order_id}
-                  className="rounded-xl border border-ink-line bg-bg-1 p-5"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="font-display text-lg text-ink">{order.order_name}</p>
-                      <p className="mt-1 text-xs text-ink-faint">
-                        {formatDate(order.created_at)} · {order.order_id}
-                      </p>
+                <li key={order.order_id}>
+                  <Link
+                    href={`/account/orders/${order.order_id}`}
+                    className="block rounded-xl border border-ink-line bg-bg-1 p-5 transition hover:border-accent"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-display text-lg text-ink">{order.order_name}</p>
+                        <p className="mt-1 text-xs text-ink-faint">
+                          {formatDate(order.created_at)} · {order.order_id}
+                        </p>
+                      </div>
+                      <span
+                        className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${status.className}`}
+                      >
+                        {status.label}
+                      </span>
                     </div>
-                    <span
-                      className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${status.className}`}
-                    >
-                      {status.label}
-                    </span>
-                  </div>
-                  <div className="mt-4 border-t border-ink-line pt-3 text-right">
-                    <span className="font-display text-lg text-ink">
-                      {formatKRW(order.amount)}
-                    </span>
-                  </div>
+                    <div className="mt-4 flex items-center justify-between border-t border-ink-line pt-3">
+                      <span className="text-xs font-medium text-accent">상세 보기 →</span>
+                      <span className="font-display text-lg text-ink">
+                        {formatKRW(order.amount)}
+                      </span>
+                    </div>
+                  </Link>
                 </li>
               );
             })}

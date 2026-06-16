@@ -2,14 +2,16 @@ import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatKRW } from "@/lib/product";
 import { STATUS_LABEL, type OrderStatus } from "./status";
+import { bulkTracking } from "./actions";
 
 export const dynamic = "force-dynamic";
 
 const FILTERS: Array<{ key: string; label: string }> = [
   { key: "", label: "전체" },
   { key: "paid", label: "결제완료" },
-  { key: "preparing", label: "배송준비" },
-  { key: "shipped", label: "배송완료" },
+  { key: "preparing", label: "배송준비중" },
+  { key: "shipped", label: "배송중" },
+  { key: "delivered", label: "배송완료" },
   { key: "pending", label: "결제대기" },
   { key: "failed", label: "실패" },
 ];
@@ -84,6 +86,28 @@ export default async function AdminPage({
           );
         })}
       </div>
+
+      {/* Bulk tracking registration */}
+      <details className="mt-6 rounded-xl border border-ink-line bg-bg-2 p-5">
+        <summary className="cursor-pointer text-sm font-semibold text-ink">
+          송장번호 일괄 등록
+        </summary>
+        <form action={bulkTracking} className="mt-4">
+          <p className="mb-2 text-xs text-ink-mute">
+            한 줄에 하나씩 <code className="font-mono">주문번호 송장번호</code> 형식으로 붙여넣으세요
+            (공백·쉼표·탭 구분). 매칭된 주문은 <b>배송중</b>으로 바뀝니다.
+          </p>
+          <textarea
+            name="bulk"
+            rows={5}
+            placeholder={"glo_1781601216910_42053f8c 1234567890\nglo_1781601206191_71a225da 6712345678"}
+            className="w-full rounded-md border border-ink-line bg-bg-1 px-3 py-2 font-mono text-xs text-ink outline-none focus:border-accent"
+          />
+          <button className="mt-3 rounded-full bg-burg-600 px-5 py-2 text-sm font-semibold text-bg-1 transition hover:bg-burg-400">
+            일괄 등록 (배송중 처리)
+          </button>
+        </form>
+      </details>
 
       {error && (
         <p className="mt-6 rounded-md bg-bg-3 px-4 py-3 text-sm text-burg-400">

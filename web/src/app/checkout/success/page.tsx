@@ -67,11 +67,14 @@ function SuccessInner() {
   }
 
   return (
-    <Centered title="결제가 완료되었습니다.">
-      <p className="mt-4 font-display text-lg italic text-accent">
+    <Centered
+      title="결제가 완료되었습니다."
+      titleClassName="whitespace-nowrap text-[1.45rem] sm:text-3xl"
+    >
+      <p className="mt-3 font-display text-base italic text-accent">
         A quieter kind of glow.
       </p>
-      <dl className="mx-auto mt-8 max-w-xs space-y-2 text-sm">
+      <dl className="mx-auto mt-8 w-full max-w-sm space-y-3 rounded-xl border border-ink-line bg-bg-1 px-7 py-5 text-sm">
         {result.orderName && (
           <Row label="주문" value={result.orderName} />
         )}
@@ -92,9 +95,9 @@ function SuccessInner() {
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between border-b border-ink-line pb-2">
-      <dt className="text-ink-mute">{label}</dt>
-      <dd className="text-ink">{value}</dd>
+    <div className="flex items-baseline justify-between gap-8 border-b border-ink-line pb-2.5 last:border-b-0 last:pb-0">
+      <dt className="shrink-0 text-ink-mute">{label}</dt>
+      <dd className="text-right text-ink">{value}</dd>
     </div>
   );
 }
@@ -103,10 +106,12 @@ function Centered({
   title,
   children,
   tone = "default",
+  titleClassName = "text-4xl",
 }: {
   title: string;
   children?: React.ReactNode;
   tone?: "default" | "error";
+  titleClassName?: string;
 }) {
   return (
     <main
@@ -114,7 +119,7 @@ function Centered({
       className="flex min-h-screen flex-col items-center justify-center bg-bg-2 px-6 text-center"
     >
       <h1
-        className={`font-display text-4xl font-light ${
+        className={`font-display font-light ${titleClassName} ${
           tone === "error" ? "text-burg-400" : "text-ink"
         }`}
       >
