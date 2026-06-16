@@ -1,14 +1,16 @@
 /**
- * Marketing pages (landing, product, science, about, legal) are a faithful
- * lift-and-shift of the original static ko/*.html. Each page carries its own
- * co-located CSS (generated from the source <style> block) and the markup is
- * injected verbatim via dangerouslySetInnerHTML. This layout only loads the
- * web fonts the marketing CSS expects by literal family name.
+ * Marketing pages (landing, product, science, about, legal) — a faithful
+ * lift-and-shift of the original static ko/*.html. Nav + footer are rendered
+ * ONCE here (shared chrome) and persist across client-side navigation; each
+ * page only injects its content. Fonts are loaded by literal family name.
  *
- * Commerce routes (/checkout, /login, /account) live OUTSIDE this group and
- * use Tailwind — the two styling worlds stay separate.
+ * Commerce routes (/checkout, /login, /account) live OUTSIDE this group.
  */
+import "./_chrome.css";
 import NavAuth from "./nav-auth";
+import ChromeBehaviors from "./_chrome-client";
+import ScrollTop from "./_scroll-top";
+import { NAV_HTML, FOOTER_HTML } from "./_chrome";
 
 export default function MarketingLayout({
   children,
@@ -17,7 +19,6 @@ export default function MarketingLayout({
 }) {
   return (
     <>
-      <NavAuth />
       {/* eslint-disable-next-line @next/next/no-page-custom-font */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -29,7 +30,14 @@ export default function MarketingLayout({
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css"
       />
+
+      <div dangerouslySetInnerHTML={{ __html: NAV_HTML }} />
       {children}
+      <div dangerouslySetInnerHTML={{ __html: FOOTER_HTML }} />
+
+      <NavAuth />
+      <ChromeBehaviors />
+      <ScrollTop />
     </>
   );
 }
