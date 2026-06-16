@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatKRW } from "@/lib/product";
 import { STATUS_LABEL, type OrderStatus } from "./status";
-import { bulkTracking } from "./actions";
+import { bulkTracking, bulkPrepareAll } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +51,12 @@ export default async function AdminPage({
     .limit(500)
     .returns<Row[]>();
   const orders = data ?? [];
+
+  // How many orders are awaiting fulfillment (for the bulk-prepare button).
+  const { count: paidCount } = await admin
+    .from("orders")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "paid");
   const exportHref = status ? `/admin/export?status=${status}` : "/admin/export";
 
   return (
@@ -87,8 +93,24 @@ export default async function AdminPage({
         })}
       </div>
 
+      {/* Bulk: move all paid orders → 배송준비중 */}
+      <form
+        action={bulkPrepareAll}
+        className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ink-line bg-bg-2 px-5 py-4"
+      >
+        <div className="text-sm text-ink-soft">
+          결제완료 <b className="text-ink">{paidCount ?? 0}건</b>을 한 번에 배송준비중으로 전환합니다.
+        </div>
+        <button
+          disabled={!paidCount}
+          className="rounded-full bg-burg-600 px-5 py-2 text-sm font-semibold text-bg-1 transition hover:bg-burg-400 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          결제완료 → 배송준비중 일괄 전환
+        </button>
+      </form>
+
       {/* Bulk tracking registration */}
-      <details className="mt-6 rounded-xl border border-ink-line bg-bg-2 p-5">
+      <details className="mt-4 rounded-xl border border-ink-line bg-bg-2 p-5">
         <summary className="cursor-pointer text-sm font-semibold text-ink">
           송장번호 일괄 등록
         </summary>

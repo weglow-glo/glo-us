@@ -35,6 +35,13 @@ export async function markPreparing(formData: FormData) {
   revalidatePath(`/admin/orders/${id}`);
 }
 
+/** Move ALL paid orders to 배송준비중 in one go (pre-order batch fulfillment). */
+export async function bulkPrepareAll() {
+  const admin = createAdminClient();
+  await admin.from("orders").update({ status: "preparing" }).eq("status", "paid");
+  revalidatePath("/admin");
+}
+
 /** Confirm delivery → 배송완료. */
 export async function markDelivered(formData: FormData) {
   const id = String(formData.get("id") ?? "");
