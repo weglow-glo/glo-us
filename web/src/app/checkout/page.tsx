@@ -21,5 +21,20 @@ export default async function CheckoutPage({
     redirect(`/login?next=${encodeURIComponent(next)}`);
   }
 
-  return <CheckoutClient initialOption={option ?? "1m"} />;
+  // Prefill what Kakao actually shares: nickname + account email. Phone and
+  // shipping address require extra approved consent scopes we don't request yet.
+  const meta = (user.user_metadata ?? {}) as Record<string, string | undefined>;
+  const defaultName =
+    meta.nickname || meta.name || meta.full_name || meta.preferred_username || "";
+  const defaultPhone = meta.phone_number || meta.phone || "";
+  const accountEmail = user.email ?? meta.email ?? "";
+
+  return (
+    <CheckoutClient
+      initialOption={option ?? "1m"}
+      defaultName={defaultName}
+      defaultPhone={defaultPhone}
+      accountEmail={accountEmail}
+    />
+  );
 }
