@@ -14,6 +14,12 @@ export default function ChromeBehaviors() {
   const pathname = usePathname();
 
   useEffect(() => {
+    // Client-nav only WITHIN the marketing group. Commerce routes (checkout,
+    // login, account, admin) full-load so the marketing global CSS doesn't
+    // leak onto their Tailwind layout.
+    const MARKETING = new Set([
+      "/", "/product", "/science", "/about", "/privacy", "/terms", "/refund",
+    ]);
     const onClick = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
         return;
@@ -22,8 +28,9 @@ export default function ChromeBehaviors() {
       if (!a) return;
       const href = a.getAttribute("href");
       if (!href || a.getAttribute("target") === "_blank") return;
-      // Only internal path links — leaves #anchors, mailto:, tel:, external alone.
-      if (!href.startsWith("/")) return;
+      if (!href.startsWith("/")) return; // external, mailto:, tel:, #hash
+      const url = new URL(href, location.origin);
+      if (!MARKETING.has(url.pathname)) return; // commerce/other → full load
       e.preventDefault();
       router.push(href);
     };
