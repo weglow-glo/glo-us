@@ -56,7 +56,7 @@ export default async function AccountPage() {
   const list = orders ?? [];
 
   return (
-    <main id="main" className="mx-auto max-w-2xl px-6 py-12">
+    <main id="main" className="mx-auto max-w-3xl px-6 py-12">
       <div className="flex items-center justify-between">
         <Link href="/" className="font-display text-3xl font-light tracking-tight text-ink">
           glo<span className="italic text-accent">.</span>
@@ -77,7 +77,7 @@ export default async function AccountPage() {
         My page
       </p>
       <h1 className="mt-3 font-display text-4xl font-light text-ink">
-        <span className="italic text-accent">{name}</span>님, 반가워요.
+        <span className="text-accent">{name}</span>님, 반가워요.
       </h1>
       {email && <p className="mt-3 text-sm text-ink-soft">{email}</p>}
 
