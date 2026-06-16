@@ -84,6 +84,9 @@ function buildPage({ src, route, css, interactions }) {
     .replace(/<script[\s\S]*?<\/script>/g, "")
     .replace(/<script[^>]*\/>/g, "");
 
+  // 4·) Remove the nav CTA pill (btn-nav) — the nav keeps just login/account.
+  body = body.replace(/<a\b[^>]*class="btn-nav"[^>]*>[\s\S]*?<\/a>/g, "");
+
   // 4a) Convert early-bird (waitlist) CTAs into live "구매하기" buttons that
   //     go straight to /checkout. Matched by the "얼리버드" label so the real
   //     "로그인" nav link is left untouched (rewired to /login below).
