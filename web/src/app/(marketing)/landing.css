@@ -177,7 +177,7 @@ body{padding-top:0;}
 /* ===========================================
    TIMELINE — light, with frosted cards
    =========================================== */
-.timeline{padding:120px 0;background:var(--bg-2);position:relative;overflow:hidden;}
+.timeline{padding:80px 0;background:var(--bg-2);position:relative;overflow:hidden;}
 .timeline::before{content:'';position:absolute;top:-150px;left:-50px;width:700px;height:700px;background:radial-gradient(circle,rgba(184,135,135,.45),rgba(212,181,181,.2) 35%,transparent 65%);pointer-events:none;}
 .timeline::after{content:'';position:absolute;bottom:-200px;right:-100px;width:600px;height:600px;background:radial-gradient(circle,rgba(138,74,82,.3),rgba(184,135,135,.15) 40%,transparent 70%);pointer-events:none;}
 .tl-bg-orb{position:absolute;top:40%;left:55%;width:380px;height:380px;background:radial-gradient(circle,rgba(212,181,181,.4),transparent 65%);pointer-events:none;}
