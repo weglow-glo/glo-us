@@ -38,7 +38,9 @@ export async function POST(request: Request) {
   // 1) Look up the pending order and verify the amount matches what we stored.
   const { data: order, error: lookupError } = await admin
     .from("orders")
-    .select("id, amount, status, order_name, customer_name, customer_email")
+    .select(
+      "id, amount, status, order_name, customer_name, customer_email, user_id, shipping_address",
+    )
     .eq("order_id", orderId)
     .single();
 
@@ -102,6 +104,49 @@ export async function POST(request: Request) {
       { error: "결제는 완료됐지만 주문 기록에 실패했습니다. 고객센터로 문의해주세요." },
       { status: 500 },
     );
+  }
+
+  // Best-effort: remember this address in the user's address book for next time.
+  // De-duped on the core fields; the first saved address becomes the default.
+  const sa = order.shipping_address as {
+    recipient?: string;
+    phone?: string;
+    postcode?: string;
+    address?: string;
+    detail?: string;
+    memo?: string;
+  } | null;
+  if (order.user_id && sa?.recipient && sa?.address) {
+    try {
+      const { data: existing } = await admin
+        .from("shipping_addresses")
+        .select("id")
+        .eq("user_id", order.user_id)
+        .eq("recipient", sa.recipient)
+        .eq("phone", sa.phone ?? "")
+        .eq("address", sa.address)
+        .eq("detail", sa.detail ?? "")
+        .limit(1);
+
+      if (!existing || existing.length === 0) {
+        const { count } = await admin
+          .from("shipping_addresses")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", order.user_id);
+        await admin.from("shipping_addresses").insert({
+          user_id: order.user_id,
+          recipient: sa.recipient,
+          phone: sa.phone ?? "",
+          postcode: sa.postcode ?? null,
+          address: sa.address,
+          detail: sa.detail ?? null,
+          memo: sa.memo ?? null,
+          is_default: (count ?? 0) === 0,
+        });
+      }
+    } catch (e) {
+      console.error("[confirm] address-book save failed:", e);
+    }
   }
 
   // Best-effort order confirmation email — never block/fail the response on it.
