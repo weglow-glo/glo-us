@@ -17,6 +17,7 @@ import {
   formatKRW,
   PREORDER,
 } from "@/lib/product";
+import type { Address } from "@/lib/address";
 
 const CLIENT_KEY = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!;
 const DAUM_SRC =
@@ -63,6 +64,90 @@ export default function CheckoutClient({
   const [address, setAddress] = useState("");
   const [detail, setDetail] = useState("");
   const [memo, setMemo] = useState("");
+
+  // Saved address book (prefill default + pick/add/delete/set-default modal).
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [showAddr, setShowAddr] = useState(false);
+  const [addrBusy, setAddrBusy] = useState(false);
+  const prefilledRef = useRef(false);
+
+  const applyAddress = (a: Address) => {
+    setRecipient(a.recipient);
+    setPhone(a.phone);
+    setPostcode(a.postcode ?? "");
+    setAddress(a.address ?? "");
+    setDetail(a.detail ?? "");
+    setMemo(a.memo ?? "");
+    setInvalid({});
+  };
+
+  const loadAddresses = async (prefill = false) => {
+    try {
+      const res = await fetch("/api/addresses", { cache: "no-store" });
+      if (!res.ok) return;
+      const { addresses: list } = (await res.json()) as { addresses: Address[] };
+      setAddresses(list ?? []);
+      // On first load, default to the user's default (or most recent) address.
+      if (prefill && !prefilledRef.current && list && list.length > 0) {
+        prefilledRef.current = true;
+        applyAddress(list.find((a) => a.is_default) ?? list[0]);
+      }
+    } catch {
+      /* address book is best-effort */
+    }
+  };
+
+  useEffect(() => {
+    loadAddresses(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function saveCurrentAddress() {
+    if (addrBusy) return;
+    if (!recipient.trim() || !phone.trim() || !address.trim()) {
+      showToast("현재 입력한 수령인·연락처·주소를 먼저 채워주세요.");
+      return;
+    }
+    setAddrBusy(true);
+    try {
+      const res = await fetch("/api/addresses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipient, phone, postcode, address, detail, memo }),
+      });
+      if (res.ok) await loadAddresses();
+    } finally {
+      setAddrBusy(false);
+    }
+  }
+
+  async function setDefaultAddress(id: string) {
+    setAddrBusy(true);
+    try {
+      const res = await fetch("/api/addresses", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      if (res.ok) await loadAddresses();
+    } finally {
+      setAddrBusy(false);
+    }
+  }
+
+  async function deleteAddress(id: string) {
+    setAddrBusy(true);
+    try {
+      const res = await fetch("/api/addresses", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      if (res.ok) await loadAddresses();
+    } finally {
+      setAddrBusy(false);
+    }
+  }
 
   // Field-level validation highlight + auto-dismissing top toast.
   const [invalid, setInvalid] = useState<Record<string, boolean>>({});
@@ -193,6 +278,96 @@ export default function CheckoutClient({
         </div>
       )}
 
+      {/* Saved-address picker modal */}
+      {showAddr && (
+        <div
+          className="fixed inset-0 z-[80] flex items-end justify-center bg-burg-900/40 sm:items-center"
+          onClick={() => setShowAddr(false)}
+        >
+          <div
+            className="max-h-[82vh] w-full overflow-y-auto rounded-t-2xl bg-bg-1 p-5 sm:max-w-md sm:rounded-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="font-display text-lg text-ink">저장된 배송지</h3>
+              <button
+                type="button"
+                onClick={() => setShowAddr(false)}
+                className="rounded-full px-2 text-xl leading-none text-ink-mute hover:text-ink"
+                aria-label="닫기"
+              >
+                ×
+              </button>
+            </div>
+
+            <ul className="mt-4 space-y-3">
+              {addresses.map((a) => (
+                <li key={a.id} className="rounded-xl border border-ink-line p-4">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-ink">{a.recipient}</span>
+                    <span className="text-sm text-ink-mute">{a.phone}</span>
+                    {a.is_default && (
+                      <span className="rounded-full bg-accent px-2 py-0.5 text-[11px] font-semibold text-cream">
+                        기본
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1 text-sm text-ink-soft">
+                    {[a.postcode ? `(${a.postcode})` : "", a.address, a.detail]
+                      .filter(Boolean)
+                      .join(" ")}
+                  </p>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        applyAddress(a);
+                        setShowAddr(false);
+                      }}
+                      className="rounded-full bg-burg-600 px-4 py-1.5 text-xs font-semibold text-bg-1 transition hover:bg-burg-400"
+                    >
+                      이 주소 사용
+                    </button>
+                    {!a.is_default && (
+                      <button
+                        type="button"
+                        disabled={addrBusy}
+                        onClick={() => setDefaultAddress(a.id)}
+                        className="rounded-full border border-ink-line px-4 py-1.5 text-xs font-medium text-ink-soft transition hover:border-accent hover:text-accent disabled:opacity-50"
+                      >
+                        기본으로
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      disabled={addrBusy}
+                      onClick={() => deleteAddress(a.id)}
+                      className="ml-auto text-xs font-medium text-burg-400 hover:underline disabled:opacity-50"
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </li>
+              ))}
+              {addresses.length === 0 && (
+                <li className="rounded-xl border border-dashed border-ink-line p-6 text-center text-sm text-ink-mute">
+                  저장된 배송지가 없습니다.
+                </li>
+              )}
+            </ul>
+
+            <button
+              type="button"
+              onClick={saveCurrentAddress}
+              disabled={addrBusy}
+              className="mt-4 w-full rounded-full border border-ink-line py-2.5 text-sm font-medium text-ink-soft transition hover:border-accent hover:text-accent disabled:opacity-50"
+            >
+              + 현재 입력한 주소 저장
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Top bar — logo home + back */}
       <div className="flex items-center justify-between">
         <Link href="/" className="font-display text-3xl font-light tracking-tight text-ink">
@@ -251,7 +426,18 @@ export default function CheckoutClient({
 
       {/* Shipping */}
       <section className="mt-8">
-        <h2 className="mb-4 font-display text-xl text-ink">배송 정보</h2>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h2 className="font-display text-xl text-ink">배송 정보</h2>
+          {addresses.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowAddr(true)}
+              className="shrink-0 rounded-full border border-ink-line px-3.5 py-1.5 text-xs font-medium text-ink-soft transition hover:border-accent hover:text-accent"
+            >
+              저장된 배송지 {addresses.length}
+            </button>
+          )}
+        </div>
         <div className="grid gap-4">
           <Field
             label="수령인"
@@ -317,6 +503,15 @@ export default function CheckoutClient({
           </div>
 
           <Field label="배송 메모 (선택)" value={memo} onChange={setMemo} placeholder="부재 시 문 앞에 두세요" />
+
+          <button
+            type="button"
+            onClick={saveCurrentAddress}
+            disabled={addrBusy}
+            className="justify-self-start text-sm font-medium text-accent underline-offset-2 hover:underline disabled:opacity-50"
+          >
+            + 이 배송지를 저장
+          </button>
         </div>
       </section>
 
