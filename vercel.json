@@ -1,3 +1,0 @@
-{
-  "buildCommand": "cd web && npm run build"
-}
