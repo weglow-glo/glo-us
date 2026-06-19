@@ -1,6 +1,7 @@
 import "./product.css";
 import { ProductInteractions } from "../_interactions";
 
+// Rebuild trigger: 2606_glo_2-1.mp4 video added (2026-06-19)
 export const metadata = {
   title: "glo GL-01 — Skin longevity protocol",
   description: "GL-01 · 4가지 mechanism × 9가지 clinically-studied 성분 — glo 특허 Tightening-PB Complex® 포함 (KR 10-2911449). 매일 한 포 15ml pineapple shot. 무료 배송, 90일 환불 보장.",
