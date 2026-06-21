@@ -150,7 +150,7 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 
 /* QUICK SPECS */
 .qspecs{background:var(--bg-2);padding:0;border-top:1px solid var(--ink-line);border-bottom:1px solid var(--ink-line);}
-.qspecs-g{display:grid;grid-template-columns:repeat(7,1fr);}
+.qspecs-g{display:grid;grid-template-columns:repeat(8,1fr);}
 .qs{padding:32px 24px;border-right:1px solid var(--ink-line-2);}
 .qs:last-child{border-right:0;}
 .qs-lbl{font-size:9px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--ink-mute);margin-bottom:8px;}
@@ -371,6 +371,8 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .rev-head{display:grid;grid-template-columns:1fr 1.4fr;gap:80px;align-items:end;margin-bottom:32px;}
 .rev-head h2{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:54px;line-height:1.18;letter-spacing:-1.8px;color:var(--ink);}
 .rev-head h2 em{font-style:italic;color:var(--accent);}
+.rev-intro{margin-top:18px;max-width:460px;font-size:14px;line-height:1.7;color:var(--ink-soft);}
+.rev-intro b{color:var(--ink);font-weight:600;}
 .rev-stats{display:flex;flex-direction:column;gap:20px;align-items:flex-start;width:100%;max-width:480px;}
 .rev-summary{display:flex;align-items:center;gap:24px;}
 .rev-avg{font-family:'Fraunces','Noto Serif KR',serif;font-size:64px;font-weight:300;line-height:.95;color:var(--ink);letter-spacing:-2.4px;}
@@ -452,7 +454,7 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
   .qspecs-g{grid-template-columns:repeat(2,1fr);}
   .qs{border-right:none;border-bottom:1px solid var(--ink-line-2);padding:22px 18px;}
   .qs:nth-child(odd):not(:last-child){border-right:1px solid var(--ink-line-2);}
-  .qs:last-child{grid-column:1 / -1;border-bottom:none;}
+  .qs:last-child{border-bottom:none;}
   .ph-h,.tl-head h2,.ings-head h2,.dt-h,.t-h,.faq h2,.how-l h2,.canister-r h2,.rev-head h2,.final h2{font-size:38px;letter-spacing:-1.4px;}
   .rev-stats{flex-wrap:wrap;gap:16px;}
   .rev-avg{font-size:48px;letter-spacing:-1.6px;}
