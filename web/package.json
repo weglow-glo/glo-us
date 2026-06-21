@@ -12,6 +12,7 @@
     "port-marketing": "node scripts/port-marketing.mjs"
   },
   "dependencies": {
+    "@channel.io/channel-web-sdk-loader": "^2.0.2",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.108.1",
     "@tosspayments/tosspayments-sdk": "^2.7.1",

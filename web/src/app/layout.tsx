@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
+import ChannelTalk from "./channel-talk";
 
 // Display serif — headlines, italic accent emphasis, ingredient names, large numerals
 const fraunces = Fraunces({
@@ -43,6 +44,7 @@ export default function RootLayout({
           본문으로 건너뛰기
         </a>
         {children}
+        <ChannelTalk />
       </body>
     </html>
   );
