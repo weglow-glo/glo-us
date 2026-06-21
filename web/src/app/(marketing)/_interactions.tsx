@@ -116,6 +116,23 @@ export function ProductInteractions() {
       optHandlers.forEach(([el, h]) => el.removeEventListener("click", h)),
     );
 
+    // 6) Reviews "더 보기" — reveal collapsed review cards in batches.
+    const loadBtn = document.getElementById("rev-load");
+    if (loadBtn) {
+      const BATCH = 3;
+      const reveal = () => {
+        const hidden = document.querySelectorAll<HTMLElement>(".rev-item.is-collapsed");
+        hidden.forEach((el, i) => {
+          if (i < BATCH) el.classList.remove("is-collapsed");
+        });
+        if (document.querySelectorAll(".rev-item.is-collapsed").length === 0) {
+          loadBtn.setAttribute("hidden", "");
+        }
+      };
+      loadBtn.addEventListener("click", reveal);
+      cleanups.push(() => loadBtn.removeEventListener("click", reveal));
+    }
+
     return () => cleanups.forEach((c) => c());
   }, []);
 
