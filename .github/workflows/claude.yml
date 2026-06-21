@@ -64,7 +64,8 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
 
           # Optional: pin model. Default is the latest Sonnet.
-          # model: claude-sonnet-4-7
+          model: claude-sonnet-4-5
+
 
           custom_instructions: |
             You are an autonomous contributor on the glo marketing website
