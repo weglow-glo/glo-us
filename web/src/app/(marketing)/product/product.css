@@ -54,7 +54,7 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 /* BUTTONS */
 .btn-p{background:var(--burg-600);color:var(--bg-1);padding:16px 32px;font-weight:600;font-size:14px;display:inline-block;transition:background .2s,transform .15s;border-radius:100px;}
 .btn-p:hover{background:var(--burg-400);transform:translateY(-1px);}
-.btn-g{font-weight:500;font-size:14px;color:var(--ink);padding:16px 4px;border-bottom:1px solid var(--ink-line);}
+.btn-g{font-weight:500;font-size:14px;color:var(--ink);padding:16px 4px;border:none;border-bottom:1px solid var(--ink-line);background:none;cursor:pointer;font-family:inherit;line-height:1.2;}
 .btn-g:hover{border-color:var(--accent);}
 .btn-g.lt{color:var(--cream);border-color:rgba(244,235,235,.32);}
 .btn-g.lt:hover{border-color:var(--accent);}
@@ -401,9 +401,13 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .rev-more:hover{border-color:var(--accent);}
 .rev-sort{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft);white-space:nowrap;}
 .rev-sort-v{font-weight:500;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:4px;border-bottom:1px solid var(--ink-line);padding-bottom:1px;}
+.rev-sort-l{color:var(--ink-mute);}
+.rev-sort-select{font-family:inherit;font-size:13px;font-weight:500;color:var(--ink);background:none;border:none;border-bottom:1px solid var(--ink-line);padding:2px 18px 3px 2px;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238a4a52' stroke-width='1.4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 2px center;}
+.rev-sort-select:focus{outline:none;border-color:var(--accent);}
 .rev-list{display:flex;flex-direction:column;}
 .rev-item{display:grid;grid-template-columns:200px 1fr 160px;gap:32px;padding:30px 0;border-top:1px solid var(--ink-line);}
 .rev-item:first-child{border-top:none;}
+.rev-item.is-collapsed{display:none;}
 .rev-author{display:flex;flex-direction:column;gap:8px;}
 .rev-name{font-size:14px;font-weight:500;color:var(--ink);}
 .rev-name .loc{font-weight:400;color:var(--ink-mute);font-size:11px;letter-spacing:.6px;text-transform:uppercase;margin-left:6px;}

@@ -87,7 +87,7 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 /* BUTTONS */
 .btn-p{background:var(--burg-600);color:var(--bg-1);padding:16px 32px;font-weight:600;font-size:14px;display:inline-block;transition:background .2s,transform .15s;border-radius:100px;}
 .btn-p:hover{background:var(--burg-400);transform:translateY(-1px);}
-.btn-g{font-weight:500;font-size:14px;color:var(--ink);padding:16px 4px;border-bottom:1px solid var(--ink-line);}
+.btn-g{font-weight:500;font-size:14px;color:var(--ink);padding:16px 4px;border:none;border-bottom:1px solid var(--ink-line);background:none;cursor:pointer;font-family:inherit;line-height:1.2;}
 .btn-g:hover{border-color:var(--accent);}
 .btn-g.lt{color:var(--cream);border-color:rgba(244,235,235,.32);}
 .btn-g.lt:hover{border-color:var(--accent);}
@@ -434,9 +434,13 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .rev-more:hover{border-color:var(--accent);}
 .rev-sort{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft);white-space:nowrap;}
 .rev-sort-v{font-weight:500;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:4px;border-bottom:1px solid var(--ink-line);padding-bottom:1px;}
+.rev-sort-l{color:var(--ink-mute);}
+.rev-sort-select{font-family:inherit;font-size:13px;font-weight:500;color:var(--ink);background:none;border:none;border-bottom:1px solid var(--ink-line);padding:2px 18px 3px 2px;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238a4a52' stroke-width='1.4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 2px center;}
+.rev-sort-select:focus{outline:none;border-color:var(--accent);}
 .rev-list{display:flex;flex-direction:column;}
 .rev-item{display:grid;grid-template-columns:200px 1fr 160px;gap:32px;padding:30px 0;border-top:1px solid var(--ink-line);}
 .rev-item:first-child{border-top:none;}
+.rev-item.is-collapsed{display:none;}
 .rev-author{display:flex;flex-direction:column;gap:8px;}
 .rev-name{font-size:14px;font-weight:500;color:var(--ink);}
 .rev-name .loc{font-weight:400;color:var(--ink-mute);font-size:11px;letter-spacing:.6px;text-transform:uppercase;margin-left:6px;}
@@ -1003,7 +1007,7 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
       <div>
         <div class="rev-search">
           <svg class="rev-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-          <input type="text" placeholder="후기 검색" aria-label="후기 검색"/>
+          <input type="text" id="rev-search-input" placeholder="후기 검색" aria-label="후기 검색"/>
         </div>
         <div class="rev-topics">
           <span class="rev-topics-l">인기 키워드</span>
@@ -1017,10 +1021,10 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
           <button class="rev-more">더 보기</button>
         </div>
       </div>
-      <div class="rev-sort">정렬: <span class="rev-sort-v">평점 높은 순 ⌄</span></div>
+      <div class="rev-sort"><span class="rev-sort-l">정렬</span><select id="rev-sort" class="rev-sort-select"><option value="rating_desc">평점 높은 순</option><option value="recent">최신순</option><option value="helpful">도움 순</option></select></div>
     </div>
 
-    <div class="rev-list">
+    <div class="rev-list" id="rev-list">
       <article class="rev-item">
         <div class="rev-author">
           <div class="rev-name">김 OO <span class="loc">서울</span></div>
@@ -1134,10 +1138,181 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
           </div>
         </div>
       </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">윤 OO <span class="loc">인천</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">환절기마다 뒤집어지던 피부가 이번엔 잠잠했어요. 장벽이 단단해진 느낌이라 다음 환절기가 안 무서워요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.02.20</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>7</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">강 OO <span class="loc">서울</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
+          <p class="rev-text">드라마틱한 변화를 기대하면 실망할 수도 있어요. 저는 4주차부터 결이 정돈되는 게 느껴졌고, 꾸준히 먹는 게 핵심인 것 같아요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.02.11</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>11</span></button>
+            <button class="rev-vote">↓ <span>1</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">조 OO <span class="loc">수원</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">화장이 들뜨던 게 줄었어요. 아침에 메이크업 올릴 때 가장 먼저 체감돼요. 향도 인공적이지 않아서 좋습니다.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.01.30</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>5</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">임 OO <span class="loc">광주</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">성분표를 하나하나 찾아봤는데 용량까지 다 공개돼 있어서 신뢰가 갔어요. 먹는 입장에서 이런 투명함이 제일 중요하더라구요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.01.22</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>18</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">서 OO <span class="loc">대전</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
+          <p class="rev-text">한 포 용량이 작아서 부담 없이 꾸준히 먹게 돼요. 다만 가격대가 살짝 있는 편이라 정기적으로 먹으려면 고민은 되네요. 효과는 만족.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.01.15</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>9</span></button>
+            <button class="rev-vote">↓ <span>2</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">신 OO <span class="loc">서울</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">40대 들어 푸석해진 게 고민이었는데, 12주쯤 되니 탄력이 확실히 달라졌어요. 주변에서 피부 좋아졌다는 말 자주 들어요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.01.08</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>16</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">오 OO <span class="loc">용인</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">먹는 콜라겐은 다 비슷할 줄 알았는데, 흡수가 빠른 저분자라 그런지 체감이 달랐어요. 아침 컨디션부터 다릅니다.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2025.12.27</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>10</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">배 OO <span class="loc">제주</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
+          <p class="rev-text">처음 2주는 큰 변화가 없어서 반신반의했는데, 한 달 넘기니 확실히 수분감이 올라왔어요. 인내심이 좀 필요한 제품.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2025.12.19</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>8</span></button>
+            <button class="rev-vote">↓ <span>1</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">문 OO <span class="loc">서울</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">자극적인 마케팅 없이 타임라인이랑 근거를 차분하게 보여줘서 신뢰가 갔고, 실제로 그 말대로 변하니까 더 믿게 됐어요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2025.12.10</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>13</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
     </div>
 
     <div class="rev-load">
-      <a href="#" class="btn-g">후기 더 보기</a>
+      <button type="button" id="rev-load" class="btn-g">후기 더 보기</button>
     </div>
   </div>
 </section>
