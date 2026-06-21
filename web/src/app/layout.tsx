@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import ChannelTalk from "./channel-talk";
+import MetaPixel from "./meta-pixel";
 
 // Display serif — headlines, italic accent emphasis, ingredient names, large numerals
 const fraunces = Fraunces({
@@ -45,6 +46,7 @@ export default function RootLayout({
         </a>
         {children}
         <ChannelTalk />
+        <MetaPixel />
       </body>
     </html>
   );

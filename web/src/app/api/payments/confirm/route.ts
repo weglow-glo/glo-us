@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendOrderConfirmation } from "@/lib/email";
+import { sendMetaPurchase } from "@/lib/meta-capi";
 
 const TOSS_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
 
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
   const { data: order, error: lookupError } = await admin
     .from("orders")
     .select(
-      "id, amount, status, order_name, customer_name, customer_email, user_id, shipping_address",
+      "id, amount, status, order_name, customer_name, customer_email, customer_phone, user_id, shipping_address",
     )
     .eq("order_id", orderId)
     .single();
@@ -148,6 +149,25 @@ export async function POST(request: Request) {
       console.error("[confirm] address-book save failed:", e);
     }
   }
+
+  // Best-effort: Meta Conversions API Purchase (deduped with the browser pixel
+  // via event_id = orderId). Pull fbp/fbc cookies + IP/UA for better matching.
+  const cookieHeader = request.headers.get("cookie") ?? "";
+  const readCookie = (name: string) =>
+    cookieHeader.match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`))?.[1] ?? null;
+  void sendMetaPurchase({
+    eventId: orderId,
+    value: order.amount,
+    currency: "KRW",
+    email: order.customer_email,
+    phone: order.customer_phone,
+    fbp: readCookie("_fbp"),
+    fbc: readCookie("_fbc"),
+    clientIp:
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
+    userAgent: request.headers.get("user-agent"),
+    sourceUrl: request.headers.get("referer"),
+  });
 
   // Best-effort order confirmation email — never block/fail the response on it.
   const emailTo = order.customer_email ?? payment?.receipt?.email ?? null;
