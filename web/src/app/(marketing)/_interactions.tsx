@@ -116,21 +116,126 @@ export function ProductInteractions() {
       optHandlers.forEach(([el, h]) => el.removeEventListener("click", h)),
     );
 
-    // 6) Reviews "더 보기" — reveal collapsed review cards in batches.
-    const loadBtn = document.getElementById("rev-load");
-    if (loadBtn) {
-      const BATCH = 3;
-      const reveal = () => {
-        const hidden = document.querySelectorAll<HTMLElement>(".rev-item.is-collapsed");
-        hidden.forEach((el, i) => {
-          if (i < BATCH) el.classList.remove("is-collapsed");
-        });
-        if (document.querySelectorAll(".rev-item.is-collapsed").length === 0) {
-          loadBtn.setAttribute("hidden", "");
+    // 6) Reviews — load from the DB API with pagination / sort / search.
+    //    Falls back to the static cards if the API is unavailable (e.g. pre-seed).
+    const revList = document.getElementById("rev-list");
+    const loadBtn = document.getElementById("rev-load") as HTMLButtonElement | null;
+    if (revList && loadBtn) {
+      type Rev = {
+        author_name: string;
+        location: string | null;
+        rating: number;
+        body: string;
+        helpful_up: number;
+        helpful_down: number;
+        review_date: string;
+      };
+      const esc = (s: unknown) =>
+        String(s ?? "").replace(
+          /[&<>]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c] as string,
+        );
+      const card = (r: Rev) => {
+        const stars = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
+        const date = (r.review_date || "").replace(/-/g, ".");
+        return `<article class="rev-item"><div class="rev-author"><div class="rev-name">${esc(r.author_name)} <span class="loc">${esc(r.location)}</span></div><div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div></div><div class="rev-body"><div class="rev-body-stars" aria-label="${r.rating}점 / 5점">${stars}</div><p class="rev-text">${esc(r.body)}</p></div><div class="rev-meta"><div class="rev-date">${date}</div><div class="rev-helpful"><span class="rev-helpful-q">도움됐나요?</span><button class="rev-vote">↑ <span>${r.helpful_up}</span></button><button class="rev-vote">↓ <span>${r.helpful_down}</span></button></div></div></article>`;
+      };
+
+      let dynamic = false;
+      let offset = 0;
+      let sort = "rating_desc";
+      let q = "";
+      let loading = false;
+      const LIMIT = 8;
+
+      const fetchPage = async (reset: boolean) => {
+        if (loading) return;
+        loading = true;
+        loadBtn.disabled = true;
+        try {
+          const res = await fetch(
+            `/api/reviews?offset=${reset ? 0 : offset}&limit=${LIMIT}&sort=${sort}&q=${encodeURIComponent(q)}`,
+            { cache: "no-store" },
+          );
+          if (!res.ok) throw new Error("reviews api");
+          const d = (await res.json()) as { reviews: Rev[]; hasMore: boolean };
+          if (reset) {
+            revList.innerHTML = "";
+            offset = 0;
+          }
+          revList.insertAdjacentHTML("beforeend", d.reviews.map(card).join(""));
+          offset += d.reviews.length;
+          loadBtn.toggleAttribute("hidden", !d.hasMore);
+          if (reset && d.reviews.length === 0) {
+            revList.innerHTML =
+              '<p style="padding:40px 0;text-align:center;color:var(--ink-mute);font-size:14px;">검색 결과가 없어요.</p>';
+          }
+          dynamic = true;
+        } catch {
+          // API not ready — keep the static fallback cards in place.
+        } finally {
+          loading = false;
+          loadBtn.disabled = false;
         }
       };
-      loadBtn.addEventListener("click", reveal);
-      cleanups.push(() => loadBtn.removeEventListener("click", reveal));
+
+      // Static fallback: reveal collapsed cards in batches.
+      const revealStatic = () => {
+        const hidden = document.querySelectorAll<HTMLElement>(".rev-item.is-collapsed");
+        hidden.forEach((el, i) => {
+          if (i < 3) el.classList.remove("is-collapsed");
+        });
+        if (document.querySelectorAll(".rev-item.is-collapsed").length === 0)
+          loadBtn.setAttribute("hidden", "");
+      };
+
+      const onLoad = () => (dynamic ? fetchPage(false) : revealStatic());
+      loadBtn.addEventListener("click", onLoad);
+      cleanups.push(() => loadBtn.removeEventListener("click", onLoad));
+
+      const sortSel = document.getElementById("rev-sort") as HTMLSelectElement | null;
+      const onSort = () => {
+        if (!dynamic) return;
+        sort = sortSel!.value;
+        fetchPage(true);
+      };
+      sortSel?.addEventListener("change", onSort);
+      cleanups.push(() => sortSel?.removeEventListener("change", onSort));
+
+      const search = document.getElementById("rev-search-input") as HTMLInputElement | null;
+      let deb: number | undefined;
+      const onSearch = () => {
+        if (!dynamic) return;
+        clearTimeout(deb);
+        deb = window.setTimeout(() => {
+          q = search!.value.trim();
+          fetchPage(true);
+        }, 350);
+      };
+      search?.addEventListener("input", onSearch);
+      cleanups.push(() => {
+        clearTimeout(deb);
+        search?.removeEventListener("input", onSearch);
+      });
+
+      const chipHandlers: Array<[HTMLElement, () => void]> = [];
+      document.querySelectorAll<HTMLElement>(".rev-chip").forEach((chip) => {
+        const h = () => {
+          if (!dynamic) return;
+          const kw = chip.textContent?.trim() ?? "";
+          if (search) search.value = kw;
+          q = kw;
+          fetchPage(true);
+        };
+        chip.addEventListener("click", h);
+        chipHandlers.push([chip, h]);
+      });
+      cleanups.push(() =>
+        chipHandlers.forEach(([el, h]) => el.removeEventListener("click", h)),
+      );
+
+      // Initial load — try the API; static cards stay if it fails.
+      void fetchPage(true);
     }
 
     return () => cleanups.forEach((c) => c());
