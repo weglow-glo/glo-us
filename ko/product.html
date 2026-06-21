@@ -183,7 +183,7 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 
 /* QUICK SPECS */
 .qspecs{background:var(--bg-2);padding:0;border-top:1px solid var(--ink-line);border-bottom:1px solid var(--ink-line);}
-.qspecs-g{display:grid;grid-template-columns:repeat(7,1fr);}
+.qspecs-g{display:grid;grid-template-columns:repeat(8,1fr);}
 .qs{padding:32px 24px;border-right:1px solid var(--ink-line-2);}
 .qs:last-child{border-right:0;}
 .qs-lbl{font-size:9px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--ink-mute);margin-bottom:8px;}
@@ -404,6 +404,8 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .rev-head{display:grid;grid-template-columns:1fr 1.4fr;gap:80px;align-items:end;margin-bottom:32px;}
 .rev-head h2{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:54px;line-height:1.18;letter-spacing:-1.8px;color:var(--ink);}
 .rev-head h2 em{font-style:italic;color:var(--accent);}
+.rev-intro{margin-top:18px;max-width:460px;font-size:14px;line-height:1.7;color:var(--ink-soft);}
+.rev-intro b{color:var(--ink);font-weight:600;}
 .rev-stats{display:flex;flex-direction:column;gap:20px;align-items:flex-start;width:100%;max-width:480px;}
 .rev-summary{display:flex;align-items:center;gap:24px;}
 .rev-avg{font-family:'Fraunces','Noto Serif KR',serif;font-size:64px;font-weight:300;line-height:.95;color:var(--ink);letter-spacing:-2.4px;}
@@ -485,7 +487,7 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
   .qspecs-g{grid-template-columns:repeat(2,1fr);}
   .qs{border-right:none;border-bottom:1px solid var(--ink-line-2);padding:22px 18px;}
   .qs:nth-child(odd):not(:last-child){border-right:1px solid var(--ink-line-2);}
-  .qs:last-child{grid-column:1 / -1;border-bottom:none;}
+  .qs:last-child{border-bottom:none;}
   .ph-h,.tl-head h2,.ings-head h2,.dt-h,.t-h,.faq h2,.how-l h2,.canister-r h2,.rev-head h2,.final h2{font-size:38px;letter-spacing:-1.4px;}
   .rev-stats{flex-wrap:wrap;gap:16px;}
   .rev-avg{font-size:48px;letter-spacing:-1.6px;}
@@ -657,6 +659,7 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
     <div class="qs"><div class="qs-lbl">체감 시점</div><div class="qs-val">1주 → 4주 → 12주</div><div class="qs-sub">수분 → 톤 → 탄력</div></div>
     <div class="qs"><div class="qs-lbl">제조</div><div class="qs-val">미국 · 한국</div><div class="qs-sub">cGMP · 한국/미국 안전 기준 준수</div></div>
     <div class="qs"><div class="qs-lbl">검사</div><div class="qs-val">안전성 테스트 통과</div><div class="qs-sub">중금속 · 미생물</div></div>
+    <div class="qs"><div class="qs-lbl">출시 전 검증</div><div class="qs-val">체험단 1,000명</div><div class="qs-sub">753개 실제 체험 후기</div></div>
   </div>
 </div>
 
@@ -974,23 +977,24 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
   <div class="ctr">
     <div class="rev-head">
       <div>
-        <div class="ey clay"><span class="dash"></span>실제 구매 후기</div>
-        <h2>멤버들이<br/><em>전하는</em> 이야기.</h2>
+        <div class="ey clay"><span class="dash"></span>출시 전 체험단 후기</div>
+        <h2>먼저 써본 분들이<br/><em>전하는</em> 이야기.</h2>
+        <p class="rev-intro">한국 정식 출시 전, <b>체험단 1,000명</b>이 직접 사용하고 <b>753개</b>의 후기를 남겼습니다. 좋은 후기만 골라 싣지 않고, 받은 그대로 공개합니다.</p>
       </div>
       <div class="rev-stats">
         <div class="rev-summary">
           <div class="rev-avg">4.8</div>
           <div class="rev-stars-line">
             <div class="rev-stars" aria-label="4.8점 / 5점">★★★★★</div>
-            <div class="rev-count">12,475개 실제 구매 후기 기준</div>
+            <div class="rev-count">체험단 1,000명 · 753개 실제 체험 후기 기준</div>
           </div>
         </div>
         <div class="rev-dist" aria-label="Star rating distribution">
-          <div class="rev-dist-row"><span class="rev-dist-label">5<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:89%"></div></div><span class="rev-dist-count">11,101</span></div>
-          <div class="rev-dist-row"><span class="rev-dist-label">4<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:8.1%"></div></div><span class="rev-dist-count">1,015</span></div>
-          <div class="rev-dist-row"><span class="rev-dist-label">3<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:1.7%"></div></div><span class="rev-dist-count">207</span></div>
-          <div class="rev-dist-row"><span class="rev-dist-label">2<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:0.5%"></div></div><span class="rev-dist-count">64</span></div>
-          <div class="rev-dist-row"><span class="rev-dist-label">1<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:0.7%"></div></div><span class="rev-dist-count">88</span></div>
+          <div class="rev-dist-row"><span class="rev-dist-label">5<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:89%"></div></div><span class="rev-dist-count">671</span></div>
+          <div class="rev-dist-row"><span class="rev-dist-label">4<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:8%"></div></div><span class="rev-dist-count">60</span></div>
+          <div class="rev-dist-row"><span class="rev-dist-label">3<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:1.7%"></div></div><span class="rev-dist-count">13</span></div>
+          <div class="rev-dist-row"><span class="rev-dist-label">2<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:0.5%"></div></div><span class="rev-dist-count">4</span></div>
+          <div class="rev-dist-row"><span class="rev-dist-label">1<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:0.7%"></div></div><span class="rev-dist-count">5</span></div>
         </div>
       </div>
     </div>
@@ -1020,7 +1024,7 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
       <article class="rev-item">
         <div class="rev-author">
           <div class="rev-name">김 OO <span class="loc">서울</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>실구매 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
@@ -1039,7 +1043,7 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
       <article class="rev-item">
         <div class="rev-author">
           <div class="rev-name">박 OO <span class="loc">서울</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>실구매 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
@@ -1058,7 +1062,7 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
       <article class="rev-item">
         <div class="rev-author">
           <div class="rev-name">이 OO <span class="loc">부산</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>실구매 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
@@ -1077,7 +1081,7 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
       <article class="rev-item">
         <div class="rev-author">
           <div class="rev-name">최 OO <span class="loc">성남</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>실구매 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
@@ -1096,7 +1100,7 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
       <article class="rev-item">
         <div class="rev-author">
           <div class="rev-name">정 OO <span class="loc">대구</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>실구매 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
@@ -1115,7 +1119,7 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
       <article class="rev-item">
         <div class="rev-author">
           <div class="rev-name">한 OO <span class="loc">서울</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>실구매 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
