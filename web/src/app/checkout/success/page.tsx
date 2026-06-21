@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { formatKRW } from "@/lib/product";
+import { metaTrack } from "@/lib/meta";
 
 type Result =
   | { state: "loading" }
@@ -42,6 +43,17 @@ function SuccessInner() {
           method: data.method,
           totalAmount: data.totalAmount,
         });
+        // Browser Purchase event — deduped with the server CAPI via event_id = orderId.
+        metaTrack(
+          "Purchase",
+          {
+            value: data.totalAmount ?? amount,
+            currency: "KRW",
+            content_ids: ["GL-01"],
+            content_type: "product",
+          },
+          orderId,
+        );
       })
       .catch((e) =>
         setResult({

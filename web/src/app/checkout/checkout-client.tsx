@@ -18,6 +18,7 @@ import {
   PREORDER,
 } from "@/lib/product";
 import type { Address } from "@/lib/address";
+import { metaTrack } from "@/lib/meta";
 
 const CLIENT_KEY = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!;
 const DAUM_SRC =
@@ -99,6 +100,12 @@ export default function CheckoutClient({
 
   useEffect(() => {
     loadAddresses(true);
+    metaTrack("InitiateCheckout", {
+      content_ids: ["GL-01"],
+      content_type: "product",
+      currency: "KRW",
+      value: opt.price,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
