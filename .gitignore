@@ -23,11 +23,12 @@ desktop.ini
 # Archive zips (deployment artifacts kept local)
 *.zip
 
-# Kakao Business review submission PDF (private — generated locally)
+# Local one-shot helper scripts (private — may handle tokens)
 kakao-review.pdf
 _kakao-review-build.py
 _verify.py
 _verify-pdf.py
+_cf-cleanup.py
 
 # Logs / env
 *.log
@@ -35,14 +36,8 @@ _verify-pdf.py
 .env.local
 .env.*.local
 
-# Dependencies (no build step yet — placeholder for Next.js migration)
+# Dependencies / build output
 node_modules/
 .next/
 dist/
 build/
-
-# wrangler files
-.wrangler
-.dev.vars*
-!.dev.vars.example
-!.env.example
