@@ -122,10 +122,12 @@ function buildPage({ src, route, css, interactions }) {
   // 4) Rewrites (links, business info, CTAs).
   body = rewrite(body);
 
-  // 5) Remove nav + footer — they're rendered once in the marketing layout.
+  // 5) Remove nav + page footer — they're rendered once in the marketing layout.
+  //    Match the bare <footer> (page footer) only — NOT <footer class="path-marker">
+  //    diagram biomarkers on science.html.
   body = body
     .replace(/<nav[\s\S]*?<\/nav>/, "")
-    .replace(/<footer[\s\S]*?<\/footer>/, "");
+    .replace(/<footer>[\s\S]*?<\/footer>/, "");
 
   // Apply business-info rewrites to metadata too (description/title are
   // extracted from the original <head>, not the rewritten body).
