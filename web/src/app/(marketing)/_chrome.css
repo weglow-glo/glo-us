@@ -1,5 +1,8 @@
 /* Shared marketing chrome tweaks (nav + footer are rendered in the layout). */
 
+/* Brand wordmark — "glo" in body copy renders in the logo font (set by GloWordmark). */
+.gloword { font-family: 'Fraunces', 'Noto Serif KR', serif; font-style: normal; }
+
 /* Match the left logo pill and the right login/avatar pill height on mobile —
    the nav links hide < 640px, which otherwise leaves the two pills uneven. */
 @media (max-width: 640px) {

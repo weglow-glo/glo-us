@@ -10,6 +10,7 @@ import "./_chrome.css";
 import NavAuth from "./nav-auth";
 import ChromeBehaviors from "./_chrome-client";
 import ScrollTop from "./_scroll-top";
+import GloWordmark from "./glo-wordmark";
 import { NAV_HTML, FOOTER_HTML } from "./_chrome";
 
 export default function MarketingLayout({
@@ -42,6 +43,7 @@ export default function MarketingLayout({
       <NavAuth />
       <ChromeBehaviors />
       <ScrollTop />
+      <GloWordmark />
     </>
   );
 }
