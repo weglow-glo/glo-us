@@ -138,7 +138,7 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 .b-dots{display:flex;gap:4px;justify-content:center;margin-top:6px;position:relative;z-index:2;}
 .b-dots span{width:4px;height:4px;border-radius:50%;background:rgba(212,181,181,.55);}
 .bottle-img{position:relative;z-index:1;height:580px;width:auto;max-width:100%;filter:drop-shadow(0 32px 60px rgba(58,26,34,.30)) drop-shadow(0 10px 22px rgba(58,26,34,.20));pointer-events:none;user-select:none;}
-.bottle-vid{position:relative;z-index:1;height:clamp(400px,46vw,520px);width:auto;max-width:100%;object-fit:cover;-webkit-mask-image:radial-gradient(ellipse 54% 64% at 50% 48%,#000 40%,rgba(0,0,0,0) 78%);mask-image:radial-gradient(ellipse 54% 64% at 50% 48%,#000 40%,rgba(0,0,0,0) 78%);pointer-events:none;user-select:none;}
+.bottle-vid{position:relative;z-index:1;height:clamp(400px,48vw,540px);width:auto;max-width:100%;filter:drop-shadow(0 24px 48px rgba(58,26,34,.26));pointer-events:none;user-select:none;}
 .phero-r{position:relative;display:flex;flex-direction:column;justify-content:center;}
 .ph-lbl{font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--accent);}
 .ph-h{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-weight:300;font-size:78px;line-height:1.15;letter-spacing:-2.8px;margin:18px 0 0;color:var(--ink);}
@@ -654,6 +654,18 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
 
 /* Point font — 색 들어간 영문은 Times New Roman, 한글은 Wanted Sans로 자동 폴백(Times엔 한글 글리프 없음) */
 .ey,.ph-lbl,.po-banner-off,.logo .dot,em{font-family:'Times New Roman',Times,'Wanted Sans Variable','Wanted Sans',serif;}
+
+/* 체험단 변화 기록 — 주차별 가로 스트립 (before/after) */
+.ba{padding:clamp(72px,10vw,110px) 0;background:var(--bg-2);border-top:1px solid var(--ink-line);}
+.ba-sub{margin-top:12px;font-size:clamp(13px,2.4vw,15px);color:var(--ink-soft);}
+.ba-track{display:flex;gap:14px;margin-top:36px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;-webkit-overflow-scrolling:touch;}
+.ba-shot{flex:0 0 auto;width:clamp(180px,42vw,228px);scroll-snap-align:start;}
+.ba-img{position:relative;aspect-ratio:4/5;border-radius:16px;overflow:hidden;background:linear-gradient(160deg,var(--bg-3),var(--burg-50) 120%);background-size:cover;background-position:center;box-shadow:0 16px 32px rgba(58,26,34,.12),inset 0 0 0 1px rgba(58,26,34,.05);}
+.ba-wk{position:absolute;left:12px;bottom:12px;background:rgba(255,250,250,.92);backdrop-filter:saturate(160%) blur(6px);-webkit-backdrop-filter:saturate(160%) blur(6px);border-radius:100px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--ink);letter-spacing:-.01em;}
+.ba-shot.is-before .ba-wk{background:var(--burg-600);color:var(--cream);}
+.ba-meta{margin-top:26px;font-size:13px;color:var(--ink-soft);}
+.ba-meta b{color:var(--ink);}
+.ba-note{margin-top:12px;font-size:11.5px;color:var(--ink-faint);line-height:1.65;max-width:620px;}
 </style>
 </head>
 <body>
@@ -697,8 +709,8 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
       <div class="atom a7"><span class="atom-dot"></span>HA complex</div>
       <div class="atom a8"><span class="atom-dot"></span>밀크 세라마이드</div>
       <div class="atom a9"><span class="atom-dot"></span>헤마토코쿠스</div>
-      <video class="bottle-vid" autoplay muted loop playsinline preload="metadata" poster="/assets/video/hero-sachet-poster.jpg" aria-label="GL-01 사쉐 · 20ml 액상 샷 · 파인애플">
-        <source src="/assets/video/hero-sachet.mp4" type="video/mp4"/>
+      <video class="bottle-vid" autoplay muted loop playsinline preload="metadata" poster="/assets/video/hero-sachet-poster.png" aria-label="GL-01 사쉐 · 20ml 액상 샷 · 파인애플">
+        <source src="/assets/video/hero-sachet.webm" type="video/webm"/>
       </video>
     </div>
     <div class="phero-r">
@@ -1167,6 +1179,24 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
       <div class="faq-item"><div class="faq-q"><span>언제부터 효과를 느낄 수 있나요?</span><span class="faq-mark">+</span></div><div class="faq-a">사람마다 다르지만, 일반적인 체감 순서는 이렇습니다.<br/>• 1~2주차 – 피부 결이 부드러워지고 윤기가 돌기 시작해요.<br/>• 4~8주차 – 피부 톤이 고르게 올라오고, 잡티가 옅어지기 시작합니다.<br/>• 12주차 – 탄력 측정 시 수치 변화가 나타나는 구간입니다.<br/>항산화·세포 보호 효과는 눈으로 바로 보이지 않지만, 그 사이에도 피부 속에서 꾸준히 쌓이고 있어요. glo가 3개월을 기준으로 제안하는 이유입니다.</div></div>
       <div class="faq-item"><div class="faq-q"><span>환불 정책은요?</span><span class="faq-mark">+</span></div><div class="faq-a">꾸준히 드셨는데도 변화가 느껴지지 않으신다면, 사용한 제품 포함 90일 이내 전액 환불해드립니다. 맞지 않는 제품을 억지로 드시는 것보다 환불해드리는 편이 낫다고 생각합니다.</div></div>
     </div>
+  </div>
+</section>
+
+<!-- 체험단 변화 기록 (before/after 주차별) — 사진은 실제 동의받은 체험단 사진으로 교체 -->
+<section class="ba">
+  <div class="ctr">
+    <div class="ey clay"><span class="dash"></span>실제 체험단 기록</div>
+    <h2 class="po-h">주차별로, <em>눈으로 확인하세요.</em></h2>
+    <p class="ba-sub">한 체험단 회원의 사용 전부터 8주까지의 변화 기록입니다.</p>
+    <div class="ba-track">
+      <figure class="ba-shot is-before"><div class="ba-img"><span class="ba-wk">사용 전</span></div></figure>
+      <figure class="ba-shot"><div class="ba-img"><span class="ba-wk">1주</span></div></figure>
+      <figure class="ba-shot"><div class="ba-img"><span class="ba-wk">2주</span></div></figure>
+      <figure class="ba-shot"><div class="ba-img"><span class="ba-wk">4주</span></div></figure>
+      <figure class="ba-shot"><div class="ba-img"><span class="ba-wk">8주</span></div></figure>
+    </div>
+    <p class="ba-meta"><b>OO님 · 30대</b> · 모공·결 변화 · 동일 조명/각도에서 촬영</p>
+    <p class="ba-note">* 개인의 사용 후기이며 변화에는 개인차가 있습니다. 본 제품은 일반 식품으로, 질병의 예방·치료를 목적으로 하지 않으며 효과를 보장하지 않습니다.</p>
   </div>
 </section>
 
