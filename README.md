@@ -1,18 +1,18 @@
 # glo
 
 **Skin longevity protocol — a daily ingestible supplement.**
-8 specialists, 4 years of formulation, 9 clinically-studied actives (incl. glo-patented Tightening-PB Complex®).
+10 Korean specialists, 4 years of formulation, 9 clinically-studied actives (incl. glo-patented Tightening-PB Complex®).
 
-🌐 **Live:** https://glo-us.com · https://glo-us.com/ko/
-📦 **SKU:** GL-01 · 15 ml pineapple liquid shot · 30-pack monthly
+🌐 **Production:** https://glo-us.com (Next.js app, deployed on Vercel)
+📦 **SKU:** GL-01 · 20 ml pineapple liquid shot · 30-pack monthly
 
 ---
 
 ## What this repo is
 
-The marketing + signup website for **glo health, inc.** (operated in Korea by **(주)위글로우**). Static HTML/CSS pages with a small JS layer for Kakao Login + early-bird signup. Deployed via Cloudflare Pages.
+The commerce + marketing website for **glo health, inc.** (operated in Korea by **(주)위글로우**). A **Next.js app** under [`web/`](./web) handles the storefront, Kakao login, Toss Payments checkout, order/shipping management, and an admin dashboard. Marketing pages (landing, product, science, about, legal) are lifted from the Korean HTML sources in [`ko/`](./ko) and rendered inside the app.
 
-This is currently a **pre-launch site**. Real ecommerce / checkout flow is planned post Kakao Sync approval + Stripe integration (see roadmap below).
+First launch is **Korea-first** (KRW, Toss Payments, pre-order — no subscription).
 
 ---
 
@@ -20,15 +20,15 @@ This is currently a **pre-launch site**. Real ecommerce / checkout flow is plann
 
 | Layer | Tool | Status |
 |---|---|---|
-| Hosting | Cloudflare Pages | ✅ Live |
-| DNS | Cloudflare | ✅ |
-| Auth | Supabase (PostgreSQL + Auth) | ✅ Live |
-| Social login | Kakao OAuth + Kakao Sync | ✅ Live |
-| Email / Marketing | Klaviyo | ⏸️ Paused (Kakao 채널 우선) |
-| Payments | Stripe | ⬜ Planned (post-launch) |
-| Channel messaging | Kakao for Business 채널톡 | ⏸️ For launch broadcast |
-
-**No build step (yet).** Each HTML page is self-contained (inline `<style>` + inline `<script>`). A Next.js + Tailwind + TypeScript migration is on the roadmap once copy/UX is locked across all pages.
+| Framework | Next.js 16 (App Router) + React 19 + TypeScript | ✅ |
+| Styling | Tailwind v4 | ✅ |
+| Hosting | Vercel | ✅ |
+| DB / Auth | Supabase (PostgreSQL + Auth) | ✅ |
+| Social login | Kakao OAuth | ✅ |
+| Payments | Toss Payments (일반결제, LIVE) | ✅ |
+| Support chat | Channel Talk (채널톡) | ✅ |
+| Analytics | Meta Pixel + Conversions API | ✅ |
+| Order email | Resend | ⬜ Planned |
 
 ---
 
@@ -36,53 +36,39 @@ This is currently a **pre-launch site**. Real ecommerce / checkout flow is plann
 
 ```
 .
-├── index.html, product.html, science.html, about.html    ← EN pages
-├── privacy.html, terms.html, refund.html                  ← EN legal
+├── web/                         ← THE app (Next.js — production)
+│   ├── src/app/
+│   │   ├── (marketing)/         ← landing/product/science/about/legal (generated from ko/)
+│   │   ├── checkout/ account/ login/ admin/   ← commerce (hand-built)
+│   │   └── api/                 ← payments, reviews, addresses, meta CAPI …
+│   ├── scripts/
+│   │   ├── port-marketing.mjs   ← generates (marketing) pages from ko/*.html
+│   │   └── copy-assets.mjs      ← syncs repo-root assets/ → web/public/assets/
+│   └── public/
 │
-├── ko/                                                    ← Korean pages
-│   ├── index.html, product.html, science.html, about.html
-│   ├── login.html, account.html                           ← Kakao auth flow
-│   └── privacy.html, terms.html                           ← KR legal
+├── ko/                          ← marketing SOURCE (edit here, then regenerate)
+│   ├── index.html  product.html  science.html  about.html
+│   └── privacy.html  terms.html  refund.html
 │
-├── assets/
-│   ├── js/glo-auth.js                                     ← Supabase + Kakao + 얼리버드 modal
-│   ├── bottle/, founders/, og/, video/, ingredients/      ← Static assets
-│   └── css/brand.css                                      ← Reference-only design tokens
-│
-├── _styleguide.html                                       ← Internal design system reference
-├── sitemap.xml, robots.txt, favicon.svg
-│
-├── CONTRIBUTING.md                                        ← Non-dev contributor guide
-├── .github/                                               ← PR + Issue templates
-└── README.md                                              ← This file
+├── assets/                      ← shared media (bottle, video, og, images …)
+├── .github/                     ← PR + issue templates, CI
+└── README.md / CONTRIBUTING.md
 ```
 
----
-
-## Live URLs
-
-### Pages
-- **KR home:** https://glo-us.com/ko/
-- **EN home:** https://glo-us.com/ (auto-redirects to /ko/ for Korean browsers)
-- **Style guide (internal):** https://glo-us.com/_styleguide.html
-
-### Pre-launch sign-in
-- **Login:** https://glo-us.com/ko/login.html (카카오 OAuth)
-- **My page:** https://glo-us.com/ko/account.html
+> **Marketing edit flow:** edit the relevant `ko/*.html`, run `node web/scripts/port-marketing.mjs`, commit the regenerated `web/src/app/(marketing)/**`. Do **not** hand-edit the generated `page.tsx`/`*.css` files.
 
 ---
 
-## Local preview
-
-No build needed. Just open any `.html` file in a browser.
+## Local dev
 
 ```bash
-# Optional: a tiny dev server if you want clean URLs
-python -m http.server 8080
-# → http://localhost:8080/ko/
+cd web
+npm install
+npm run dev          # predev copies assets/ → public, then starts Next.js
+# → http://localhost:3000
 ```
 
-Or use VS Code's **Live Server** extension.
+Secrets live in `web/.env.local` (gitignored): Supabase, Toss, Kakao, Channel Talk, Meta, admin password. Production sets the same vars in Vercel.
 
 ---
 
@@ -91,40 +77,13 @@ Or use VS Code's **Live Server** extension.
 **Non-developer contributors (marketing · design)** → start here: [`CONTRIBUTING.md`](./CONTRIBUTING.md)
 
 Quick version:
-1. Edit files directly in **GitHub web UI** (✏️ pencil icon)
-2. Create a new branch (`mkt/...`, `design/...`, `feat/...`, `fix/...`)
-3. Open a Pull Request
-4. Cloudflare Pages will auto-deploy a preview URL within 1–2 min
-5. Get 1 reviewer approval → merge → live
+1. Edit the relevant `ko/*.html` (or open it in the GitHub web editor)
+2. Regenerate the marketing pages: `node web/scripts/port-marketing.mjs`
+3. Commit on a branch (`mkt/...`, `design/...`, `feat/...`, `fix/...`) and open a PR
+4. Vercel auto-deploys a preview URL
+5. Get 1 reviewer approval → merge to `main` → live
 
-**Branch protection:** `main` requires PR + 1 review + passing CI. Direct pushes to `main` are blocked.
-
-**Design system:** See [`_styleguide.html`](./\_styleguide.html) — colour tokens, typography, components, all in one place.
-
----
-
-## Roadmap
-
-### Phase 1 — Pre-launch (current)
-- ✅ Site copy locked (KR + EN)
-- ✅ Kakao Login + 카카오 Sync integration
-- ✅ Early-bird signup flow (Supabase-backed)
-- ✅ Team collab workflow (CONTRIBUTING.md, PR templates, style guide)
-- ⏳ 카카오 채널 friend acquisition (via Sync default-check)
-- ⏳ Decap CMS for marketing self-service
-
-### Phase 2 — Launch
-- ⬜ Stripe checkout integration
-- ⬜ Subscription management (정기구독)
-- ⬜ Kakao 채널톡 launch broadcast (50% 얼리버드 discount)
-- ⬜ Order tracking + shipping notifications
-
-### Phase 3 — Scale
-- ⬜ Next.js + Tailwind migration (component library, design tokens single-source)
-- ⬜ Member dashboard expansion (order history, refer-a-friend, etc.)
-- ⬜ Admin dashboard (manual operations → automated)
-
-See [`CLAUDE.md`](./CLAUDE.md) for the detailed engineering brief (private — not in this public repo).
+**Branch protection:** `main` requires PR + 1 review + passing CI. Direct pushes are blocked.
 
 ---
 
