@@ -30,6 +30,10 @@ export default function MarketingLayout({
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css"
       />
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css"
+      />
 
       <div dangerouslySetInnerHTML={{ __html: NAV_HTML }} />
       {children}
