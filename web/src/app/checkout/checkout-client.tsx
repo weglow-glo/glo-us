@@ -181,7 +181,7 @@ export default function CheckoutClient({
       await widgets.setAmount({ currency: "KRW", value: opt.price });
       if (cancelled) return;
       await Promise.all([
-        widgets.renderPaymentMethods({ selector: "#payment-method", variantKey: "DEFAULT" }),
+        widgets.renderPaymentMethods({ selector: "#payment-method", variantKey: "DEFAULT-2" }),
         widgets.renderAgreement({ selector: "#agreement", variantKey: "AGREEMENT" }),
       ]);
       if (cancelled) return;
