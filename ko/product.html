@@ -489,8 +489,14 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 /* #3 mechanism */
 .po-mech{background:var(--bg-2);}
 .po-mech-in{max-width:900px;margin:0 auto;text-align:center;}
-.po-mech-flow{display:flex;align-items:center;justify-content:center;gap:8px 12px;flex-wrap:wrap;margin-top:32px;font-size:13px;color:var(--ink-soft);}
-.po-mech-flow .ar{color:var(--accent);}
+.po-mech-sub{margin-top:12px;font-size:clamp(13px,2.4vw,15px);color:var(--ink-soft);}
+.po-mech-steps{display:flex;align-items:flex-start;justify-content:center;gap:clamp(2px,1vw,10px);margin-top:36px;}
+.po-mech-step{display:flex;flex-direction:column;align-items:center;gap:10px;width:clamp(62px,18vw,92px);}
+.po-mech-ico{width:clamp(46px,13vw,64px);height:clamp(46px,13vw,64px);border-radius:50%;background:var(--bg-3);display:flex;align-items:center;justify-content:center;}
+.po-mech-ico svg{width:48%;height:48%;stroke:var(--accent);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+.po-mech-step-l{font-size:clamp(11px,2.2vw,13px);color:var(--ink-soft);line-height:1.35;text-align:center;}
+.po-mech-step-l b{display:block;color:var(--ink);font-weight:600;}
+.po-mech-arrow{color:var(--accent);font-size:clamp(13px,3vw,16px);align-self:center;margin-top:-14px;flex-shrink:0;}
 .po-mech-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:40px;text-align:left;}
 .po-mech-cell{background:var(--bg-1);border:1px solid var(--ink-line);border-radius:12px;padding:24px;}
 .po-mech-cell .l{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink-mute);}
@@ -748,11 +754,27 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
 <section class="po-sec po-mech">
   <div class="ctr po-mech-in">
     <h2 class="po-h">피부 나이가 <em>거꾸로</em> 가는 이유</h2>
-    <div class="po-mech-flow">
-      <span>glo 1포 섭취</span><span class="ar">→</span>
-      <span>장벽에서 흡수</span><span class="ar">→</span>
-      <span>멜라닌 이동 차단</span><span class="ar">→</span>
-      <span>피부 4경로 작용</span>
+    <p class="po-mech-sub">겉에 바르는 게 아니라, 속에서 만드는 차이</p>
+    <div class="po-mech-steps">
+      <div class="po-mech-step">
+        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><rect x="9.5" y="4" width="5" height="16" rx="1"/><line x1="9.5" y1="7" x2="14.5" y2="7"/><path d="M18.5 5.5c0 0-1.4 1.9-1.4 2.9a1.4 1.4 0 0 0 2.8 0c0-1-1.4-2.9-1.4-2.9z"/></svg></span>
+        <span class="po-mech-step-l"><b>Glo</b>1포 섭취</span>
+      </div>
+      <span class="po-mech-arrow">›</span>
+      <div class="po-mech-step">
+        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><line x1="3" y1="16" x2="21" y2="16"/><path d="M8 6v6M6 10l2 2 2-2"/><path d="M16 6v6M14 10l2 2 2-2"/></svg></span>
+        <span class="po-mech-step-l"><b>장에서</b>흡수</span>
+      </div>
+      <span class="po-mech-arrow">›</span>
+      <div class="po-mech-step">
+        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><path d="M3 9c3-3 6 3 9 0s6-3 9 0"/><path d="M3 15c3-3 6 3 9 0s6-3 9 0"/></svg></span>
+        <span class="po-mech-step-l"><b>혈류로</b>이동</span>
+      </div>
+      <span class="po-mech-arrow">›</span>
+      <div class="po-mech-step">
+        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><path d="M3 17h18M3 13h18"/><circle cx="7" cy="8" r="1"/><circle cx="12" cy="6" r="1"/><circle cx="17" cy="8" r="1"/></svg></span>
+        <span class="po-mech-step-l"><b>피부</b>4경로</span>
+      </div>
     </div>
     <div class="po-mech-grid">
       <div class="po-mech-cell"><div class="l">피부 표면 · 미백</div><div class="t"><em>밝게</em></div><div class="s">글루타치온 · 나이아신아미드 · 화이트토마토 · L-시스테인</div></div>

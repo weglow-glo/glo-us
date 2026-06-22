@@ -456,8 +456,14 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 /* #3 mechanism */
 .po-mech{background:var(--bg-2);}
 .po-mech-in{max-width:900px;margin:0 auto;text-align:center;}
-.po-mech-flow{display:flex;align-items:center;justify-content:center;gap:8px 12px;flex-wrap:wrap;margin-top:32px;font-size:13px;color:var(--ink-soft);}
-.po-mech-flow .ar{color:var(--accent);}
+.po-mech-sub{margin-top:12px;font-size:clamp(13px,2.4vw,15px);color:var(--ink-soft);}
+.po-mech-steps{display:flex;align-items:flex-start;justify-content:center;gap:clamp(2px,1vw,10px);margin-top:36px;}
+.po-mech-step{display:flex;flex-direction:column;align-items:center;gap:10px;width:clamp(62px,18vw,92px);}
+.po-mech-ico{width:clamp(46px,13vw,64px);height:clamp(46px,13vw,64px);border-radius:50%;background:var(--bg-3);display:flex;align-items:center;justify-content:center;}
+.po-mech-ico svg{width:48%;height:48%;stroke:var(--accent);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+.po-mech-step-l{font-size:clamp(11px,2.2vw,13px);color:var(--ink-soft);line-height:1.35;text-align:center;}
+.po-mech-step-l b{display:block;color:var(--ink);font-weight:600;}
+.po-mech-arrow{color:var(--accent);font-size:clamp(13px,3vw,16px);align-self:center;margin-top:-14px;flex-shrink:0;}
 .po-mech-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:40px;text-align:left;}
 .po-mech-cell{background:var(--bg-1);border:1px solid var(--ink-line);border-radius:12px;padding:24px;}
 .po-mech-cell .l{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink-mute);}
