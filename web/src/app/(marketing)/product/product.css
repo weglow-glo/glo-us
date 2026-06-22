@@ -621,3 +621,15 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
 
 /* Point font — 색 들어간 영문은 Times New Roman, 한글은 Wanted Sans로 자동 폴백(Times엔 한글 글리프 없음) */
 .ey,.ph-lbl,.po-banner-off,.logo .dot,em{font-family:'Times New Roman',Times,'Wanted Sans Variable','Wanted Sans',serif;}
+
+/* 체험단 변화 기록 — 주차별 가로 스트립 (before/after) */
+.ba{padding:clamp(72px,10vw,110px) 0;background:var(--bg-2);border-top:1px solid var(--ink-line);}
+.ba-sub{margin-top:12px;font-size:clamp(13px,2.4vw,15px);color:var(--ink-soft);}
+.ba-track{display:flex;gap:14px;margin-top:36px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;-webkit-overflow-scrolling:touch;}
+.ba-shot{flex:0 0 auto;width:clamp(180px,42vw,228px);scroll-snap-align:start;}
+.ba-img{position:relative;aspect-ratio:4/5;border-radius:16px;overflow:hidden;background:linear-gradient(160deg,var(--bg-3),var(--burg-50) 120%);background-size:cover;background-position:center;box-shadow:0 16px 32px rgba(58,26,34,.12),inset 0 0 0 1px rgba(58,26,34,.05);}
+.ba-wk{position:absolute;left:12px;bottom:12px;background:rgba(255,250,250,.92);backdrop-filter:saturate(160%) blur(6px);-webkit-backdrop-filter:saturate(160%) blur(6px);border-radius:100px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--ink);letter-spacing:-.01em;}
+.ba-shot.is-before .ba-wk{background:var(--burg-600);color:var(--cream);}
+.ba-meta{margin-top:26px;font-size:13px;color:var(--ink-soft);}
+.ba-meta b{color:var(--ink);}
+.ba-note{margin-top:12px;font-size:11.5px;color:var(--ink-faint);line-height:1.65;max-width:620px;}
