@@ -480,7 +480,8 @@ footer{background:var(--bd);padding:68px 0 32px;color:rgba(242,232,216,.62);}
 html[lang="ko"] body,html[lang="ko"] input,html[lang="ko"] select,html[lang="ko"] button,html[lang="ko"] textarea{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;letter-spacing:-.01em;}
 /* Block fake italic on Korean glyphs — Hangul fonts don't ship italic faces; browser was synthesizing oblique slants that looked broken. Real italics in Fraunces still render for Latin. */
 html[lang="ko"] body{font-synthesis:none;}
-html[lang="ko"] h1,html[lang="ko"] h2,html[lang="ko"] h3,html[lang="ko"] .logo,html[lang="ko"] .foot-logo,html[lang="ko"] .bottle-logo,html[lang="ko"] .b-logo{font-family:'Fraunces','Noto Serif KR',serif;letter-spacing:-.025em;}
+html[lang="ko"] h1,html[lang="ko"] h2,html[lang="ko"] h3{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;letter-spacing:-.025em;}
+html[lang="ko"] .logo,html[lang="ko"] .foot-logo,html[lang="ko"] .bottle-logo,html[lang="ko"] .b-logo{font-family:'Fraunces','Noto Serif KR',serif;}
 html[lang="ko"] em,html[lang="ko"] .ey em,html[lang="ko"] .card-title em,html[lang="ko"] h1 em,html[lang="ko"] h2 em{font-style:normal;color:var(--accent);font-weight:400;}
 html[lang="ko"] .hero-sub em,html[lang="ko"] p em{font-style:normal;color:var(--accent);font-weight:700;}
 /* Dark-bg em — keep cream/light instead of forcing var(--accent) which disappears on burgundy */
