@@ -37,6 +37,10 @@ export async function GET(request: Request) {
       .order("review_date", { ascending: false });
   }
 
+  // Stable tiebreaker — without a unique final sort key, offset pagination over
+  // tied rows (same rating/date) can repeat or skip rows across pages.
+  query = query.order("id", { ascending: true });
+
   const { data, count, error } = await query.range(offset, offset + limit - 1);
 
   if (error) {
