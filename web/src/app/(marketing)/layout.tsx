@@ -33,7 +33,7 @@ export default function MarketingLayout({
       />
       <link
         rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css"
+        href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/complete/WantedSansVariable.min.css"
       />
 
       <div dangerouslySetInnerHTML={{ __html: NAV_HTML }} />
