@@ -551,12 +551,24 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .po-cmp-table .glo-col .po-cmp-sm{color:rgba(244,235,235,.7);}
 
 /* #6 how to drink */
-.po-how{background:var(--bg-2);text-align:center;}
-.po-how-fig{position:relative;width:min(300px,70%);margin:36px auto 0;}
-.po-how-img{width:100%;height:auto;filter:drop-shadow(0 24px 48px rgba(58,26,34,.28));}
-.po-how-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:560px;margin:36px auto 0;}
-.po-how-chip{background:var(--bg-1);border:1px solid var(--ink-line);border-radius:100px;padding:10px 18px;font-size:13px;color:var(--ink-soft);}
-.po-how-chip b{color:var(--accent);font-weight:600;}
+.po-how{position:relative;overflow:hidden;text-align:center;
+  background:
+    radial-gradient(circle at 18% 28%,rgba(255,240,200,.85),transparent 30%),
+    radial-gradient(circle at 82% 22%,rgba(210,165,105,.5),transparent 32%),
+    radial-gradient(circle at 78% 78%,rgba(190,145,88,.5),transparent 34%),
+    radial-gradient(circle at 22% 82%,rgba(235,205,150,.65),transparent 30%),
+    radial-gradient(circle at 50% 48%,rgba(255,246,224,.45),transparent 52%),
+    linear-gradient(160deg,#e7cd9c,#d9b985 55%,#caa873);}
+.po-how .ey,.po-how .po-h{position:relative;z-index:3;}
+.po-how-stage{position:relative;width:min(430px,90%);margin:34px auto 0;aspect-ratio:43/50;}
+.po-how-sachet{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(7deg);height:86%;width:auto;z-index:2;filter:drop-shadow(0 22px 44px rgba(58,26,34,.4));pointer-events:none;user-select:none;}
+.po-how-pill{position:absolute;z-index:3;background:rgba(255,252,246,.86);backdrop-filter:saturate(140%) blur(5px);-webkit-backdrop-filter:saturate(140%) blur(5px);border-radius:14px;padding:8px 13px;font-size:clamp(10.5px,2.3vw,12.5px);color:var(--ink);line-height:1.35;box-shadow:0 6px 18px rgba(58,26,34,.14);white-space:nowrap;}
+.po-how-pill b{display:block;color:var(--accent);font-weight:600;}
+.po-how-pill.p1{left:-2%;top:6%}
+.po-how-pill.p2{right:-2%;top:3%}
+.po-how-pill.p3{left:-4%;top:47%}
+.po-how-pill.p4{right:-4%;top:44%}
+.po-how-pill.p5{left:50%;bottom:-2%;transform:translateX(-50%)}
 
 @media (max-width:640px){
   .po-flavor-stats{grid-template-columns:1fr;}
@@ -1076,20 +1088,18 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
   </div>
 </section>
 
-<!-- #6 음용법 (CSS) -->
+<!-- #6 음용법 (CSS — golden bokeh bg + sachet + floating pills) -->
 <section class="po-sec po-how">
   <div class="ctr">
     <div class="ey clay" style="justify-content:center;"><span class="dash"></span>How to drink</div>
     <h2 class="po-h">이렇게 <em>마십니다.</em></h2>
-    <div class="po-how-fig">
-      <img class="po-how-img" src="/assets/bottle/sachet.png" alt="GL-01 사쉐" width="308" height="580"/>
-    </div>
-    <div class="po-how-chips">
-      <span class="po-how-chip">물 없이 <b>OK</b></span>
-      <span class="po-how-chip">아침 공복 <b>1일 1포</b></span>
-      <span class="po-how-chip">1포 한 입 <b>15ml</b></span>
-      <span class="po-how-chip">손쉽게 <b>이지컷</b></span>
-      <span class="po-how-chip">간편한 <b>액상 스틱</b></span>
+    <div class="po-how-stage">
+      <img class="po-how-sachet" src="/assets/bottle/sachet.png" alt="GL-01 사쉐" width="308" height="580"/>
+      <span class="po-how-pill p1">물 없이<b>OK</b></span>
+      <span class="po-how-pill p2">아침 공복<b>1일 1포</b></span>
+      <span class="po-how-pill p3">손쉽게<b>이지컷</b></span>
+      <span class="po-how-pill p4">1포 한 입<b>15ml</b></span>
+      <span class="po-how-pill p5">간편한<b>액상 스틱</b></span>
     </div>
   </div>
 </section>
