@@ -497,18 +497,29 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .po-mech-step-l{font-size:clamp(11px,2.2vw,13px);color:var(--ink-soft);line-height:1.35;text-align:center;}
 .po-mech-step-l b{display:block;color:var(--ink);font-weight:600;}
 .po-mech-arrow{color:var(--accent);font-size:clamp(13px,3vw,16px);align-self:center;margin-top:-14px;flex-shrink:0;}
-.po-mech-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:40px;text-align:left;}
-.po-mech-cell{background:var(--bg-1);border:1px solid var(--ink-line);border-radius:12px;padding:24px;}
-.po-mech-cell .l{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink-mute);}
-.po-mech-cell .t{font-family:'Fraunces',serif;font-size:19px;color:var(--ink);margin-top:6px;}
-.po-mech-cell .t em{font-style:italic;color:var(--accent);}
-.po-mech-cell .s{font-size:12.5px;color:var(--ink-soft);margin-top:8px;line-height:1.5;}
-.po-mech-tri{margin-top:44px;}
-.po-mech-tri .po-h{font-size:clamp(20px,3.6vw,28px);}
-.po-mech-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px;}
-.po-mech-col{padding:18px 14px;border-top:2px solid var(--accent);text-align:left;}
-.po-mech-col .h{font-weight:600;color:var(--ink);font-size:15px;}
-.po-mech-col .s{font-size:12px;color:var(--ink-mute);margin-top:5px;}
+/* champagne / water-droplet zone (CSS recreation of the designer's background) */
+.po-mech-zone{margin-top:48px;border-radius:24px;overflow:hidden;text-align:center;padding:clamp(40px,7vw,72px) clamp(20px,5vw,52px);
+  background:
+    radial-gradient(circle at 15% 20%,rgba(255,252,245,.85),transparent 36%),
+    radial-gradient(circle at 85% 24%,rgba(240,222,190,.62),transparent 40%),
+    radial-gradient(circle at 76% 82%,rgba(232,206,170,.55),transparent 42%),
+    radial-gradient(circle at 20% 86%,rgba(248,238,222,.7),transparent 38%),
+    radial-gradient(circle at 50% 50%,rgba(255,255,255,.35),transparent 55%),
+    linear-gradient(155deg,#faf5ec,#f1e4d2 52%,#ead9c0);}
+.po-mech-zone-h{font-family:'Fraunces','Noto Serif KR',serif;font-weight:400;font-size:clamp(18px,3.4vw,24px);color:var(--ink);letter-spacing:.3px;}
+.po-mech-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(24px,5vw,38px) clamp(16px,4vw,44px);margin-top:30px;}
+.po-mech-cell{text-align:center;}
+.po-mech-cell .t2{font-size:clamp(15px,2.7vw,18px);color:var(--ink);font-weight:600;}
+.po-mech-cell .t2 .tag{color:var(--accent);}
+.po-mech-cell .s{font-size:clamp(12px,2.3vw,13.5px);color:var(--ink-soft);margin-top:8px;line-height:1.55;}
+.po-mech-tri{margin-top:clamp(40px,6vw,58px);}
+.po-mech-tri-h{font-family:'Fraunces','Noto Serif KR',serif;font-weight:400;font-size:clamp(20px,3.6vw,28px);color:var(--ink);}
+.po-mech-tri-h em{font-style:italic;color:var(--accent);}
+.po-mech-tri-sub{font-size:clamp(13px,2.4vw,15px);color:var(--ink-soft);margin-top:10px;line-height:1.6;}
+.po-mech-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:26px;}
+.po-mech-col{text-align:center;}
+.po-mech-col .h{font-weight:600;color:var(--ink);font-size:clamp(14px,2.5vw,16px);}
+.po-mech-col .s{font-size:clamp(11px,2.1vw,12.5px);color:var(--ink-mute);margin-top:6px;line-height:1.5;}
 
 /* #4 flavor */
 .po-flavor{background:var(--bg-3);text-align:center;}
@@ -544,7 +555,7 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .po-how-chip b{color:var(--accent);font-weight:600;}
 
 @media (max-width:640px){
-  .po-mech-grid,.po-mech-cols,.po-flavor-stats{grid-template-columns:1fr;}
+  .po-flavor-stats{grid-template-columns:1fr;}
   .po-cmp-table th,.po-cmp-table td{padding:14px 6px;font-size:13px;}
 }
 
@@ -776,18 +787,22 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
         <span class="po-mech-step-l"><b>피부</b>4경로</span>
       </div>
     </div>
-    <div class="po-mech-grid">
-      <div class="po-mech-cell"><div class="l">피부 표면 · 미백</div><div class="t"><em>밝게</em></div><div class="s">글루타치온 · 나이아신아미드 · 화이트토마토 · L-시스테인</div></div>
-      <div class="po-mech-cell"><div class="l">피부 장벽 · 수분</div><div class="t"><em>촉촉하게</em></div><div class="s">히알루론산 복합체 · 밀크세라마이드</div></div>
-      <div class="po-mech-cell"><div class="l">진피층 · 탄력</div><div class="t"><em>단단하게</em></div><div class="s">초저분자 콜라겐 · 특허 복합물</div></div>
-      <div class="po-mech-cell"><div class="l">세포 전체 · 항산화</div><div class="t"><em>지키며</em></div><div class="s">아스타잔틴 (헤마토코쿠스 추출)</div></div>
-    </div>
-    <div class="po-mech-tri">
-      <h3 class="po-h">glo는 <em>트리플 브라이트닝</em></h3>
-      <div class="po-mech-cols">
-        <div class="po-mech-col"><div class="h">생성 차단</div><div class="s">글루타치온 · L-시스테인</div></div>
-        <div class="po-mech-col"><div class="h">이동 차단</div><div class="s">나이아신아미드</div></div>
-        <div class="po-mech-col"><div class="h">이너 선케어</div><div class="s">화이트토마토</div></div>
+    <div class="po-mech-zone">
+      <div class="po-mech-zone-h">[피부 속 4가지 작용]</div>
+      <div class="po-mech-grid">
+        <div class="po-mech-cell"><div class="t2">피부 표면 <span class="tag">[미백]</span></div><div class="s">글루타치온, 나이아신아미드,<br>화이트토마토, L-시스테인</div></div>
+        <div class="po-mech-cell"><div class="t2">피부 장벽 <span class="tag">[수분]</span></div><div class="s">히알루론산, 밀크세라마이드</div></div>
+        <div class="po-mech-cell"><div class="t2">진피층 <span class="tag">[탄력]</span></div><div class="s">초저분자 콜라겐, 특허 복합물</div></div>
+        <div class="po-mech-cell"><div class="t2">세포 전체 <span class="tag">[항산화]</span></div><div class="s">아스타잔틴</div></div>
+      </div>
+      <div class="po-mech-tri">
+        <h3 class="po-mech-tri-h">Glo는 <em>트리플 브라이트닝</em></h3>
+        <p class="po-mech-tri-sub">만들어지고, 퍼지고, 생기는 것까지 3경로 동시 차단</p>
+        <div class="po-mech-cols">
+          <div class="po-mech-col"><div class="h">생성 차단</div><div class="s">글루타치온<br>L-시스테인</div></div>
+          <div class="po-mech-col"><div class="h">이동 차단</div><div class="s">나이아신아미드</div></div>
+          <div class="po-mech-col"><div class="h">이너 선케어</div><div class="s">화이트토마토</div></div>
+        </div>
       </div>
     </div>
   </div>
