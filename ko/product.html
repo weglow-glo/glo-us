@@ -457,6 +457,18 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .rev-vote:hover{color:var(--ink);border-color:var(--accent);}
 .rev-load{margin-top:36px;text-align:center;}
 
+/* 사전결제 혜택 배너 — CSS (replaces the raster promo image) */
+.po-banner{background:var(--bg-1);padding:96px 0 80px;border-top:1px solid var(--ink-line);overflow:hidden;}
+.po-banner-in{text-align:center;}
+.po-banner-h{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:clamp(28px,5vw,46px);line-height:1.28;letter-spacing:-1px;color:var(--ink);margin-top:18px;}
+.po-banner-h em{font-style:italic;color:var(--accent);}
+.po-banner-fig{position:relative;display:flex;align-items:center;justify-content:center;margin:8px auto 0;width:min(560px,94%);}
+.po-banner-num{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:clamp(170px,34vw,360px);line-height:.82;letter-spacing:-10px;color:var(--burg-300);position:relative;z-index:1;}
+.po-banner-pct{font-size:.42em;vertical-align:top;color:var(--burg-200);letter-spacing:0;}
+.po-banner-img{position:absolute;left:50%;top:50%;transform:translate(-56%,-46%);height:clamp(230px,50vw,400px);width:auto;z-index:2;filter:drop-shadow(0 26px 52px rgba(58,26,34,.32));pointer-events:none;user-select:none;}
+.po-banner-off{position:absolute;right:3%;bottom:7%;z-index:3;font-family:'Fraunces','Noto Serif KR',serif;font-style:italic;font-size:clamp(26px,5.5vw,52px);color:var(--burg-200);}
+.po-banner-sub{margin-top:20px;font-size:13px;color:var(--ink-mute);line-height:1.7;}
+
 @media (max-width:1100px){
   .ctr,.final-i{padding:0 32px;}
   .nav-i{padding:0 48px;}
@@ -630,9 +642,18 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
   </div>
 </section>
 
-<!-- 이런 분들에게 공감 섹션 -->
-<section>
-  <img src="/assets/images/2606_glo_1.png" style="width:100%;display:block;">
+<!-- 사전결제 혜택 배너 (CSS) -->
+<section class="po-banner">
+  <div class="ctr po-banner-in">
+    <div class="ey clay"><span class="dash"></span>사전결제 한정</div>
+    <h2 class="po-banner-h">사전결제하신 분들만,<br><em>최대 70% 먼저.</em></h2>
+    <div class="po-banner-fig">
+      <span class="po-banner-num">70<span class="po-banner-pct">%</span></span>
+      <img class="po-banner-img" src="/assets/bottle/sachet.png" alt="GL-01 사쉐" width="308" height="580"/>
+      <span class="po-banner-off">Off</span>
+    </div>
+    <p class="po-banner-sub">7월 2일 정식 출시와 함께 정상가로 전환됩니다.<br>지금 사전결제가 가장 저렴합니다.</p>
+  </div>
 </section>
 
 <!-- 사전예약 50% 혜택 섹션 -->

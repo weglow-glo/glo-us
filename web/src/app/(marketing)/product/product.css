@@ -424,6 +424,18 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .rev-vote:hover{color:var(--ink);border-color:var(--accent);}
 .rev-load{margin-top:36px;text-align:center;}
 
+/* 사전결제 혜택 배너 — CSS (replaces the raster promo image) */
+.po-banner{background:var(--bg-1);padding:96px 0 80px;border-top:1px solid var(--ink-line);overflow:hidden;}
+.po-banner-in{text-align:center;}
+.po-banner-h{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:clamp(28px,5vw,46px);line-height:1.28;letter-spacing:-1px;color:var(--ink);margin-top:18px;}
+.po-banner-h em{font-style:italic;color:var(--accent);}
+.po-banner-fig{position:relative;display:flex;align-items:center;justify-content:center;margin:8px auto 0;width:min(560px,94%);}
+.po-banner-num{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:clamp(170px,34vw,360px);line-height:.82;letter-spacing:-10px;color:var(--burg-300);position:relative;z-index:1;}
+.po-banner-pct{font-size:.42em;vertical-align:top;color:var(--burg-200);letter-spacing:0;}
+.po-banner-img{position:absolute;left:50%;top:50%;transform:translate(-56%,-46%);height:clamp(230px,50vw,400px);width:auto;z-index:2;filter:drop-shadow(0 26px 52px rgba(58,26,34,.32));pointer-events:none;user-select:none;}
+.po-banner-off{position:absolute;right:3%;bottom:7%;z-index:3;font-family:'Fraunces','Noto Serif KR',serif;font-style:italic;font-size:clamp(26px,5.5vw,52px);color:var(--burg-200);}
+.po-banner-sub{margin-top:20px;font-size:13px;color:var(--ink-mute);line-height:1.7;}
+
 @media (max-width:1100px){
   .ctr,.final-i{padding:0 32px;}
   .nav-i{padding:0 48px;}
