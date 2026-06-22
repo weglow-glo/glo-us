@@ -7,13 +7,13 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{background:var(--bg-1);color:var(--ink);}
-body{font-family:'Inter','Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;font-synthesis:none;}
+body{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;font-synthesis:none;}
 a{color:inherit;text-decoration:none;}
 nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 .nav-i{display:flex;align-items:center;justify-content:space-between;padding:0 80px;max-width:1480px;margin:0 auto;gap:16px;}
 .nav-l,.nav-r{pointer-events:auto;display:flex;align-items:center;background:rgba(243,234,234,.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border:1px solid rgba(212,181,181,.4);border-radius:100px;box-shadow:0 8px 32px rgba(58,26,34,.08),inset 0 1px 0 rgba(255,255,255,.5);}
 .nav-l{padding:6px 32px;gap:32px;}.nav-r{padding:6px;gap:4px;}
-.logo{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:30px;letter-spacing:-1.3px;color:var(--ink);line-height:1;}
+.logo{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-weight:300;font-size:30px;letter-spacing:-1.3px;color:var(--ink);line-height:1;}
 .logo .dot{color:var(--accent);font-style:italic;}
 .nav-links{display:flex;gap:24px;font-size:13px;font-weight:500;color:var(--ink-soft);padding:10px 4px;}
 .nav-links a:hover{color:var(--accent);}
@@ -25,12 +25,12 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 .ctr{max-width:880px;margin:0 auto;padding:160px 64px 100px;}
 .ey{font-size:11px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:var(--ink-mute);margin-bottom:18px;}
 .ey .dash{display:inline-block;width:24px;height:1px;background:var(--accent);vertical-align:middle;margin-right:10px;}
-h1{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:60px;line-height:1.18;letter-spacing:-2.4px;color:var(--ink);}
+h1{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-weight:300;font-size:60px;line-height:1.18;letter-spacing:-2.4px;color:var(--ink);}
 h1 em{font-style:normal;color:var(--accent);font-weight:400;}
 .meta{font-size:13px;color:var(--ink-mute);margin-top:18px;padding-bottom:24px;border-bottom:1px solid var(--ink-line);line-height:1.7;}
 .intro{font-size:15.5px;line-height:1.78;color:var(--ink-soft);margin:32px 0 16px;}
 .intro b{color:var(--ink);font-weight:600;}
-h2{font-family:'Fraunces','Noto Serif KR',serif;font-weight:500;font-size:24px;line-height:1.3;letter-spacing:-.5px;color:var(--ink);margin:48px 0 14px;}
+h2{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-weight:500;font-size:24px;line-height:1.3;letter-spacing:-.5px;color:var(--ink);margin:48px 0 14px;}
 h2 em{font-style:normal;color:var(--accent);font-weight:500;}
 h3{font-size:13px;font-weight:700;letter-spacing:.4px;color:var(--accent);margin:28px 0 10px;}
 p,li{font-size:14.5px;line-height:1.78;color:var(--ink-soft);margin-bottom:12px;}
@@ -62,9 +62,9 @@ tr:last-child td{border-bottom:none;}
 footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6);}
 .foot-i{max-width:1360px;margin:0 auto;padding:0 64px;}
 .foot-g{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;gap:32px;padding-bottom:44px;border-bottom:1px solid rgba(244,235,235,.08);}
-.foot-logo{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:50px;letter-spacing:-2.2px;line-height:.9;color:var(--cream);}
+.foot-logo{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-weight:300;font-size:50px;letter-spacing:-2.2px;line-height:.9;color:var(--cream);}
 .foot-logo .dot{color:var(--burg-50);font-style:italic;}
-.foot-tag{font-family:'Fraunces','Noto Serif KR',serif;font-style:italic;font-size:14px;color:rgba(244,235,235,.5);margin-top:14px;max-width:240px;line-height:1.45;}
+.foot-tag{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-style:italic;font-size:14px;color:rgba(244,235,235,.5);margin-top:14px;max-width:240px;line-height:1.45;}
 .foot-col h4{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(244,235,235,.4);margin:0 0 14px;}
 .foot-col ul{list-style:none;display:flex;flex-direction:column;gap:8px;font-size:13px;padding:0;}
 .foot-col li{margin:0;color:rgba(244,235,235,.62);}
@@ -103,3 +103,6 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important;}
 }
+
+/* Point font — 색 들어간 영문은 Times New Roman, 한글은 Wanted Sans 폴백 */
+.ey,em,.logo .dot{font-family:'Times New Roman',Times,'Wanted Sans Variable','Wanted Sans',serif;}
