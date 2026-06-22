@@ -41,3 +41,11 @@ node_modules/
 .next/
 dist/
 build/
+
+# Generated marketing pages — built from ko/*.html by web/scripts/port-marketing.mjs
+# at dev/build time (predev/prebuild). EDIT ko/*.html, NOT these (they get overwritten).
+web/src/app/(marketing)/_chrome.ts
+web/src/app/(marketing)/page.tsx
+web/src/app/(marketing)/landing.css
+web/src/app/(marketing)/*/page.tsx
+web/src/app/(marketing)/*/*.css

@@ -9,9 +9,12 @@
  * Idempotent — safe to re-run after editing the ko/ sources.
  */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const REPO = process.cwd();
+// Resolve repo root from this script's location (web/scripts/) so it works
+// regardless of cwd — e.g. `npm run build` runs scripts from web/.
+const REPO = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const KO = join(REPO, "ko");
 const OUT = join(REPO, "web", "src", "app", "(marketing)");
 
