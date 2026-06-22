@@ -457,6 +457,109 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .rev-vote:hover{color:var(--ink);border-color:var(--accent);}
 .rev-load{margin-top:36px;text-align:center;}
 
+/* 사전결제 혜택 배너 — CSS (replaces the raster promo image) */
+.po-banner{background:var(--bg-1);padding:96px 0 80px;border-top:1px solid var(--ink-line);overflow:hidden;}
+.po-banner-in{text-align:center;}
+.po-banner-h{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:clamp(28px,5vw,46px);line-height:1.28;letter-spacing:-1px;color:var(--ink);margin-top:18px;}
+.po-banner-h em{font-style:italic;color:var(--accent);}
+.po-banner-fig{position:relative;display:flex;align-items:center;justify-content:center;margin:8px auto 0;width:min(560px,94%);}
+.po-banner-num{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:clamp(170px,34vw,360px);line-height:.82;letter-spacing:-10px;color:var(--burg-300);position:relative;z-index:1;}
+.po-banner-pct{font-size:.42em;vertical-align:top;color:var(--burg-200);letter-spacing:0;}
+.po-banner-img{position:absolute;left:50%;top:50%;transform:translate(-50%,-46%);height:clamp(150px,32vw,260px);width:auto;z-index:2;filter:drop-shadow(0 22px 44px rgba(58,26,34,.3));pointer-events:none;user-select:none;}
+.po-banner-off{position:absolute;right:3%;bottom:7%;z-index:3;font-family:'Fraunces','Noto Serif KR',serif;font-style:italic;font-size:clamp(26px,5.5vw,52px);color:var(--burg-200);}
+.po-banner-sub{margin-top:20px;font-size:13px;color:var(--ink-mute);line-height:1.7;}
+
+/* ===== Designer sections rebuilt in CSS (matched to the design system) ===== */
+.po-sec{padding:clamp(72px,10vw,110px) 0;}
+.po-h{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;line-height:1.3;letter-spacing:-1px;color:var(--ink);font-size:clamp(26px,4.8vw,42px);}
+.po-h em{font-style:italic;color:var(--accent);}
+
+/* #2 pain-point checklist — dark burgundy impact */
+.po-pain{background:var(--burg-600);color:var(--cream);}
+.po-pain-in{max-width:680px;margin:0 auto;text-align:center;}
+.po-pain .po-h{color:var(--cream);}
+.po-pain .po-h em{color:var(--burg-50);}
+.po-pain-list{list-style:none;margin:40px auto 0;padding:clamp(28px,5vw,40px);background:rgba(244,235,235,.97);border-radius:20px;text-align:left;display:flex;flex-direction:column;gap:20px;}
+.po-pain-list li{position:relative;padding-left:38px;font-size:clamp(15px,2.6vw,18px);color:var(--ink);line-height:1.45;}
+.po-pain-list li::before{content:'✓';position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--burg-300);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.po-pain-foot{margin-top:32px;font-size:clamp(15px,2.7vw,19px);line-height:1.75;}
+.po-pain-foot b{font-weight:600;}
+.po-pain-foot em{font-style:italic;color:var(--burg-50);font-weight:500;}
+
+/* #3 mechanism */
+.po-mech{background:var(--bg-2);}
+.po-mech-in{max-width:900px;margin:0 auto;text-align:center;}
+.po-mech-sub{margin-top:12px;font-size:clamp(13px,2.4vw,15px);color:var(--ink-soft);}
+.po-mech-steps{display:flex;align-items:flex-start;justify-content:center;gap:clamp(2px,1vw,10px);margin-top:36px;}
+.po-mech-step{display:flex;flex-direction:column;align-items:center;gap:10px;width:clamp(62px,18vw,92px);}
+.po-mech-ico{width:clamp(46px,13vw,64px);height:clamp(46px,13vw,64px);border-radius:50%;background:var(--bg-3);display:flex;align-items:center;justify-content:center;}
+.po-mech-ico svg{width:48%;height:48%;stroke:var(--accent);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+.po-mech-step-l{font-size:clamp(11px,2.2vw,13px);color:var(--ink-soft);line-height:1.35;text-align:center;}
+.po-mech-step-l b{display:block;color:var(--ink);font-weight:600;}
+.po-mech-arrow{color:var(--accent);font-size:clamp(13px,3vw,16px);align-self:center;margin-top:-14px;flex-shrink:0;}
+/* champagne / water-droplet zone (CSS recreation of the designer's background) */
+.po-mech-zone{margin-top:48px;border-radius:24px;overflow:hidden;text-align:center;padding:clamp(40px,7vw,72px) clamp(20px,5vw,52px);
+  background:
+    radial-gradient(circle at 15% 20%,rgba(255,252,245,.85),transparent 36%),
+    radial-gradient(circle at 85% 24%,rgba(240,222,190,.62),transparent 40%),
+    radial-gradient(circle at 76% 82%,rgba(232,206,170,.55),transparent 42%),
+    radial-gradient(circle at 20% 86%,rgba(248,238,222,.7),transparent 38%),
+    radial-gradient(circle at 50% 50%,rgba(255,255,255,.35),transparent 55%),
+    linear-gradient(155deg,#faf5ec,#f1e4d2 52%,#ead9c0);}
+.po-mech-zone-h{font-family:'Fraunces','Noto Serif KR',serif;font-weight:400;font-size:clamp(18px,3.4vw,24px);color:var(--ink);letter-spacing:.3px;}
+.po-mech-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(24px,5vw,38px) clamp(16px,4vw,44px);margin-top:30px;}
+.po-mech-cell{text-align:center;}
+.po-mech-cell .t2{font-size:clamp(15px,2.7vw,18px);color:var(--ink);font-weight:600;}
+.po-mech-cell .t2 .tag{color:var(--accent);}
+.po-mech-cell .s{font-size:clamp(12px,2.3vw,13.5px);color:var(--ink-soft);margin-top:8px;line-height:1.55;}
+.po-mech-tri{margin-top:clamp(40px,6vw,58px);}
+.po-mech-tri-h{font-family:'Fraunces','Noto Serif KR',serif;font-weight:400;font-size:clamp(20px,3.6vw,28px);color:var(--ink);}
+.po-mech-tri-h em{font-style:italic;color:var(--accent);}
+.po-mech-tri-sub{font-size:clamp(13px,2.4vw,15px);color:var(--ink-soft);margin-top:10px;line-height:1.6;}
+.po-mech-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:26px;}
+.po-mech-col{text-align:center;}
+.po-mech-col .h{font-weight:600;color:var(--ink);font-size:clamp(14px,2.5vw,16px);}
+.po-mech-col .s{font-size:clamp(11px,2.1vw,12.5px);color:var(--ink-mute);margin-top:6px;line-height:1.5;}
+
+/* #4 flavor */
+.po-flavor{position:relative;background:#fdfaf4;overflow:hidden;}
+.po-flavor-bg{position:relative;background:url('/assets/images/flavor-splash.png') center 28%/cover no-repeat;min-height:clamp(580px,132vw,840px);display:flex;flex-direction:column;justify-content:space-between;text-align:center;padding:clamp(44px,8vw,76px) 0;}
+.po-flavor-bg::before{content:'';position:absolute;left:0;right:0;top:0;height:30%;background:linear-gradient(#fdfaf4 24%,rgba(253,250,244,0));z-index:1;pointer-events:none;}
+.po-flavor-bg::after{content:'';position:absolute;left:0;right:0;bottom:0;height:32%;background:linear-gradient(rgba(253,250,244,0),#fdfaf4 72%);z-index:1;pointer-events:none;}
+.po-flavor-top{position:relative;z-index:2;}
+.po-flavor-sub{margin-top:14px;font-size:clamp(13px,2.5vw,15px);color:var(--ink-soft);line-height:1.7;}
+.po-flavor-stats{position:relative;z-index:2;display:flex;justify-content:center;gap:clamp(18px,8vw,64px);}
+.po-flavor-stat{text-align:center;}
+.po-flavor-stat .v{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:clamp(22px,4.4vw,32px);color:var(--accent);}
+.po-flavor-stat .k{font-size:clamp(11px,2.2vw,13px);color:var(--ink-mute);margin-top:6px;}
+
+/* #5 comparison table */
+.po-cmp{background:var(--bg-1);}
+.po-cmp-in{max-width:680px;margin:0 auto;}
+.po-cmp-in .po-h{text-align:center;}
+.po-cmp-table{width:100%;border-collapse:collapse;margin-top:40px;}
+.po-cmp-table th,.po-cmp-table td{padding:18px 10px;text-align:center;font-size:14px;border-bottom:1px solid var(--ink-line);vertical-align:middle;}
+.po-cmp-table thead th{font-weight:600;color:var(--ink);font-size:13px;}
+.po-cmp-table .feat{text-align:left;color:var(--ink-soft);font-size:13px;line-height:1.45;}
+.po-cmp-table .glo-col{background:var(--burg-600);color:var(--cream);}
+.po-cmp-table thead .glo-col{border-top-left-radius:14px;border-top-right-radius:14px;}
+.po-cmp-table tbody tr:last-child .glo-col{border-bottom-left-radius:14px;border-bottom-right-radius:14px;border-bottom:none;}
+.po-cmp-table .mk{font-size:17px;}
+.po-cmp-table .x{color:var(--ink-faint);}
+.po-cmp-table .glo-col .x{color:rgba(244,235,235,.6);}
+.po-cmp-sm{display:block;font-size:11px;color:var(--ink-faint);margin-top:3px;}
+.po-cmp-table .glo-col .po-cmp-sm{color:rgba(244,235,235,.7);}
+
+/* #6 how to drink */
+.po-how{background:#caad85;text-align:center;padding:clamp(60px,9vw,96px) 0 0;overflow:hidden;}
+.po-how .po-h{color:var(--ink);}
+.po-how-photo{display:block;width:100%;max-width:560px;margin:26px auto 0;}
+
+@media (max-width:640px){
+  .po-flavor-stats{grid-template-columns:1fr;}
+  .po-cmp-table th,.po-cmp-table td{padding:14px 6px;font-size:13px;}
+}
+
 @media (max-width:1100px){
   .ctr,.final-i{padding:0 32px;}
   .nav-i{padding:0 48px;}
@@ -590,7 +693,7 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
       <div class="atom a7"><span class="atom-dot"></span>HA complex</div>
       <div class="atom a8"><span class="atom-dot"></span>밀크 세라마이드</div>
       <div class="atom a9"><span class="atom-dot"></span>헤마토코쿠스</div>
-      <img class="bottle-img" src="/assets/bottle/sachet.png" alt="GL-01 사쉐 · 15ml 액상 샷 · 파인애플" width="308" height="580"/>
+      <img class="bottle-img" src="/assets/bottle/sachet.png" alt="GL-01 사쉐 · 15ml 액상 샷 · 파인애플" width="152" height="580"/>
     </div>
     <div class="phero-r">
       <div class="ph-lbl">GL-01 · Skin rejuvenation</div>
@@ -630,27 +733,95 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
   </div>
 </section>
 
-<!-- 이런 분들에게 공감 섹션 -->
-<section>
-  <img src="/assets/images/2606_glo_1.png" style="width:100%;display:block;">
+<!-- 사전결제 혜택 배너 (CSS) -->
+<section class="po-banner">
+  <div class="ctr po-banner-in">
+    <div class="ey clay"><span class="dash"></span>사전결제 한정</div>
+    <h2 class="po-banner-h">사전결제하신 분들만,<br><em>최대 70% 먼저.</em></h2>
+    <div class="po-banner-fig">
+      <span class="po-banner-num">70<span class="po-banner-pct">%</span></span>
+      <img class="po-banner-img" src="/assets/bottle/sachet.png" alt="GL-01 사쉐" width="152" height="580"/>
+      <span class="po-banner-off">Off</span>
+    </div>
+    <p class="po-banner-sub">7월 2일 정식 출시와 함께 정상가로 전환됩니다.<br>지금 사전결제가 가장 저렴합니다.</p>
+  </div>
 </section>
 
-<!-- 사전예약 50% 혜택 섹션 -->
-<section>
-  <video autoplay muted loop playsinline style="width:100%;display:block;">
-    <source src="/assets/video/2606_glo_2-1.mp4" type="video/mp4">
-    <img src="/assets/images/2606_glo_2-2.png">
-  </video>
+<!-- #2 고민 체크리스트 (CSS) -->
+<section class="po-sec po-pain">
+  <div class="ctr po-pain-in">
+    <h2 class="po-h">혹시 이 중에<br><em>하나라도 해당</em>되시나요?</h2>
+    <ul class="po-pain-list">
+      <li>피부가 칙칙해진 느낌이다.</li>
+      <li>젊었을 때 느끼던 탱탱함이 없다.</li>
+      <li>화장을 안 해도 피부가 물광처럼 보였으면 좋겠다.</li>
+      <li>요즘 들어 탄력이 없어지고 처지는 느낌이다.</li>
+      <li>화장으로도 피부 톤이 안 올라온다.</li>
+    </ul>
+    <p class="po-pain-foot">그 고민들, <b>glo</b>가 한 포에 담았습니다.<br>3중 미백 · 탄력 · 파인애플맛 — <em>하루 1포로 끝.</em></p>
+  </div>
 </section>
 
-<!-- 이런 분들에게 카드형 섹션 -->
-<section>
-  <img src="/assets/images/2606_glo_3.png" style="width:100%;display:block;">
+<!-- #3 메커니즘 (CSS) -->
+<section class="po-sec po-mech">
+  <div class="ctr po-mech-in">
+    <h2 class="po-h">피부 나이가 <em>거꾸로</em> 가는 이유</h2>
+    <p class="po-mech-sub">겉에 바르는 게 아니라, 속에서 만드는 차이</p>
+    <div class="po-mech-steps">
+      <div class="po-mech-step">
+        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><rect x="9.5" y="4" width="5" height="16" rx="1"/><line x1="9.5" y1="7" x2="14.5" y2="7"/><path d="M18.5 5.5c0 0-1.4 1.9-1.4 2.9a1.4 1.4 0 0 0 2.8 0c0-1-1.4-2.9-1.4-2.9z"/></svg></span>
+        <span class="po-mech-step-l"><b>Glo</b>1포 섭취</span>
+      </div>
+      <span class="po-mech-arrow">›</span>
+      <div class="po-mech-step">
+        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><line x1="3" y1="16" x2="21" y2="16"/><path d="M8 6v6M6 10l2 2 2-2"/><path d="M16 6v6M14 10l2 2 2-2"/></svg></span>
+        <span class="po-mech-step-l"><b>장에서</b>흡수</span>
+      </div>
+      <span class="po-mech-arrow">›</span>
+      <div class="po-mech-step">
+        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><path d="M3 9c3-3 6 3 9 0s6-3 9 0"/><path d="M3 15c3-3 6 3 9 0s6-3 9 0"/></svg></span>
+        <span class="po-mech-step-l"><b>혈류로</b>이동</span>
+      </div>
+      <span class="po-mech-arrow">›</span>
+      <div class="po-mech-step">
+        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><path d="M3 17h18M3 13h18"/><circle cx="7" cy="8" r="1"/><circle cx="12" cy="6" r="1"/><circle cx="17" cy="8" r="1"/></svg></span>
+        <span class="po-mech-step-l"><b>피부</b>4경로</span>
+      </div>
+    </div>
+    <div class="po-mech-zone">
+      <div class="po-mech-zone-h">[피부 속 4가지 작용]</div>
+      <div class="po-mech-grid">
+        <div class="po-mech-cell"><div class="t2">피부 표면 <span class="tag">[미백]</span></div><div class="s">글루타치온, 나이아신아미드,<br>화이트토마토, L-시스테인</div></div>
+        <div class="po-mech-cell"><div class="t2">피부 장벽 <span class="tag">[수분]</span></div><div class="s">히알루론산, 밀크세라마이드</div></div>
+        <div class="po-mech-cell"><div class="t2">진피층 <span class="tag">[탄력]</span></div><div class="s">초저분자 콜라겐, 특허 복합물</div></div>
+        <div class="po-mech-cell"><div class="t2">세포 전체 <span class="tag">[항산화]</span></div><div class="s">아스타잔틴</div></div>
+      </div>
+      <div class="po-mech-tri">
+        <h3 class="po-mech-tri-h">Glo는 <em>트리플 브라이트닝</em></h3>
+        <p class="po-mech-tri-sub">만들어지고, 퍼지고, 생기는 것까지 3경로 동시 차단</p>
+        <div class="po-mech-cols">
+          <div class="po-mech-col"><div class="h">생성 차단</div><div class="s">글루타치온<br>L-시스테인</div></div>
+          <div class="po-mech-col"><div class="h">이동 차단</div><div class="s">나이아신아미드</div></div>
+          <div class="po-mech-col"><div class="h">이너 선케어</div><div class="s">화이트토마토</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
-<!-- How It Works 섹션 -->
-<section>
-  <img src="/assets/images/2606_glo_4.png" style="width:100%;display:block;">
+<!-- #4 풍미 (CSS text over the cropped pineapple-splash photo) -->
+<section class="po-flavor">
+  <div class="po-flavor-bg">
+    <div class="ctr po-flavor-top">
+      <h2 class="po-h">황 냄새 없이, <em>파인애플 그대로.</em></h2>
+      <p class="po-flavor-sub">먹기 싫어서 꾸준히 먹지 못했다면, glo로 해결됩니다.</p>
+    </div>
+    <div class="ctr po-flavor-stats">
+      <div class="po-flavor-stat"><div class="v">ZERO</div><div class="k">황 냄새</div></div>
+      <div class="po-flavor-stat"><div class="v">ZERO</div><div class="k">Sugar</div></div>
+      <div class="po-flavor-stat"><div class="v">2,400mg</div><div class="k">파인애플 농축액</div></div>
+    </div>
+  </div>
 </section>
 
 <!-- QUICK SPECS -->
@@ -884,14 +1055,31 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
   </div>
 </section>
 
-<!-- 파인애플 맛 섹션 -->
-<section>
-  <img src="/assets/images/2606_glo_5.png" style="width:100%;display:block;">
+<!-- #5 타사 비교표 (CSS) -->
+<section class="po-sec po-cmp">
+  <div class="ctr po-cmp-in">
+    <h2 class="po-h">비교해봐도,<br><em>정답은 glo 입니다.</em></h2>
+    <table class="po-cmp-table">
+      <thead>
+        <tr><th></th><th class="glo-col">glo GL-01</th><th>타사 제품</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="feat">나이아신아미드<br>멜라닌 이동 차단 성분</td><td class="glo-col"><span class="mk">○</span></td><td><span class="mk x">✕</span></td></tr>
+        <tr><td class="feat">L-시스테인<br>글루타치온 지속 재생</td><td class="glo-col"><span class="mk">○</span></td><td><span class="mk x">✕</span></td></tr>
+        <tr><td class="feat">콜라겐 동시 포함<br>탄력 케어 여부</td><td class="glo-col"><span class="mk">○</span></td><td><span class="mk x">✕</span><span class="po-cmp-sm">콜라겐과 글루타치온은 별개</span></td></tr>
+        <tr><td class="feat">환불 보장 기간</td><td class="glo-col">90일<span class="po-cmp-sm">사용 포함</span></td><td>14~30일<span class="po-cmp-sm">미개봉 한정</span></td></tr>
+      </tbody>
+    </table>
+  </div>
 </section>
 
-<!-- 타사 비교 섹션 -->
-<section>
-  <img src="/assets/images/2606_glo_6.png" style="width:100%;display:block;">
+<!-- #6 음용법 — 원본 골든버블 사진 그대로 배경, 헤드라인만 CSS -->
+<section class="po-how">
+  <div class="ctr">
+    <div class="ey clay" style="justify-content:center;"><span class="dash"></span>How to drink</div>
+    <h2 class="po-h">이렇게 <em>마십니다.</em></h2>
+  </div>
+  <img class="po-how-photo" src="/assets/images/howto-photo.png" alt="물 없이 OK · 아침 공복 1일 1포 · 1포 한 입 15ml · 손쉽게 이지컷 · 간편한 액상 스틱" width="900" height="1020"/>
 </section>
 
 <!-- DOSE TABLE -->

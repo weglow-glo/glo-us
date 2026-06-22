@@ -424,6 +424,109 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .rev-vote:hover{color:var(--ink);border-color:var(--accent);}
 .rev-load{margin-top:36px;text-align:center;}
 
+/* 사전결제 혜택 배너 — CSS (replaces the raster promo image) */
+.po-banner{background:var(--bg-1);padding:96px 0 80px;border-top:1px solid var(--ink-line);overflow:hidden;}
+.po-banner-in{text-align:center;}
+.po-banner-h{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:clamp(28px,5vw,46px);line-height:1.28;letter-spacing:-1px;color:var(--ink);margin-top:18px;}
+.po-banner-h em{font-style:italic;color:var(--accent);}
+.po-banner-fig{position:relative;display:flex;align-items:center;justify-content:center;margin:8px auto 0;width:min(560px,94%);}
+.po-banner-num{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:clamp(170px,34vw,360px);line-height:.82;letter-spacing:-10px;color:var(--burg-300);position:relative;z-index:1;}
+.po-banner-pct{font-size:.42em;vertical-align:top;color:var(--burg-200);letter-spacing:0;}
+.po-banner-img{position:absolute;left:50%;top:50%;transform:translate(-50%,-46%);height:clamp(150px,32vw,260px);width:auto;z-index:2;filter:drop-shadow(0 22px 44px rgba(58,26,34,.3));pointer-events:none;user-select:none;}
+.po-banner-off{position:absolute;right:3%;bottom:7%;z-index:3;font-family:'Fraunces','Noto Serif KR',serif;font-style:italic;font-size:clamp(26px,5.5vw,52px);color:var(--burg-200);}
+.po-banner-sub{margin-top:20px;font-size:13px;color:var(--ink-mute);line-height:1.7;}
+
+/* ===== Designer sections rebuilt in CSS (matched to the design system) ===== */
+.po-sec{padding:clamp(72px,10vw,110px) 0;}
+.po-h{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;line-height:1.3;letter-spacing:-1px;color:var(--ink);font-size:clamp(26px,4.8vw,42px);}
+.po-h em{font-style:italic;color:var(--accent);}
+
+/* #2 pain-point checklist — dark burgundy impact */
+.po-pain{background:var(--burg-600);color:var(--cream);}
+.po-pain-in{max-width:680px;margin:0 auto;text-align:center;}
+.po-pain .po-h{color:var(--cream);}
+.po-pain .po-h em{color:var(--burg-50);}
+.po-pain-list{list-style:none;margin:40px auto 0;padding:clamp(28px,5vw,40px);background:rgba(244,235,235,.97);border-radius:20px;text-align:left;display:flex;flex-direction:column;gap:20px;}
+.po-pain-list li{position:relative;padding-left:38px;font-size:clamp(15px,2.6vw,18px);color:var(--ink);line-height:1.45;}
+.po-pain-list li::before{content:'✓';position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--burg-300);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.po-pain-foot{margin-top:32px;font-size:clamp(15px,2.7vw,19px);line-height:1.75;}
+.po-pain-foot b{font-weight:600;}
+.po-pain-foot em{font-style:italic;color:var(--burg-50);font-weight:500;}
+
+/* #3 mechanism */
+.po-mech{background:var(--bg-2);}
+.po-mech-in{max-width:900px;margin:0 auto;text-align:center;}
+.po-mech-sub{margin-top:12px;font-size:clamp(13px,2.4vw,15px);color:var(--ink-soft);}
+.po-mech-steps{display:flex;align-items:flex-start;justify-content:center;gap:clamp(2px,1vw,10px);margin-top:36px;}
+.po-mech-step{display:flex;flex-direction:column;align-items:center;gap:10px;width:clamp(62px,18vw,92px);}
+.po-mech-ico{width:clamp(46px,13vw,64px);height:clamp(46px,13vw,64px);border-radius:50%;background:var(--bg-3);display:flex;align-items:center;justify-content:center;}
+.po-mech-ico svg{width:48%;height:48%;stroke:var(--accent);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+.po-mech-step-l{font-size:clamp(11px,2.2vw,13px);color:var(--ink-soft);line-height:1.35;text-align:center;}
+.po-mech-step-l b{display:block;color:var(--ink);font-weight:600;}
+.po-mech-arrow{color:var(--accent);font-size:clamp(13px,3vw,16px);align-self:center;margin-top:-14px;flex-shrink:0;}
+/* champagne / water-droplet zone (CSS recreation of the designer's background) */
+.po-mech-zone{margin-top:48px;border-radius:24px;overflow:hidden;text-align:center;padding:clamp(40px,7vw,72px) clamp(20px,5vw,52px);
+  background:
+    radial-gradient(circle at 15% 20%,rgba(255,252,245,.85),transparent 36%),
+    radial-gradient(circle at 85% 24%,rgba(240,222,190,.62),transparent 40%),
+    radial-gradient(circle at 76% 82%,rgba(232,206,170,.55),transparent 42%),
+    radial-gradient(circle at 20% 86%,rgba(248,238,222,.7),transparent 38%),
+    radial-gradient(circle at 50% 50%,rgba(255,255,255,.35),transparent 55%),
+    linear-gradient(155deg,#faf5ec,#f1e4d2 52%,#ead9c0);}
+.po-mech-zone-h{font-family:'Fraunces','Noto Serif KR',serif;font-weight:400;font-size:clamp(18px,3.4vw,24px);color:var(--ink);letter-spacing:.3px;}
+.po-mech-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(24px,5vw,38px) clamp(16px,4vw,44px);margin-top:30px;}
+.po-mech-cell{text-align:center;}
+.po-mech-cell .t2{font-size:clamp(15px,2.7vw,18px);color:var(--ink);font-weight:600;}
+.po-mech-cell .t2 .tag{color:var(--accent);}
+.po-mech-cell .s{font-size:clamp(12px,2.3vw,13.5px);color:var(--ink-soft);margin-top:8px;line-height:1.55;}
+.po-mech-tri{margin-top:clamp(40px,6vw,58px);}
+.po-mech-tri-h{font-family:'Fraunces','Noto Serif KR',serif;font-weight:400;font-size:clamp(20px,3.6vw,28px);color:var(--ink);}
+.po-mech-tri-h em{font-style:italic;color:var(--accent);}
+.po-mech-tri-sub{font-size:clamp(13px,2.4vw,15px);color:var(--ink-soft);margin-top:10px;line-height:1.6;}
+.po-mech-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:26px;}
+.po-mech-col{text-align:center;}
+.po-mech-col .h{font-weight:600;color:var(--ink);font-size:clamp(14px,2.5vw,16px);}
+.po-mech-col .s{font-size:clamp(11px,2.1vw,12.5px);color:var(--ink-mute);margin-top:6px;line-height:1.5;}
+
+/* #4 flavor */
+.po-flavor{position:relative;background:#fdfaf4;overflow:hidden;}
+.po-flavor-bg{position:relative;background:url('/assets/images/flavor-splash.png') center 28%/cover no-repeat;min-height:clamp(580px,132vw,840px);display:flex;flex-direction:column;justify-content:space-between;text-align:center;padding:clamp(44px,8vw,76px) 0;}
+.po-flavor-bg::before{content:'';position:absolute;left:0;right:0;top:0;height:30%;background:linear-gradient(#fdfaf4 24%,rgba(253,250,244,0));z-index:1;pointer-events:none;}
+.po-flavor-bg::after{content:'';position:absolute;left:0;right:0;bottom:0;height:32%;background:linear-gradient(rgba(253,250,244,0),#fdfaf4 72%);z-index:1;pointer-events:none;}
+.po-flavor-top{position:relative;z-index:2;}
+.po-flavor-sub{margin-top:14px;font-size:clamp(13px,2.5vw,15px);color:var(--ink-soft);line-height:1.7;}
+.po-flavor-stats{position:relative;z-index:2;display:flex;justify-content:center;gap:clamp(18px,8vw,64px);}
+.po-flavor-stat{text-align:center;}
+.po-flavor-stat .v{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:clamp(22px,4.4vw,32px);color:var(--accent);}
+.po-flavor-stat .k{font-size:clamp(11px,2.2vw,13px);color:var(--ink-mute);margin-top:6px;}
+
+/* #5 comparison table */
+.po-cmp{background:var(--bg-1);}
+.po-cmp-in{max-width:680px;margin:0 auto;}
+.po-cmp-in .po-h{text-align:center;}
+.po-cmp-table{width:100%;border-collapse:collapse;margin-top:40px;}
+.po-cmp-table th,.po-cmp-table td{padding:18px 10px;text-align:center;font-size:14px;border-bottom:1px solid var(--ink-line);vertical-align:middle;}
+.po-cmp-table thead th{font-weight:600;color:var(--ink);font-size:13px;}
+.po-cmp-table .feat{text-align:left;color:var(--ink-soft);font-size:13px;line-height:1.45;}
+.po-cmp-table .glo-col{background:var(--burg-600);color:var(--cream);}
+.po-cmp-table thead .glo-col{border-top-left-radius:14px;border-top-right-radius:14px;}
+.po-cmp-table tbody tr:last-child .glo-col{border-bottom-left-radius:14px;border-bottom-right-radius:14px;border-bottom:none;}
+.po-cmp-table .mk{font-size:17px;}
+.po-cmp-table .x{color:var(--ink-faint);}
+.po-cmp-table .glo-col .x{color:rgba(244,235,235,.6);}
+.po-cmp-sm{display:block;font-size:11px;color:var(--ink-faint);margin-top:3px;}
+.po-cmp-table .glo-col .po-cmp-sm{color:rgba(244,235,235,.7);}
+
+/* #6 how to drink */
+.po-how{background:#caad85;text-align:center;padding:clamp(60px,9vw,96px) 0 0;overflow:hidden;}
+.po-how .po-h{color:var(--ink);}
+.po-how-photo{display:block;width:100%;max-width:560px;margin:26px auto 0;}
+
+@media (max-width:640px){
+  .po-flavor-stats{grid-template-columns:1fr;}
+  .po-cmp-table th,.po-cmp-table td{padding:14px 6px;font-size:13px;}
+}
+
 @media (max-width:1100px){
   .ctr,.final-i{padding:0 32px;}
   .nav-i{padding:0 48px;}
