@@ -489,12 +489,16 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .po-mech-col .s{font-size:clamp(11px,2.1vw,12.5px);color:var(--ink-mute);margin-top:6px;line-height:1.5;}
 
 /* #4 flavor */
-.po-flavor{background:var(--bg-3);text-align:center;}
-.po-flavor-sub{margin-top:14px;font-size:14px;color:var(--ink-soft);line-height:1.7;}
-.po-flavor-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:620px;margin:40px auto 0;}
-.po-flavor-stat{background:var(--bg-1);border:1px solid var(--ink-line);border-radius:14px;padding:30px 10px;}
-.po-flavor-stat .v{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(22px,3.8vw,30px);color:var(--accent);}
-.po-flavor-stat .k{font-size:12px;color:var(--ink-mute);margin-top:6px;}
+.po-flavor{position:relative;background:#fdfaf4;overflow:hidden;}
+.po-flavor-bg{position:relative;background:url('/assets/images/flavor-splash.png') center 28%/cover no-repeat;min-height:clamp(580px,132vw,840px);display:flex;flex-direction:column;justify-content:space-between;text-align:center;padding:clamp(44px,8vw,76px) 0;}
+.po-flavor-bg::before{content:'';position:absolute;left:0;right:0;top:0;height:30%;background:linear-gradient(#fdfaf4 24%,rgba(253,250,244,0));z-index:1;pointer-events:none;}
+.po-flavor-bg::after{content:'';position:absolute;left:0;right:0;bottom:0;height:32%;background:linear-gradient(rgba(253,250,244,0),#fdfaf4 72%);z-index:1;pointer-events:none;}
+.po-flavor-top{position:relative;z-index:2;}
+.po-flavor-sub{margin-top:14px;font-size:clamp(13px,2.5vw,15px);color:var(--ink-soft);line-height:1.7;}
+.po-flavor-stats{position:relative;z-index:2;display:flex;justify-content:center;gap:clamp(18px,8vw,64px);}
+.po-flavor-stat{text-align:center;}
+.po-flavor-stat .v{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:clamp(22px,4.4vw,32px);color:var(--accent);}
+.po-flavor-stat .k{font-size:clamp(11px,2.2vw,13px);color:var(--ink-mute);margin-top:6px;}
 
 /* #5 comparison table */
 .po-cmp{background:var(--bg-1);}
