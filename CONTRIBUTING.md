@@ -15,9 +15,9 @@
 | **GitHub 계정** | 코드 저장소 접근 | https://github.com/signup |
 | **GitHub Desktop** (선택) | 비개발자용 Git GUI | https://desktop.github.com |
 | **VS Code** (선택) | 텍스트 에디터 | https://code.visualstudio.com |
-| **Node.js** (재생성용) | 마케팅 페이지 재생성 | https://nodejs.org |
+| **Node.js** (개발자만) | 로컬 미리보기·빌드 | https://nodejs.org |
 
-> 💡 카피 한두 줄만 바꾼다면 **GitHub.com 웹 편집기**로 `ko/*.html`을 고친 뒤, 재생성은 개발자에게 부탁해도 됩니다(아래 2번 참고).
+> 💡 카피 한두 줄만 바꾼다면 **GitHub.com 웹 편집기**로 `ko/*.html`만 고치면 됩니다. 머지하면 **빌드가 알아서 페이지를 다시 만들어 배포**해요 (수동 재생성·개발자 호출 불필요).
 
 ### 저장소 접근 권한
 
@@ -62,8 +62,7 @@ glo/
 2. 우상단 **연필(✏️)** 클릭 → `Ctrl+F`로 문구 검색 → 수정
 3. 맨 아래 **Commit message**(`mkt: hero 문구 수정`) → **"Create a new branch and start a pull request"** → 브랜치명 `mkt/hero-copy-fix`
 4. **"Propose changes"** → PR 생성
-5. ⚠️ **재생성 필요:** `ko/` 변경은 `web/`의 페이지로 다시 빌드해야 반영됩니다. 직접 못 하면 PR 댓글로 개발자에게 "재생성 부탁"이라고 남기세요. (개발자/로컬: `node web/scripts/port-marketing.mjs` 실행 후 커밋)
-6. Vercel이 PR에 **Preview 링크**를 자동으로 답니다 — 그 URL로 미리보기 확인 → 리뷰 → 머지
+5. Vercel이 PR에 **Preview 링크**를 자동으로 답니다 (빌드가 `ko/`에서 페이지를 자동 재생성) — 그 URL로 미리보기 확인 → 리뷰 → 머지 → 배포. **수동 재생성 불필요.**
 
 ### 🅱 디자인 토큰 변경 (디자인)
 
@@ -109,11 +108,11 @@ glo/
 ## 6. 자주 하는 작업 — 빠른 레퍼런스
 
 ### 헤더/푸터 텍스트 수정
-- nav·footer는 **공용 chrome**(`ko/index.html`에서 생성)입니다. 사업자정보 등은 `ko/index.html`의 `<footer>`를 고친 뒤 재생성하면 전 페이지에 반영됩니다.
+- nav·footer는 **공용 chrome**(`ko/index.html`에서 생성)입니다. 사업자정보 등은 `ko/index.html`의 `<footer>`를 고치면 빌드 때 전 페이지에 자동 반영됩니다.
 
 ### 이미지 교체
 1. 새 이미지를 `assets/`의 알맞은 하위 폴더에 업로드
-2. 해당 `ko/*.html`에서 경로(`src="..."` / `url(...)`)만 교체 → 재생성
+2. 해당 `ko/*.html`에서 경로(`src="..."` / `url(...)`)만 교체 (빌드가 자동 반영)
 
 ### 새 페이지 추가
 ⚠️ 개발자 영역 (라우팅·SEO·생성기 등록 필요).
@@ -142,7 +141,7 @@ glo/
 |---|---|
 | Git/GitHub UI 헷갈림 | 개발자에게 화면 캡처 + 무엇을 바꾸려는지 설명 |
 | PR이 빨갛게 (CI 실패) | 개발자 호출 — HTML 구조나 빌드 깨졌을 가능성 |
-| `ko/` 고쳤는데 사이트에 반영 안 됨 | 재생성 안 된 것 — 개발자에게 재생성 요청 |
+| `ko/` 고쳤는데 미리보기에 반영 안 됨 | 빌드(Vercel Preview) 완료를 1~2분 기다리기 |
 | Preview URL이 안 떠 | 1~2분 더 기다리기, 그래도 안 뜨면 개발자 |
 
 ---
@@ -150,7 +149,7 @@ glo/
 ## 9. 절대 하면 안 되는 것
 
 - ❌ `main` 브랜치에 직접 커밋 (PR로만)
-- ❌ `web/src/app/(marketing)/`의 생성된 파일을 직접 수정 (← `ko/` 고치고 재생성)
+- ❌ `web/src/app/(marketing)/`의 생성된 파일 직접 수정 (빌드 산출물 — git에 없음, 덮어써짐. `ko/`를 고칠 것)
 - ❌ API secret를 코드에 노출 (`web/.env.local`에만, public key 외)
 - ❌ `archive/` 폴더 수정 (옛 프로젝트, 배포 안 됨)
 - ❌ `CLAUDE.md` 수정 (개발자용 메모)
