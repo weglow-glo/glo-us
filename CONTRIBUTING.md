@@ -1,6 +1,8 @@
 # glo 기여 가이드
 
-이 문서는 **개발자가 아닌 팀원**(마케팅 · 디자인)도 사이트에 직접 기여할 수 있도록 만든 가이드입니다.
+이 문서는 **개발자가 아닌 팀원**(마케팅 · 디자인)도 사이트에 기여할 수 있도록 만든 가이드입니다.
+
+> 사이트는 `web/` 폴더의 **Next.js 앱**(Vercel 배포)입니다. 마케팅 페이지(랜딩·상품·사이언스·어바웃·법적)는 **`ko/*.html` 소스**를 편집한 뒤 생성 스크립트로 만들어집니다.
 
 ---
 
@@ -13,8 +15,9 @@
 | **GitHub 계정** | 코드 저장소 접근 | https://github.com/signup |
 | **GitHub Desktop** (선택) | 비개발자용 Git GUI | https://desktop.github.com |
 | **VS Code** (선택) | 텍스트 에디터 | https://code.visualstudio.com |
+| **Node.js** (재생성용) | 마케팅 페이지 재생성 | https://nodejs.org |
 
-> 💡 **가장 가벼운 옵션:** GitHub Desktop 없이 **GitHub.com 웹 편집기**만 써도 충분합니다. 카피 한두 줄 바꾸기엔 이게 가장 빠릅니다.
+> 💡 카피 한두 줄만 바꾼다면 **GitHub.com 웹 편집기**로 `ko/*.html`을 고친 뒤, 재생성은 개발자에게 부탁해도 됩니다(아래 2번 참고).
 
 ### 저장소 접근 권한
 
@@ -26,35 +29,26 @@
 
 ```
 glo/
-├── index.html              ← 영어 랜딩 (US 시장)
-├── product.html            ← 영어 GL-01 상품 페이지
-├── science.html            ← 영어 사이언스
-├── about.html              ← 영어 About
-├── privacy.html, terms.html, refund.html  ← 영어 법적 페이지
+├── web/                    ← 실제 사이트 (Next.js · Vercel) — 개발자 영역
+│   ├── src/app/(marketing)/   ← 마케팅 페이지 (ko/에서 자동 생성, 직접 편집 ❌)
+│   ├── src/app/checkout · account · login · admin/   ← 커머스
+│   └── scripts/port-marketing.mjs   ← ko/ → 마케팅 페이지 생성기
 │
-├── ko/                     ← 한국 시장 (모든 한국어 페이지)
+├── ko/                     ← 마케팅 소스 (여기를 편집!)
 │   ├── index.html          ← 메인 랜딩
 │   ├── product.html        ← GL-01 상품 상세
 │   ├── science.html        ← 사이언스
 │   ├── about.html          ← 공동 개발 연구진
-│   ├── login.html          ← 카카오 로그인
-│   ├── account.html        ← 마이페이지
 │   ├── privacy.html        ← 개인정보처리방침
-│   └── terms.html          ← 이용약관
+│   ├── terms.html          ← 이용약관
+│   └── refund.html         ← 환불·교환 정책
 │
-├── assets/
-│   ├── js/glo-auth.js      ← 카카오 로그인 + 얼리버드 (개발자 영역)
-│   ├── bottle/             ← 사쉐 이미지
-│   ├── founders/           ← MD 사진
-│   ├── og/                 ← SNS 미리보기 이미지
-│   └── video/              ← 히어로 영상
-│
-├── _styleguide.html        ← 디자인 토큰 + 컴포넌트 참고용
+├── assets/                 ← 공용 미디어 (bottle/ founders/ og/ video/ images/)
 ├── CONTRIBUTING.md         ← 이 문서
 └── README.md
 ```
 
-**핵심:** 한국 사이트는 모두 `ko/` 폴더 안에 있고, 영어 사이트는 루트(`/`)에 있습니다.
+**핵심:** 마케팅 카피·디자인은 **`ko/*.html`** 에서 고칩니다. 로그인·결제·마이페이지·관리자는 `web/`의 개발자 영역입니다.
 
 ---
 
@@ -62,45 +56,23 @@ glo/
 
 ### 🅰 카피 한 줄 바꾸기 (마케팅)
 
-**예시 시나리오:** `ko/index.html`의 hero 문구 "4 x 9 Protocol" → "4 × 9 Skin Protocol"로 바꾸고 싶음.
+**예시:** `ko/index.html`의 hero 문구를 바꾸고 싶음.
 
-**브라우저만으로 (가장 쉬움):**
-
-1. https://github.com/weglow-glo/glo-us 접속
-2. `ko/` 폴더 → `index.html` 클릭
-3. 우상단 **연필(✏️) 아이콘** 클릭 → 편집 모드
-4. `Ctrl+F`로 바꿀 문구 검색 → 수정
-5. 페이지 맨 아래로 스크롤:
-   - **Commit message** (제목): `mkt: hero 문구 수정 — 4x9 Protocol`
-   - **"Create a new branch and start a pull request"** 선택
-   - 브랜치명: `mkt/hero-copy-fix` 같은 형식
-6. **"Propose changes"** 클릭 → PR 자동 생성
-7. PR 페이지에서 잠시 후 Cloudflare가 **Preview 링크** 댓글 자동 추가 — 그 URL로 미리보기 확인
-8. Slack 등에 PR URL 공유 → 리뷰 받음 → 머지
-
-**미리보기 URL 예시:**
-- 브랜치: `mkt/hero-copy-fix`
-- Preview: `https://mkt-hero-copy-fix.glo-us.pages.dev`
-- 1분 내 자동 빌드되어 접근 가능
+1. https://github.com/weglow-glo/glo-us 접속 → `ko/` → `index.html`
+2. 우상단 **연필(✏️)** 클릭 → `Ctrl+F`로 문구 검색 → 수정
+3. 맨 아래 **Commit message**(`mkt: hero 문구 수정`) → **"Create a new branch and start a pull request"** → 브랜치명 `mkt/hero-copy-fix`
+4. **"Propose changes"** → PR 생성
+5. ⚠️ **재생성 필요:** `ko/` 변경은 `web/`의 페이지로 다시 빌드해야 반영됩니다. 직접 못 하면 PR 댓글로 개발자에게 "재생성 부탁"이라고 남기세요. (개발자/로컬: `node web/scripts/port-marketing.mjs` 실행 후 커밋)
+6. Vercel이 PR에 **Preview 링크**를 자동으로 답니다 — 그 URL로 미리보기 확인 → 리뷰 → 머지
 
 ### 🅱 디자인 토큰 변경 (디자인)
 
-**예시:** burgundy 메인 컬러 `#8a4a52` → `#9a4f5a`로 살짝 밝게.
-
-⚠️ 디자인 토큰은 **모든 8개 한국 페이지 + 7개 영어 페이지 + assets/js/glo-auth.js**에 중복 정의되어 있습니다. (Next.js 마이그레이션 전까지 어쩔 수 없음)
-
-**일관성 유지 위해:**
-- 개발자에게 요청 — 일괄 치환 스크립트로 처리
-- 또는 본인이 모든 파일에서 `#8a4a52`를 `#9a4f5a`로 치환 (GitHub 검색 → 모든 파일에서 Find & Replace)
-
-**참고:** `_styleguide.html`에서 토큰 + 컴포넌트 라이브 프리뷰 확인 가능.
+디자인 토큰은 각 `ko/*.html`의 `:root`와 `web/`의 `globals.css`에 정의돼 있습니다. 일괄 변경은 **개발자에게 요청**하세요(여러 파일 동기화 필요).
 
 ### ©️ 새 컴포넌트 / 큰 UI 변경 (디자인 ↔ 개발자)
 
-1. 디자인이 Figma에서 시안 작성
-2. PR 또는 Issue로 시안 첨부 + 어느 페이지에 들어갈지 명시
-3. 개발자가 구현 (디자인 토큰 활용)
-4. PR Preview로 디자인 검수 → 머지
+1. 디자인이 Figma 시안 작성 → PR/Issue로 첨부 + 들어갈 페이지 명시
+2. 개발자가 구현 → PR Preview로 검수 → 머지
 
 ---
 
@@ -120,77 +92,47 @@ glo/
 
 **형식:** `[prefix]: 짧은 설명`
 
-✅ 좋은 예:
-- `mkt: 히어로 문구 — "Reverse your skin age" 강조`
-- `design: 푸터 배경 burg-800 → burg-900`
-- `fix: 모바일에서 atom 위치 사쉐 뒤로 가는 버그`
-
-❌ 나쁜 예:
-- `수정함`
-- `update`
-- `asdf`
+✅ `mkt: 히어로 문구 강조` · `design: 푸터 배경 burg-800 → burg-900` · `fix: 모바일 atom 위치 버그`
+❌ `수정함` · `update` · `asdf`
 
 ---
 
 ## 5. PR 리뷰 + 머지
 
-- 모든 PR은 **최소 1명의 리뷰** 필요
-- Preview URL 확인 후 리뷰
-- 머지는 PR 작성자가 직접 (리뷰 승인 후)
-- `main` 브랜치는 머지 직후 자동으로 https://glo-us.com 에 배포 (Cloudflare Pages)
+- 모든 PR은 **최소 1명의 리뷰** 필요 + CI 통과
+- Vercel Preview URL 확인 후 리뷰
+- `main` 브랜치는 머지 직후 자동으로 **Vercel에 배포** (https://glo-us.com)
+- `main` 직접 푸시는 막혀 있습니다 (PR로만)
 
 ---
 
 ## 6. 자주 하는 작업 — 빠른 레퍼런스
 
-### 헤더 메뉴 추가/수정
+### 헤더/푸터 텍스트 수정
+- nav·footer는 **공용 chrome**(`ko/index.html`에서 생성)입니다. 사업자정보 등은 `ko/index.html`의 `<footer>`를 고친 뒤 재생성하면 전 페이지에 반영됩니다.
 
-- 모든 KR 페이지의 `<nav>` 블록 (8개 파일)
-- 모든 EN 페이지의 `<nav>` 블록 (5개 파일)
-- ⚠️ **개발자에게 요청 권장** — 일괄 동기화 필요
-
-### 푸터 텍스트 수정
-
-- `<footer>` 안의 `foot-tag`, `foot-legal`, `foot-biz` 등
-- 사업자정보 변경 시: `(주)위글로우 · 대표 · 등록번호 · 주소 · 전화` 라인
-- ⚠️ 모든 페이지에 중복 → 개발자에게 요청
-
-### 한 페이지의 이미지 교체
-
-1. 새 이미지를 `assets/` 폴더에 업로드 (적절한 하위 폴더 선택)
-2. 해당 HTML 파일에서 `src="..."` 부분의 경로만 교체
-3. PR
+### 이미지 교체
+1. 새 이미지를 `assets/`의 알맞은 하위 폴더에 업로드
+2. 해당 `ko/*.html`에서 경로(`src="..."` / `url(...)`)만 교체 → 재생성
 
 ### 새 페이지 추가
-
-⚠️ 개발자 영역. 라우팅·SEO·다국어·sitemap 등 신경 쓸 게 많음.
+⚠️ 개발자 영역 (라우팅·SEO·생성기 등록 필요).
 
 ---
 
 ## 7. 디자인 토큰 (핵심만)
 
-전체 토큰 + 컴포넌트는 https://glo-us.com/_styleguide.html 에서 확인.
-
 **브랜드 컬러:**
 - `--accent` `#8a4a52` — 메인 브랜드 burgundy (이탤릭·강조)
 - `--burg-600` `#3a1a22` — 다크 burgundy (버튼·임팩트 섹션)
 - `--burg-800` `#2a1218` — 가장 어두운 burgundy (푸터)
-- `--ink` `#2a1218` — 본문 텍스트
-- `--cream` `#f4ebeb` — 어두운 배경 위 텍스트
+- `--ink` `#2a1218` — 본문 텍스트 · `--cream` `#f4ebeb` — 어두운 배경 위 텍스트
 - `--bg-3` `#f3eaea` — rose-tint 패널
 
 **폰트:**
-- **Fraunces** (serif) — 헤드라인 · 이탤릭 강조
-- **Inter** (sans) — 본문 · 버튼 (영어)
-- **Pretendard** (sans) — 본문 (한국어)
-- **Noto Serif KR** (serif) — 헤드라인 (한국어, Fraunces 폴백)
-
-**버튼 클래스:**
-- `.btn-p` — 메인 CTA (burgundy 배경 + cream 텍스트)
-- `.btn-g` — 보조 CTA (텍스트 only + 밑줄)
-- `.btn-nav` — 헤더 우측 버튼
-- `.kakao-btn` — 카카오 노란색 버튼 (로그인 페이지)
-- `.final-btn` — 최종 CTA 섹션 메인 버튼
+- **Wanted Sans** — 한글·영문 본문 기본
+- **Times New Roman** — 포인트(색 들어간) 영문
+- **Fraunces** — 로고 `glo` + 본문 속 brand 단어 "glo"
 
 ---
 
@@ -199,29 +141,27 @@ glo/
 | 상황 | 어떻게 |
 |---|---|
 | Git/GitHub UI 헷갈림 | 개발자에게 화면 캡처 + 무엇을 바꾸려는지 설명 |
-| PR이 빨갛게 (CI 실패) | 개발자 호출 — HTML 구조 깨졌을 가능성 |
+| PR이 빨갛게 (CI 실패) | 개발자 호출 — HTML 구조나 빌드 깨졌을 가능성 |
+| `ko/` 고쳤는데 사이트에 반영 안 됨 | 재생성 안 된 것 — 개발자에게 재생성 요청 |
 | Preview URL이 안 떠 | 1~2분 더 기다리기, 그래도 안 뜨면 개발자 |
-| 토큰·컴포넌트 어디 있는지 모름 | `_styleguide.html` 확인 |
-| 이게 컴포넌트인지 카피인지 헷갈림 | 일단 PR 만들고 댓글로 질문 |
 
 ---
 
 ## 9. 절대 하면 안 되는 것
 
 - ❌ `main` 브랜치에 직접 커밋 (PR로만)
-- ❌ 카카오/Supabase API 키 같은 secret를 코드에 노출 (public key 외)
-- ❌ `archive/` 폴더 안 파일 수정 (옛 프로젝트, 배포 안 됨)
-- ❌ `CLAUDE.md` 수정 (이건 개발자용 메모)
-- ❌ 비밀번호·이메일·전화번호 같은 실제 개인정보를 더미 데이터로 넣기 (마스킹된 placeholder만)
+- ❌ `web/src/app/(marketing)/`의 생성된 파일을 직접 수정 (← `ko/` 고치고 재생성)
+- ❌ API secret를 코드에 노출 (`web/.env.local`에만, public key 외)
+- ❌ `archive/` 폴더 수정 (옛 프로젝트, 배포 안 됨)
+- ❌ `CLAUDE.md` 수정 (개발자용 메모)
+- ❌ 실제 개인정보를 더미 데이터로 (마스킹된 placeholder만)
 
 ---
 
 ## 10. 추가 자료
 
-- [README.md](./README.md) — 프로젝트 개요
-- [`_styleguide.html`](./\_styleguide.html) — 디자인 시스템 라이브 프리뷰
-- [GitHub.com 웹 편집기 사용법](https://docs.github.com/en/repositories/working-with-files/managing-files/editing-files) (영문)
-- [Cloudflare Pages Preview](https://developers.cloudflare.com/pages/configuration/branch-build-controls/) (영문)
+- [README.md](./README.md) — 프로젝트 개요 · 스택 · 구조
+- [GitHub.com 웹 편집기 사용법](https://docs.github.com/en/repositories/working-with-files/managing-files/editing-files)
 
 ---
 
