@@ -21,6 +21,7 @@ import type { Address } from "@/lib/address";
 import { metaTrack } from "@/lib/meta";
 
 const CLIENT_KEY = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!;
+const IS_TEST_KEY = CLIENT_KEY?.startsWith("test_") ?? false;
 const DAUM_SRC =
   "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
 
@@ -540,9 +541,11 @@ export default function CheckoutClient({
           >
             {submitting ? "처리 중…" : `${formatKRW(amount)} 결제하기`}
           </button>
-          <p className="mt-2 text-center text-xs text-ink-faint sm:mt-3">
-            테스트 환경입니다. 실제 결제가 발생하지 않습니다.
-          </p>
+          {IS_TEST_KEY && (
+            <p className="mt-2 text-center text-xs text-ink-faint sm:mt-3">
+              테스트 환경입니다. 실제 결제가 발생하지 않습니다.
+            </p>
+          )}
         </div>
       </div>
     </main>
