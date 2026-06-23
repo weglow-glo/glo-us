@@ -238,6 +238,35 @@ export function ProductInteractions() {
       void fetchPage(true);
     }
 
+    // Sticky section tabs — scroll-spy + hide the floating nav while pinned.
+    const ptabBar = document.querySelector<HTMLElement>(".ptabs");
+    const ptabs = [...document.querySelectorAll<HTMLAnchorElement>(".ptab")];
+    const reviewsSec = document.getElementById("reviews");
+    if (ptabBar && ptabs.length && reviewsSec) {
+      let praf: number | null = null;
+      const spy = () => {
+        praf = null;
+        // pinned once the tab bar reaches the top of the viewport
+        document.body.classList.toggle("po-stuck", ptabBar.getBoundingClientRect().top <= 0);
+        const reviewsActive = reviewsSec.getBoundingClientRect().top <= 80;
+        ptabs.forEach((t) =>
+          t.classList.toggle(
+            "is-active",
+            (t.getAttribute("href") === "#reviews") === reviewsActive,
+          ),
+        );
+      };
+      const onScroll = () => {
+        if (praf == null) praf = requestAnimationFrame(spy);
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      spy();
+      cleanups.push(() => {
+        window.removeEventListener("scroll", onScroll);
+        document.body.classList.remove("po-stuck");
+      });
+    }
+
     return () => cleanups.forEach((c) => c());
   }, []);
 
