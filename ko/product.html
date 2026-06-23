@@ -694,9 +694,14 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
 .po-sci .po-h{max-width:20ch;}
 .po-sci .po-mech-sub{max-width:620px;}
 .po-sci-pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:48px 0 0;}
-.po-sci-pill{background:var(--bg-1);border:1px solid var(--ink-line);border-radius:12px;padding:28px 26px;display:flex;flex-direction:column;}
-.po-sci-tag{align-self:flex-start;font-family:'Fraunces',serif;font-style:italic;font-size:12.5px;color:var(--accent);border:1px solid var(--burg-50);border-radius:100px;padding:3px 12px;margin-bottom:18px;}
-.po-sci-pill h3{font-size:16.5px;font-weight:700;line-height:1.4;color:var(--ink);letter-spacing:-.01em;margin:0 0 11px;}
+.po-sci-pill{position:relative;overflow:hidden;background:var(--bg-1);border:1px solid var(--ink-line);border-radius:12px;padding:30px 26px 28px;display:flex;flex-direction:column;}
+.po-sci-pill > *{position:relative;z-index:1;}
+.po-sci-emb{align-self:center;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--bg-2);border:1px solid var(--burg-50);color:var(--accent);margin-bottom:16px;box-shadow:0 4px 14px rgba(58,26,34,.08);}
+.po-sci-emb svg{width:25px;height:25px;}
+.po-sci-wm{position:absolute;z-index:0;bottom:-26px;right:-26px;width:152px;height:152px;color:var(--accent);opacity:.06;pointer-events:none;}
+.po-sci-wm svg{width:100%;height:100%;}
+.po-sci-tag{align-self:center;font-family:'Fraunces',serif;font-style:italic;font-size:12.5px;color:var(--accent);border:1px solid var(--burg-50);border-radius:100px;padding:3px 12px;margin-bottom:14px;}
+.po-sci-pill h3{font-size:16.5px;font-weight:700;line-height:1.4;color:var(--ink);letter-spacing:-.01em;margin:0 0 11px;text-align:center;}
 .po-sci-pill p{font-size:13.5px;line-height:1.65;color:var(--ink-mute);margin:0;flex:1;}
 .po-sci-pill p b{color:var(--ink);font-weight:600;}
 .po-sci-name{font-family:'Times New Roman',Times,serif;font-weight:600;font-size:1.08em;color:var(--accent);letter-spacing:.01em;}
@@ -1184,17 +1189,24 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
 
     <div class="po-sci-pillars">
       <article class="po-sci-pill">
+        <span class="po-sci-wm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><polygon points="12,3 19,7 19,15 12,19 5,15 5,7"/><circle cx="12" cy="3" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="15" r="1.6" fill="currentColor" stroke="none"/><circle cx="5" cy="7" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+        <span class="po-sci-emb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="12,3 19,7 19,15 12,19 5,15 5,7"/><circle cx="12" cy="3" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="15" r="1.5" fill="currentColor" stroke="none"/><circle cx="5" cy="7" r="1.5" fill="currentColor" stroke="none"/></svg></span>
         <span class="po-sci-tag">NAD⁺ · Sirtuin</span>
         <h3>노화를 다루는 longevity 연구의 핵심 축</h3>
         <p>하버드 의대 유전학과 <b class="po-sci-name">David Sinclair</b> 교수로 대표되는 NAD⁺·시르투인(Sirtuin) 연구는, 세포가 스스로를 복구하는 longevity 경로를 설명합니다. glo의 <b>Niacinamide</b>는 Preiss-Handler 경로를 통해 이 NAD⁺의 전구체로 작용합니다.</p>
         <a href="/science.html#pathway" class="po-sci-link">NAD⁺ 경로 다이어그램 →</a>
       </article>
       <article class="po-sci-pill">
+        <span class="po-sci-wm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M12 6c-2-1.4-4.5-1.6-7-1v12c2.5-.6 5-.4 7 1 2-1.4 4.5-1.6 7-1V5c-2.5-.6-5-.4-7 1z"/><line x1="12" y1="6" x2="12" y2="19"/></svg></span>
+        <span class="po-sci-emb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M12 6c-2-1.4-4.5-1.6-7-1v12c2.5-.6 5-.4 7 1 2-1.4 4.5-1.6 7-1V5c-2.5-.6-5-.4-7 1z"/><line x1="12" y1="6" x2="12" y2="19"/></svg></span>
         <span class="po-sci-tag">Inside-out</span>
         <h3>글로벌 매체가 주목한 '먹는 피부 관리'</h3>
         <p><b class="po-sci-name">Forbes</b>를 비롯한 매체들은, 바르는 것을 넘어 안에서부터 작용하는 'skin longevity · inside-out beauty' 카테고리의 부상을 다뤄왔습니다. glo는 그 흐름을 한 포에 담았습니다.</p>
+        <a href="https://www.forbes.com/sites/jessepines/2025/11/14/6-things-to-know-about-slowing-aging-according-to-dr-david-sinclair/" class="po-sci-link" target="_blank" rel="noopener">Forbes — 노화를 늦추는 법, Dr. David Sinclair (2025) ↗</a>
       </article>
       <article class="po-sci-pill">
+        <span class="po-sci-wm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4c-3 2-4 6-3 11M8 7c-2 .5-3 2-3 4M9 11c-1.5 0-2.5 1-3 2"/><path d="M16 4c3 2 4 6 3 11M16 7c2 .5 3 2 3 4M15 11c1.5 0 2.5 1 3 2"/><path d="M9.3 13l1.9 1.9L15 11"/></svg></span>
+        <span class="po-sci-emb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4c-3 2-4 6-3 11M8 7c-2 .5-3 2-3 4M9 11c-1.5 0-2.5 1-3 2"/><path d="M16 4c3 2 4 6 3 11M16 7c2 .5 3 2 3 4M15 11c1.5 0 2.5 1 3 2"/><path d="M9.3 13l1.9 1.9L15 11"/></svg></span>
         <span class="po-sci-tag">Evidence-first</span>
         <h3>citation 없이는 라벨에 인쇄하지 않습니다</h3>
         <p>9가지 성분 모두 published clinical evidence에 용량을 맞췄습니다. 마케팅 문구가 아니라, 검증 가능한 근거로 말합니다. <b>10명의 한국 의료진</b>이 4년간 설계했습니다.</p>
