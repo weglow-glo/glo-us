@@ -71,14 +71,14 @@ export default async function AccountPage() {
         <span className="mr-2 inline-block h-px w-6 bg-accent align-middle" />
         My page
       </p>
-      <h1 className="mt-3 font-display text-4xl font-light text-ink">
+      <h1 className="mt-3 font-sans text-4xl font-light text-ink">
         <span className="text-accent">{name}</span>님, 반가워요.
       </h1>
       {email && <p className="mt-3 text-sm text-ink-soft">{email}</p>}
 
       {/* Orders */}
       <section className="mt-10">
-        <h2 className="font-display text-2xl font-light text-ink">주문 내역</h2>
+        <h2 className="font-sans text-2xl font-light text-ink">주문 내역</h2>
 
         {list.length === 0 ? (
           <div className="mt-6 rounded-xl border border-ink-line bg-bg-2 p-10 text-center">
@@ -102,7 +102,7 @@ export default async function AccountPage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className="font-display text-lg text-ink">{order.order_name}</p>
+                        <p className="font-sans text-lg text-ink">{order.order_name}</p>
                         <p className="mt-1 text-xs text-ink-faint">
                           {formatDate(order.created_at)} · {order.order_id}
                         </p>
@@ -115,7 +115,7 @@ export default async function AccountPage() {
                     </div>
                     <div className="mt-4 flex items-center justify-between border-t border-ink-line pt-3">
                       <span className="text-xs font-medium text-accent">상세 보기 →</span>
-                      <span className="font-display text-lg text-ink">
+                      <span className="font-sans text-lg text-ink">
                         {formatKRW(order.amount)}
                       </span>
                     </div>

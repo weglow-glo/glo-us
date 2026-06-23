@@ -52,7 +52,7 @@ function LoginInner() {
           <span className="mr-2 inline-block h-px w-6 bg-accent align-middle" />
           Sign in
         </p>
-        <h1 className="mt-3 text-center font-display text-4xl font-light text-accent">
+        <h1 className="mt-3 text-center font-sans text-4xl font-light text-accent">
           반가워요.
         </h1>
         <p className="mt-4 text-center text-sm leading-relaxed text-ink-soft">

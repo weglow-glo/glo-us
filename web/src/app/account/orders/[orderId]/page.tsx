@@ -89,7 +89,7 @@ export default async function OrderDetailPage({
       </div>
 
       <div className="mt-8 flex items-center justify-between gap-4">
-        <h1 className="font-display text-3xl font-light text-ink">주문 상세</h1>
+        <h1 className="font-sans text-3xl font-light text-ink">주문 상세</h1>
         <span className={`shrink-0 rounded-full px-3 py-1 text-sm font-semibold ${s.className}`}>
           {s.label}
         </span>
@@ -182,7 +182,7 @@ function Progress({ status }: { status: OrderStatus }) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-6 rounded-xl border border-ink-line bg-bg-2 p-6">
-      <h2 className="mb-3 font-display text-lg text-ink">{title}</h2>
+      <h2 className="mb-3 font-sans text-lg text-ink">{title}</h2>
       <dl className="space-y-2.5 text-sm">{children}</dl>
     </section>
   );

@@ -83,7 +83,7 @@ function SuccessInner() {
       title="결제가 완료되었습니다."
       titleClassName="whitespace-nowrap text-[1.45rem] sm:text-3xl"
     >
-      <p className="mt-3 font-display text-base italic text-accent">
+      <p className="mt-3 font-sans text-base italic text-accent">
         A quieter kind of glow.
       </p>
       <dl className="mx-auto mt-8 w-full max-w-sm space-y-3 rounded-xl border border-ink-line bg-bg-1 px-7 py-5 text-sm">
@@ -131,7 +131,7 @@ function Centered({
       className="flex min-h-screen flex-col items-center justify-center bg-bg-2 px-6 text-center"
     >
       <h1
-        className={`font-display font-light ${titleClassName} ${
+        className={`font-sans font-light ${titleClassName} ${
           tone === "error" ? "text-burg-400" : "text-ink"
         }`}
       >

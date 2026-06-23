@@ -1,12 +1,12 @@
 /**
  * Single source of truth for the GL-01 product + pre-order options.
  * Korea-first launch: KRW, one-time pre-order (no subscription).
- * Every order ships 7/2 as one batch; the regular price resumes at launch.
+ * Every order ships 7/22 as one batch; the regular price resumes at launch.
  */
 export const PRODUCT = {
   code: "GL-01",
   name: "glo GL-01",
-  /** regular price per month after the 7/2 launch */
+  /** regular price per month after the 7/22 launch */
   regularPrice: 119000,
   currency: "KRW" as const,
 } as const;
@@ -62,6 +62,6 @@ export function generateOrderId(): string {
 
 export const PREORDER = {
   /** all pre-orders ship together on this date */
-  shipDate: "7월 2일",
-  shipNote: "사전결제 상품 · 7월 2일 일괄배송",
+  shipDate: "7월 22일",
+  shipNote: "사전결제 상품 · 7월 22일 일괄배송",
 } as const;
