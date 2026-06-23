@@ -238,6 +238,29 @@ export function ProductInteractions() {
       void fetchPage(true);
     }
 
+    // Sticky section tabs — scroll-spy (상세정보 / 리뷰).
+    const ptabs = [...document.querySelectorAll<HTMLAnchorElement>(".ptab")];
+    const reviewsSec = document.getElementById("reviews");
+    if (ptabs.length && reviewsSec) {
+      let praf: number | null = null;
+      const spy = () => {
+        praf = null;
+        const reviewsActive = reviewsSec.getBoundingClientRect().top <= 130;
+        ptabs.forEach((t) =>
+          t.classList.toggle(
+            "is-active",
+            (t.getAttribute("href") === "#reviews") === reviewsActive,
+          ),
+        );
+      };
+      const onScroll = () => {
+        if (praf == null) praf = requestAnimationFrame(spy);
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      spy();
+      cleanups.push(() => window.removeEventListener("scroll", onScroll));
+    }
+
     return () => cleanups.forEach((c) => c());
   }, []);
 
