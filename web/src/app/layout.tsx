@@ -41,6 +41,12 @@ export default function RootLayout({
       className={`${fraunces.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-bg-1 text-ink font-sans">
+        {/* Wanted Sans — app-wide base font (commerce + marketing). Marketing pages
+            also set it via their inline CSS; this covers checkout/account/login/admin. */}
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/complete/WantedSansVariable.min.css"
+        />
         <a href="#main" className="skip">
           본문으로 건너뛰기
         </a>

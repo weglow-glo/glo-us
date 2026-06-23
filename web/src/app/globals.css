@@ -38,8 +38,8 @@
 
   /* Type families (var set by next/font in layout.tsx) */
   --font-display: var(--font-fraunces), Georgia, serif;
-  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
-    "Pretendard", "Malgun Gothic", "맑은 고딕", sans-serif;
+  --font-sans: "Wanted Sans Variable", "Wanted Sans", var(--font-inter), "Pretendard",
+    -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif;
 }
 
 /* RESET + base — kept in @layer base so Tailwind utilities (e.g. text-bg-1)
