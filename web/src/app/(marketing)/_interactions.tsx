@@ -267,6 +267,22 @@ export function ProductInteractions() {
       });
     }
 
+    // Review "도움됐나요?" vote buttons — client-side toggle (no backend).
+    const reviewsRoot = document.querySelector(".reviews");
+    if (reviewsRoot) {
+      const onVote = (e: Event) => {
+        const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(".rev-vote");
+        if (!btn || !reviewsRoot.contains(btn)) return;
+        const span = btn.querySelector("span");
+        if (!span) return;
+        const n = parseInt(span.textContent || "0", 10) || 0;
+        const active = btn.classList.toggle("voted");
+        span.textContent = String(active ? n + 1 : Math.max(0, n - 1));
+      };
+      reviewsRoot.addEventListener("click", onVote);
+      cleanups.push(() => reviewsRoot.removeEventListener("click", onVote));
+    }
+
     return () => cleanups.forEach((c) => c());
   }, []);
 

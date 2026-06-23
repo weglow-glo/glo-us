@@ -300,7 +300,7 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 .vr.vh{background:rgba(42,18,24,.04);font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink-mute);}
 .vc{padding:14px 16px;font-size:13px;color:var(--ink-soft);line-height:1.4;}
 .vc.vn{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-style:italic;font-size:15px;color:var(--ink);}
-.vc.vg{background:rgba(138,74,82,.08);font-weight:700;color:var(--accent-deep);border-left:1px solid rgba(138,74,82,.22);border-right:1px solid rgba(138,74,82,.22);}
+.vc.vg{background:var(--burg-600);font-weight:600;color:var(--cream);border-left:1px solid var(--burg-400);border-right:1px solid var(--burg-400);}
 .vr.vh .vc.vg{border-top:1px solid rgba(138,74,82,.22);}
 .vr:last-child .vc.vg{border-bottom:1px solid rgba(138,74,82,.22);}
 .dt-note{margin-top:20px;font-size:12px;color:var(--ink-mute);line-height:1.7;max-width:860px;}
@@ -454,7 +454,9 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .rev-date{font-size:12px;color:var(--ink-mute);font-variant-numeric:tabular-nums;}
 .rev-helpful{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-mute);justify-content:flex-end;}
 .rev-helpful-q{margin-right:4px;}
-.rev-vote{display:inline-flex;align-items:center;gap:4px;background:none;border:1px solid var(--ink-line);padding:3px 8px;cursor:pointer;color:var(--ink-soft);font-size:11px;border-radius:6px;font-family:inherit;}
+.rev-vote{display:inline-flex;align-items:center;gap:4px;background:none;border:1px solid var(--ink-line);padding:3px 8px;cursor:pointer;color:var(--ink-soft);font-size:11px;border-radius:6px;font-family:inherit;transition:background .15s,border-color .15s,color .15s;}
+.rev-vote:hover{border-color:var(--accent);color:var(--accent);}
+.rev-vote.voted{background:var(--accent);border-color:var(--accent);color:var(--cream);}
 .rev-vote:hover{color:var(--ink);border-color:var(--accent);}
 .rev-load{margin-top:36px;text-align:center;}
 
@@ -609,12 +611,12 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
   .vr.vh{display:none;}
   .vc{padding:10px 16px;font-size:13.5px;border:none;}
   .vc.vn{padding:14px 16px;background:rgba(42,18,24,.04);font-size:17px;}
-  .vc.vg{background:rgba(138,74,82,.08);color:var(--accent-deep);font-weight:700;border:none !important;}
+  .vc.vg{background:var(--burg-600);color:var(--cream);font-weight:600;border:none !important;}
   .vc:nth-child(n+2){display:flex;flex-direction:column;gap:3px;}
   .vc:nth-child(2)::before,.vc:nth-child(3)::before,.vc:nth-child(4)::before{font-size:9px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--ink-mute);}
-  .vc:nth-child(2)::before{content:'Studied dose';}
-  .vc:nth-child(3)::before{content:'Typical OTC';}
-  .vc:nth-child(4)::before{content:'glo GL-01';color:var(--accent);}
+  .vc:nth-child(2)::before{content:'임상 연구 함량';}
+  .vc:nth-child(3)::before{content:'타사 평균';}
+  .vc:nth-child(4)::before{content:'glo GL-01';color:var(--cream);text-transform:none;font-family:'Fraunces','Noto Serif KR',serif;letter-spacing:0;}
   /* Wide ingredient cards (Collagen, Astaxanthin) — stack the 3-flex inline layout */
   .ing-grid.g1 .ing{flex-direction:column !important;gap:18px !important;}
   .ing-grid.g1 .ing > div{flex:none !important;width:100%;align-items:flex-start !important;}
@@ -668,7 +670,6 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
 .ba-note{margin-top:12px;font-size:11.5px;color:var(--ink-faint);line-height:1.65;max-width:620px;}
 
 /* Sticky 섹션 탭 (상세정보 / 리뷰) — takes over the top; the floating nav fades while stuck */
-html{scroll-behavior:smooth;}
 .ptabs{position:sticky;top:0;z-index:55;display:flex;background:var(--bg-1);border-bottom:1px solid var(--ink-line);box-shadow:0 6px 16px rgba(58,26,34,.06);}
 .ptab{flex:1;text-align:center;padding:16px 8px;font-size:14px;font-weight:600;color:var(--ink-mute);position:relative;letter-spacing:-.01em;transition:color .2s;}
 .ptab.is-active{color:var(--ink);}
@@ -752,7 +753,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
           </button>
         </div>
         <a href="/checkout?option=1m" class="buy-btn" id="buy-btn">사전결제하기</a>
-        <div class="buy-fine"><a href="/refund.html" style="color:var(--ink-soft);border-bottom:1px solid var(--ink-line);">90일 환불 보장</a> · 무료배송</div>
+        <div class="buy-fine"><a href="/refund.html" style="color:var(--ink-soft);border-bottom:1px solid var(--ink-line);">90일 환불 보장</a> · <b style="color:var(--accent);font-weight:700;">무료배송</b></div>
         <div class="buy-fine" style="margin-top:6px;"><b style="color:var(--accent);">7월 22일 일괄배송</b> — 사전결제하신 모든 주문은 7월 22일에 함께 발송됩니다. 7월 22일 정식 출시와 함께 정상가로 전환됩니다.</div>
       </div>
     </div>
@@ -765,7 +766,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
 <!-- Sticky 섹션 탭 (상세정보 / 리뷰) -->
 <nav class="ptabs" aria-label="섹션 바로가기">
   <a href="#detail" class="ptab is-active">상세정보</a>
-  <a href="#reviews" class="ptab">리뷰 <span class="ptab-n">753</span></a>
+  <a href="#reviews" class="ptab">체험단 후기 <span class="ptab-n">753</span></a>
 </nav>
 
 <!-- 사전결제 혜택 배너 (CSS) -->
@@ -1140,7 +1141,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <p class="dt-sub">아래는 실제 임상에서 사용된 용량과 GL-01 활성 성분의 대조 분석표입니다. 또한, 일반 타사 제품들의 평균 함량과 함께 분석해 보았습니다.<sup class="c">1–10</sup></p>
     </div>
     <div class="vt">
-      <div class="vr vh"><div class="vc">Active</div><div class="vc">임상 용량</div><div class="vc">일반 OTC</div><div class="vc vg">glo GL-01</div></div>
+      <div class="vr vh"><div class="vc">Active</div><div class="vc">임상 연구 함량</div><div class="vc">타사 평균</div><div class="vc vg">glo GL-01</div></div>
       <div class="vr"><div class="vc vn">Glutathione (reduced)</div><div class="vc">250–500 mg</div><div class="vc">50–100 mg</div><div class="vc vg">250 mg · yeast-derived</div></div>
       <div class="vr"><div class="vc vn">L-Cystine</div><div class="vc">200–500 mg</div><div class="vc">대부분 생략</div><div class="vc vg">200 mg · 100% L-cystine</div></div>
       <div class="vr"><div class="vc vn">White tomato extract</div><div class="vc">100–250 mg</div><div class="vc">5–15 mg</div><div class="vc vg">200 mg · 식물성 melatonin 2%</div></div>
