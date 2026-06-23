@@ -3,6 +3,12 @@
 -- Atomic, abuse-bounded (±1) via a SECURITY DEFINER function so the public
 -- (anon) can adjust counts without an RLS update policy on the table.
 -- Run in Supabase Dashboard → SQL Editor (after 0005_reviews.sql).
+-- (Re-run safe: CREATE OR REPLACE overwrites the prior definition.)
+--
+-- NOTE: `#variable_conflict use_column` is required — the RETURNS TABLE output
+-- columns are named helpful_up/helpful_down, same as the table columns, so bare
+-- references in the body would be ambiguous. This directive resolves them to the
+-- table columns.
 -- ============================================================
 
 create or replace function public.vote_review_helpful(rid uuid, dir text, add boolean)
@@ -11,7 +17,9 @@ language plpgsql
 security definer
 set search_path = public
 as $$
-declare d int := case when add then 1 else -1 end;
+#variable_conflict use_column
+declare
+  d int := case when add then 1 else -1 end;
 begin
   if dir = 'up' then
     update public.reviews set helpful_up = greatest(0, helpful_up + d) where id = rid;
