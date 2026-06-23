@@ -678,6 +678,21 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
 #detail,#reviews{scroll-margin-top:60px;}
 /* hide ONLY the floating nav pills (logo/login) while the section tabs are pinned — not the tab bar itself */
 body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s ease;}
+
+/* 사전결제 한정 수량 + 카운트다운 */
+.po-scar{background:var(--bg-2);border-top:1px solid var(--ink-line);}
+.po-scar-in{padding:clamp(20px,4vw,28px) 64px;}
+.po-scar-top{display:flex;justify-content:space-between;align-items:center;gap:10px 16px;margin-bottom:12px;flex-wrap:wrap;}
+.po-scar-lbl{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.01em;}
+.po-scar-lbl b{color:var(--accent);font-weight:700;}
+.po-scar-cd{font-size:13px;color:var(--ink-soft);}
+.po-scar-cd b{color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums;}
+.po-scar-bar{height:12px;border-radius:100px;background:var(--bg-4);overflow:hidden;}
+.po-scar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--burg-300),var(--accent));transition:width .8s ease;}
+.po-scar-foot{display:flex;justify-content:space-between;margin-top:10px;font-size:12.5px;color:var(--ink-mute);letter-spacing:-.01em;}
+.po-scar-foot b{color:var(--ink);font-weight:700;}
+.po-scar-left b{color:var(--accent);}
+@media (max-width:640px){.po-scar-in{padding-left:24px;padding-right:24px;}}
 </style>
 </head>
 <body>
@@ -760,6 +775,21 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
   </div>
   <div class="buy-float">
     <a href="/checkout?option=1m" class="buy-float-btn" id="buy-float-btn"><span id="buy-float-price">59,500원</span> · 사전결제하기</a>
+  </div>
+</section>
+
+<!-- 사전결제 한정 수량 + 카운트다운 -->
+<section class="po-scar">
+  <div class="ctr po-scar-in">
+    <div class="po-scar-top">
+      <span class="po-scar-lbl">사전결제 한정 <b>1,000박스</b></span>
+      <span class="po-scar-cd" id="po-scar-cd">정식 출시까지 <b>—</b></span>
+    </div>
+    <div class="po-scar-bar"><div class="po-scar-fill" id="po-scar-fill" style="width:35%"></div></div>
+    <div class="po-scar-foot">
+      <span><b id="po-scar-count">351</b>박스 사전결제 완료</span>
+      <span class="po-scar-left"><b id="po-scar-left">649</b>박스 남음</span>
+    </div>
   </div>
 </section>
 

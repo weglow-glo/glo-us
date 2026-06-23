@@ -362,6 +362,75 @@ export function ProductInteractions() {
       });
     }
 
+    // 사전결제 한정 수량 bar + 카운트다운. Time-deterministic: the count is a pure
+    // function of the clock (consistent across refreshes / users), filling
+    // BASE→LIMIT by the launch date with organic (irregular) box intervals.
+    const scarFill = document.getElementById("po-scar-fill");
+    if (scarFill) {
+      const LIMIT = 1000;
+      const BASE = 351;
+      const BASE_TIME = Date.parse("2026-06-23T00:00:00+09:00");
+      const DEADLINE = Date.parse("2026-07-22T00:00:00+09:00");
+      const span = DEADLINE - BASE_TIME;
+      const need = LIMIT - BASE;
+      // seeded jitter → irregular arrival offsets that still sum to exactly `span`
+      let seed = 20260623;
+      const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+      const raw: number[] = [];
+      let total = 0;
+      for (let i = 0; i < need; i++) {
+        const r = 0.25 + 1.5 * rnd();
+        raw.push(r);
+        total += r;
+      }
+      const cum: number[] = [];
+      let acc = 0;
+      for (let i = 0; i < need; i++) {
+        acc += (raw[i] / total) * span;
+        cum.push(acc);
+      }
+      const countAt = (now: number) => {
+        const el = now - BASE_TIME;
+        if (el <= 0) return BASE;
+        if (el >= span) return LIMIT;
+        let lo = 0;
+        let hi = cum.length;
+        while (lo < hi) {
+          const mid = (lo + hi) >> 1;
+          if (cum[mid] <= el) lo = mid + 1;
+          else hi = mid;
+        }
+        return BASE + lo;
+      };
+      const countEl = document.getElementById("po-scar-count");
+      const leftEl = document.getElementById("po-scar-left");
+      const cdEl = document.getElementById("po-scar-cd")?.querySelector("b");
+      const fmt = (n: number) => n.toLocaleString("ko-KR");
+      const pad = (n: number) => String(n).padStart(2, "0");
+      let lastCount = -1;
+      const tick = () => {
+        const now = Date.now();
+        const c = countAt(now);
+        if (c !== lastCount) {
+          lastCount = c;
+          if (countEl) countEl.textContent = fmt(c);
+          if (leftEl) leftEl.textContent = fmt(Math.max(0, LIMIT - c));
+          scarFill.style.width = `${((c / LIMIT) * 100).toFixed(1)}%`;
+        }
+        if (cdEl) {
+          const ms = Math.max(0, DEADLINE - now);
+          const d = Math.floor(ms / 86400000);
+          const h = Math.floor((ms % 86400000) / 3600000);
+          const m = Math.floor((ms % 3600000) / 60000);
+          const s = Math.floor((ms % 60000) / 1000);
+          cdEl.textContent = d > 0 ? `${d}일 ${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(h)}:${pad(m)}:${pad(s)}`;
+        }
+      };
+      tick();
+      const iv = window.setInterval(tick, 1000);
+      cleanups.push(() => clearInterval(iv));
+    }
+
     return () => cleanups.forEach((c) => c());
   }, []);
 
