@@ -675,8 +675,8 @@ html{scroll-behavior:smooth;}
 .ptab.is-active::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--ink);}
 .ptab-n{color:var(--accent);font-weight:700;margin-left:1px;}
 #detail,#reviews{scroll-margin-top:60px;}
-/* hide the floating nav pills while the section tabs are pinned to the top */
-body.po-stuck nav{opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s ease;}
+/* hide ONLY the floating nav pills (logo/login) while the section tabs are pinned — not the tab bar itself */
+body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s ease;}
 </style>
 </head>
 <body>
