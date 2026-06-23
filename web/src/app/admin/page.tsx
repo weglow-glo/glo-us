@@ -74,7 +74,7 @@ export default async function AdminPage({
   return (
     <main className="mx-auto max-w-6xl px-6 py-12">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-3xl font-light text-ink">
+        <h1 className="font-sans text-3xl font-light text-ink">
           주문 관리 <span className="text-sm text-ink-mute">({orders.length})</span>
         </h1>
         <a
@@ -90,7 +90,7 @@ export default async function AdminPage({
         <span className="text-sm font-semibold uppercase tracking-wide text-ink-mute">
           총 결제완료 금액
         </span>
-        <span className="font-display text-3xl font-light text-ink">
+        <span className="font-sans text-3xl font-light text-ink">
           {formatKRW(totalRevenue)}
         </span>
         <span className="text-sm text-ink-faint">결제 {settledCount}건 · 취소·환불 제외</span>

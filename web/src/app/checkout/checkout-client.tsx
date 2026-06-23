@@ -297,7 +297,7 @@ export default function CheckoutClient({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <h3 className="font-display text-lg text-ink">저장된 배송지</h3>
+              <h3 className="font-sans text-lg text-ink">저장된 배송지</h3>
               <button
                 type="button"
                 onClick={() => setShowAddr(false)}
@@ -396,8 +396,8 @@ export default function CheckoutClient({
             <span className="inline-block rounded-full bg-accent px-2.5 py-1 text-[11px] font-bold tracking-wide text-cream">
               사전할인 {formatPct(discount)}
             </span>
-            <p className="mt-2 font-display text-xl text-ink">{PREORDER_NAME}</p>
-            <p className="mt-1 text-sm text-ink-mute">15ml 데일리 샷 · 스킨 롱제비티</p>
+            <p className="mt-2 font-sans text-xl text-ink">{PREORDER_NAME}</p>
+            <p className="mt-1 text-sm text-ink-mute">20ml 데일리 샷 · 스킨 롱제비티</p>
           </div>
           <div className="flex items-center gap-2">
             <label htmlFor="opt" className="shrink-0 whitespace-nowrap text-sm text-ink-mute">
@@ -421,7 +421,7 @@ export default function CheckoutClient({
           <span className="text-sm font-semibold uppercase tracking-wide text-ink-mute">결제 금액</span>
           <span className="flex items-baseline gap-2">
             <span className="text-sm text-ink-faint line-through">{formatKRW(regularAmount)}</span>
-            <span className="font-display text-2xl text-ink">{formatKRW(amount)}</span>
+            <span className="font-sans text-2xl text-ink">{formatKRW(amount)}</span>
           </span>
         </div>
         <p className="mt-4 rounded-md bg-bg-3 px-4 py-3 text-xs leading-relaxed text-ink-soft">
@@ -435,7 +435,7 @@ export default function CheckoutClient({
       {/* Shipping */}
       <section className="mt-8">
         <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="font-display text-xl text-ink">배송 정보</h2>
+          <h2 className="font-sans text-xl text-ink">배송 정보</h2>
           {addresses.length > 0 && (
             <button
               type="button"
