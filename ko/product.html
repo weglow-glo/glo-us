@@ -687,6 +687,38 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
 .po-live-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.5);animation:po-live-pulse 1.8s infinite;}
 @keyframes po-live-pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}70%{box-shadow:0 0 0 6px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
 @media (prefers-reduced-motion:reduce){.po-live-dot{animation:none}}
+
+/* 성분이 기대는 과학 — research authority */
+.po-sci{background:var(--bg-2);border-top:1px solid var(--ink-line);}
+.po-sci-eyebrow{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--accent);margin-bottom:16px;}
+.po-sci .po-h{max-width:20ch;}
+.po-sci .po-mech-sub{max-width:620px;}
+.po-sci-pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:48px 0 0;}
+.po-sci-pill{background:var(--bg-1);border:1px solid var(--ink-line);border-radius:12px;padding:28px 26px;display:flex;flex-direction:column;}
+.po-sci-tag{align-self:flex-start;font-family:'Fraunces',serif;font-style:italic;font-size:12.5px;color:var(--accent);border:1px solid var(--burg-50);border-radius:100px;padding:3px 12px;margin-bottom:18px;}
+.po-sci-pill h3{font-size:16.5px;font-weight:700;line-height:1.4;color:var(--ink);letter-spacing:-.01em;margin:0 0 11px;}
+.po-sci-pill p{font-size:13.5px;line-height:1.65;color:var(--ink-mute);margin:0;flex:1;}
+.po-sci-pill p b{color:var(--ink);font-weight:600;}
+.po-sci-name{font-family:'Times New Roman',Times,serif;font-weight:600;font-size:1.08em;color:var(--accent);letter-spacing:.01em;}
+.po-sci-link{margin-top:18px;font-size:13px;font-weight:600;color:var(--accent);}
+.po-sci-papers{background:var(--burg-800);border-radius:14px;padding:clamp(26px,3vw,38px);margin-top:24px;}
+.po-sci-papers-h{font-family:'Fraunces',serif;font-size:19px;color:var(--cream);margin-bottom:22px;letter-spacing:-.01em;}
+.po-sci-papers-h span{color:var(--burg-50);font-size:13px;font-style:italic;}
+.po-sci-papers ul{list-style:none;margin:0;padding:0;}
+.po-sci-papers li{display:grid;grid-template-columns:150px 1fr 230px;gap:20px;align-items:baseline;padding:16px 0;border-top:1px solid rgba(244,235,235,.14);}
+.po-sci-papers li:first-child{border-top:none;padding-top:0;}
+.pp-ing{font-weight:700;font-size:14px;color:var(--cream);}
+.pp-find{font-size:13.5px;line-height:1.55;color:rgba(244,235,235,.82);}
+.pp-cite{font-size:11.5px;color:var(--burg-50);text-align:right;}
+.pp-cite i{font-style:italic;}
+.po-sci-disc{margin-top:26px;font-size:11.5px;line-height:1.65;color:var(--ink-soft);max-width:920px;}
+.po-sci-disc b{font-weight:600;}
+.po-sci-disc a{color:var(--accent);border-bottom:1px solid var(--ink-line);white-space:nowrap;}
+@media (max-width:900px){
+  .po-sci-pillars{grid-template-columns:1fr;}
+  .po-sci-papers li{grid-template-columns:1fr;gap:5px;padding:14px 0;}
+  .pp-cite{text-align:left;}
+}
 .po-scar-top{display:flex;justify-content:space-between;align-items:center;gap:10px 16px;margin-bottom:12px;flex-wrap:wrap;}
 .po-scar-lbl{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.01em;}
 .po-scar-lbl b{color:var(--accent);font-weight:700;}
@@ -1140,6 +1172,46 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- 성분이 기대는 과학 — research authority (honest: mechanism/literature context, not endorsement) -->
+<section class="po-sec po-sci" id="science-context">
+  <div class="ctr">
+    <span class="po-sci-eyebrow">— 성분이 기대는 과학</span>
+    <h2 class="po-h">glo의 성분은 <em>longevity 연구</em>의<br/>흐름 위에 있습니다.</h2>
+    <p class="po-mech-sub">새로운 걸 발명하지 않았습니다. 이미 peer-reviewed 저널에 쌓인 근거 위에서, 임상에서 쓰인 용량 그대로 담았을 뿐입니다.</p>
+
+    <div class="po-sci-pillars">
+      <article class="po-sci-pill">
+        <span class="po-sci-tag">NAD⁺ · Sirtuin</span>
+        <h3>노화를 다루는 longevity 연구의 핵심 축</h3>
+        <p>하버드 의대 유전학과 <b class="po-sci-name">David Sinclair</b> 교수로 대표되는 NAD⁺·시르투인(Sirtuin) 연구는, 세포가 스스로를 복구하는 longevity 경로를 설명합니다. glo의 <b>Niacinamide</b>는 Preiss-Handler 경로를 통해 이 NAD⁺의 전구체로 작용합니다.</p>
+        <a href="/science.html#pathway" class="po-sci-link">NAD⁺ 경로 다이어그램 →</a>
+      </article>
+      <article class="po-sci-pill">
+        <span class="po-sci-tag">Inside-out</span>
+        <h3>글로벌 매체가 주목한 '먹는 피부 관리'</h3>
+        <p><b class="po-sci-name">Forbes</b>를 비롯한 매체들은, 바르는 것을 넘어 안에서부터 작용하는 'skin longevity · inside-out beauty' 카테고리의 부상을 다뤄왔습니다. glo는 그 흐름을 한 포에 담았습니다.</p>
+      </article>
+      <article class="po-sci-pill">
+        <span class="po-sci-tag">Evidence-first</span>
+        <h3>citation 없이는 라벨에 인쇄하지 않습니다</h3>
+        <p>9가지 성분 모두 published clinical evidence에 용량을 맞췄습니다. 마케팅 문구가 아니라, 검증 가능한 근거로 말합니다. <b>10명의 한국 의료진</b>이 4년간 설계했습니다.</p>
+      </article>
+    </div>
+
+    <div class="po-sci-papers">
+      <div class="po-sci-papers-h">실제 임상 근거 <span>· peer-reviewed journals</span></div>
+      <ul>
+        <li><span class="pp-ing">콜라겐 펩타이드</span><span class="pp-find">8주 섭취 시 피부 수분과 진피 콜라겐 네트워크가 유의하게 개선.</span><span class="pp-cite">Asserin et al. · <i>J Cosmet Dermatol</i> · 2015</span></li>
+        <li><span class="pp-ing">아스타잔틴</span><span class="pp-find">주름·탄력·수분 등 피부 지표 개선 보고.</span><span class="pp-cite">Tominaga et al. · <i>Acta Biochim Pol</i> · 2012</span></li>
+        <li><span class="pp-ing">경구 히알루론산</span><span class="pp-find">이중맹검·위약대조 시험에서 주름 완화.</span><span class="pp-cite">Oe et al. · <i>Clin Cosmet Investig Dermatol</i> · 2017</span></li>
+        <li><span class="pp-ing">글루타치온</span><span class="pp-find">산화 스트레스 방어와 피부 톤 관련 작용.</span><span class="pp-cite">Sekhar et al. · <i>Am J Clin Nutr</i> · 2011</span></li>
+      </ul>
+    </div>
+
+    <p class="po-sci-disc">위 내용은 개별 <b>성분</b>의 작용 기전을 다룬 peer-reviewed 연구를 소개한 것으로, 특정 매체·기관·연구자가 glo 제품을 보증하거나 glo와 제휴했다는 의미가 아닙니다. 완성품에 대한 진술은 식약처·FDA의 평가를 받지 않았으며, 본 제품은 질병의 예방·진단·치료·완화를 목적으로 하지 않습니다. <a href="/science.html#refs">전체 references →</a></p>
   </div>
 </section>
 
