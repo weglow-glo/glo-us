@@ -431,6 +431,24 @@ export function ProductInteractions() {
       cleanups.push(() => clearInterval(iv));
     }
 
+    // "현재 N명이 보고 있어요" — random 20–80, drifts a little to feel live.
+    const liveN = document.getElementById("po-live-n");
+    if (liveN) {
+      const LO = 20;
+      const HI = 80;
+      const rand = (a: number, b: number) => a + Math.floor(Math.random() * (b - a + 1));
+      let v = rand(LO, HI);
+      liveN.textContent = String(v);
+      const drift = () => {
+        v += rand(0, 6) - 3; // -3..+3
+        if (v < LO) v = LO + rand(0, 3);
+        if (v > HI) v = HI - rand(0, 3);
+        liveN.textContent = String(v);
+      };
+      const liveIv = window.setInterval(drift, 3500);
+      cleanups.push(() => clearInterval(liveIv));
+    }
+
     return () => cleanups.forEach((c) => c());
   }, []);
 
