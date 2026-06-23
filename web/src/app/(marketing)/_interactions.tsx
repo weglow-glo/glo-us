@@ -122,6 +122,7 @@ export function ProductInteractions() {
     const loadBtn = document.getElementById("rev-load") as HTMLButtonElement | null;
     if (revList && loadBtn) {
       type Rev = {
+        id: string;
         author_name: string;
         location: string | null;
         rating: number;
@@ -138,7 +139,7 @@ export function ProductInteractions() {
       const card = (r: Rev) => {
         const stars = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
         const date = (r.review_date || "").replace(/-/g, ".");
-        return `<article class="rev-item"><div class="rev-author"><div class="rev-name">${esc(r.author_name)} <span class="loc">${esc(r.location)}</span></div><div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div></div><div class="rev-body"><div class="rev-body-stars" aria-label="${r.rating}점 / 5점">${stars}</div><p class="rev-text">${esc(r.body)}</p></div><div class="rev-meta"><div class="rev-date">${date}</div><div class="rev-helpful"><span class="rev-helpful-q">도움됐나요?</span><button class="rev-vote">↑ <span>${r.helpful_up}</span></button><button class="rev-vote">↓ <span>${r.helpful_down}</span></button></div></div></article>`;
+        return `<article class="rev-item" data-id="${esc(r.id)}"><div class="rev-author"><div class="rev-name">${esc(r.author_name)} <span class="loc">${esc(r.location)}</span></div><div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div></div><div class="rev-body"><div class="rev-body-stars" aria-label="${r.rating}점 / 5점">${stars}</div><p class="rev-text">${esc(r.body)}</p></div><div class="rev-meta"><div class="rev-date">${date}</div><div class="rev-helpful"><span class="rev-helpful-q">도움됐나요?</span><button class="rev-vote" data-dir="up">↑ <span>${r.helpful_up}</span></button><button class="rev-vote" data-dir="down">↓ <span>${r.helpful_down}</span></button></div></div></article>`;
       };
 
       let dynamic = false;
@@ -281,20 +282,84 @@ export function ProductInteractions() {
       });
     }
 
-    // Review "도움됐나요?" vote buttons — client-side toggle (no backend).
+    // Review "도움됐나요?" votes — persisted to DB (anon RPC), deduped per device.
     const reviewsRoot = document.querySelector(".reviews");
     if (reviewsRoot) {
-      const onVote = (e: Event) => {
+      const KEY = "glo-review-votes";
+      const read = (): Record<string, boolean> => {
+        try {
+          return JSON.parse(localStorage.getItem(KEY) || "{}");
+        } catch {
+          return {};
+        }
+      };
+      const write = (v: Record<string, boolean>) => {
+        try {
+          localStorage.setItem(KEY, JSON.stringify(v));
+        } catch {
+          /* private mode — ignore */
+        }
+      };
+      // reflect this device's past votes on (re)rendered cards
+      const markVotes = () => {
+        const v = read();
+        reviewsRoot.querySelectorAll<HTMLButtonElement>(".rev-vote").forEach((b) => {
+          const id = b.closest<HTMLElement>("[data-id]")?.dataset.id;
+          const dir = b.dataset.dir;
+          if (id && dir) b.classList.toggle("voted", !!v[`${id}:${dir}`]);
+        });
+      };
+      const onVote = async (e: Event) => {
         const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(".rev-vote");
         if (!btn || !reviewsRoot.contains(btn)) return;
         const span = btn.querySelector("span");
         if (!span) return;
-        const n = parseInt(span.textContent || "0", 10) || 0;
-        const active = btn.classList.toggle("voted");
-        span.textContent = String(active ? n + 1 : Math.max(0, n - 1));
+        const id = btn.closest<HTMLElement>("[data-id]")?.dataset.id;
+        const dir = btn.dataset.dir;
+        // static fallback card (no DB id) → visual toggle only
+        if (!id || (dir !== "up" && dir !== "down")) {
+          const n = parseInt(span.textContent || "0", 10) || 0;
+          const active = btn.classList.toggle("voted");
+          span.textContent = String(active ? n + 1 : Math.max(0, n - 1));
+          return;
+        }
+        const votes = read();
+        const vkey = `${id}:${dir}`;
+        const add = !votes[vkey];
+        const prev = span.textContent || "0";
+        const n = parseInt(prev, 10) || 0;
+        // optimistic
+        btn.classList.toggle("voted", add);
+        span.textContent = String(add ? n + 1 : Math.max(0, n - 1));
+        btn.disabled = true;
+        try {
+          const res = await fetch("/api/reviews/vote", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id, dir, add }),
+          });
+          if (!res.ok) throw new Error("vote failed");
+          const data = (await res.json()) as { helpful_up: number; helpful_down: number };
+          span.textContent = String(dir === "up" ? data.helpful_up : data.helpful_down);
+          if (add) votes[vkey] = true;
+          else delete votes[vkey];
+          write(votes);
+        } catch {
+          // revert on failure
+          btn.classList.toggle("voted", !add);
+          span.textContent = prev;
+        } finally {
+          btn.disabled = false;
+        }
       };
       reviewsRoot.addEventListener("click", onVote);
-      cleanups.push(() => reviewsRoot.removeEventListener("click", onVote));
+      const mo = new MutationObserver(markVotes);
+      mo.observe(reviewsRoot, { childList: true, subtree: true });
+      markVotes();
+      cleanups.push(() => {
+        reviewsRoot.removeEventListener("click", onVote);
+        mo.disconnect();
+      });
     }
 
     return () => cleanups.forEach((c) => c());

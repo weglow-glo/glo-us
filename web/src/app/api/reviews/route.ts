@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-const COLUMNS = "author_name, location, rating, body, helpful_up, helpful_down, review_date";
+const COLUMNS = "id, author_name, location, rating, body, helpful_up, helpful_down, review_date";
 const MAX_LIMIT = 24;
 
 /**
