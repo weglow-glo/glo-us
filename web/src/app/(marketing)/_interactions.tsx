@@ -243,6 +243,20 @@ export function ProductInteractions() {
     const ptabs = [...document.querySelectorAll<HTMLAnchorElement>(".ptab")];
     const reviewsSec = document.getElementById("reviews");
     if (ptabBar && ptabs.length && reviewsSec) {
+      // Click → always jump to the section (native hash nav no-ops when the
+      // hash is already set, so handle it explicitly). Instant for snappiness.
+      ptabs.forEach((t) => {
+        const onTabClick = (e: MouseEvent) => {
+          const id = t.getAttribute("href")?.slice(1);
+          const el = id ? document.getElementById(id) : null;
+          if (!el) return;
+          e.preventDefault();
+          const y = el.getBoundingClientRect().top + window.scrollY - 56;
+          window.scrollTo({ top: y, behavior: "auto" });
+        };
+        t.addEventListener("click", onTabClick);
+        cleanups.push(() => t.removeEventListener("click", onTabClick));
+      });
       let praf: number | null = null;
       const spy = () => {
         praf = null;
