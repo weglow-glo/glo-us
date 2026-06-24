@@ -21,7 +21,9 @@ function LoginInner() {
       provider: "kakao",
       options: {
         redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
-        scopes: "account_email",
+        // No explicit `scopes`: passing a scope makes Kakao show only that item's
+        // consent and bypasses the Kakao Sync 간편가입 screen (서비스 약관 + 전체
+        // 선택하기). Let the app's configured 동의항목 drive the unified screen.
       },
     });
     if (error) {
