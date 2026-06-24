@@ -39,6 +39,7 @@ export default function MetaPixel() {
   const pathname = usePathname();
   const onAdmin = pathname?.startsWith("/admin") ?? false;
   const initedRef = useRef(false);
+  const regFiredRef = useRef(false);
 
   useEffect(() => {
     if (!META_PIXEL_ID || onAdmin) return;
@@ -54,6 +55,23 @@ export default function MetaPixel() {
         content_type: "product",
         content_name: "glo GL-01",
       });
+    }
+    // Fresh signup: the auth callback appends ?_reg=<eventId>. Fire the browser
+    // CompleteRegistration (deduped with the server CAPI via event_id), then
+    // strip the param so a reload/back doesn't refire it.
+    if (!regFiredRef.current) {
+      const reg = new URLSearchParams(window.location.search).get("_reg");
+      if (reg) {
+        regFiredRef.current = true;
+        metaTrack(
+          "CompleteRegistration",
+          { content_name: "kakao_signup", status: true },
+          reg,
+        );
+        const url = new URL(window.location.href);
+        url.searchParams.delete("_reg");
+        window.history.replaceState({}, "", url.toString());
+      }
     }
   }, [pathname, onAdmin]);
 

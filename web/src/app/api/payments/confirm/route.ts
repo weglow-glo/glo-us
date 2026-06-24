@@ -161,6 +161,7 @@ export async function POST(request: Request) {
     currency: "KRW",
     email: order.customer_email,
     phone: order.customer_phone,
+    externalId: order.user_id,
     fbp: readCookie("_fbp"),
     fbc: readCookie("_fbc"),
     clientIp:
