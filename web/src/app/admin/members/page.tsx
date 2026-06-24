@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatKRW } from "@/lib/product";
 
@@ -72,17 +71,12 @@ export default async function MembersPage() {
         <h1 className="font-sans text-3xl font-light text-ink">
           회원 관리 <span className="text-sm text-ink-mute">({members.length})</span>
         </h1>
-        <div className="flex items-center gap-3">
-          <Link href="/admin" className="text-sm text-ink-soft hover:text-accent">
-            ← 주문 관리
-          </Link>
-          <a
-            href="/admin/members/export"
-            className="rounded-full bg-burg-600 px-5 py-2.5 text-sm font-semibold text-bg-1 transition hover:bg-burg-400"
-          >
-            CSV 내보내기
-          </a>
-        </div>
+        <a
+          href="/admin/members/export"
+          className="rounded-full bg-burg-600 px-5 py-2.5 text-sm font-semibold text-bg-1 transition hover:bg-burg-400"
+        >
+          CSV 내보내기
+        </a>
       </div>
 
       {error && (
