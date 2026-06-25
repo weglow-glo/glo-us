@@ -58,6 +58,81 @@ export async function markDelivered(formData: FormData) {
 }
 
 /**
+ * Admin payment cancellation / refund. Unlike the customer flow (paid-only,
+ * ownership-checked), admin can cancel any order that still has a live Toss
+ * payment — paid through delivered. Voids the full amount at Toss, then marks
+ * the order canceled. Returns a result for inline success/error display.
+ */
+export async function cancelOrder(
+  _prev: { ok: boolean; error?: string; message?: string },
+  formData: FormData,
+): Promise<{ ok: boolean; error?: string; message?: string }> {
+  const id = String(formData.get("id") ?? "");
+  const reason = String(formData.get("reason") ?? "").trim();
+  if (!id) return { ok: false, error: "주문 ID가 없습니다." };
+
+  const admin = createAdminClient();
+  const { data: order } = await admin
+    .from("orders")
+    .select("id, status, payment_key")
+    .eq("id", id)
+    .single<{ id: string; status: string; payment_key: string | null }>();
+
+  if (!order) return { ok: false, error: "주문을 찾을 수 없습니다." };
+  if (order.status === "canceled" || order.status === "refunded")
+    return { ok: true, message: "이미 취소된 주문입니다." };
+  if (!order.payment_key)
+    return { ok: false, error: "결제 정보가 없어 취소할 수 없습니다 (미결제 주문)." };
+
+  const secretKey = process.env.TOSS_SECRET_KEY;
+  if (!secretKey) {
+    console.error("[admin/cancel] TOSS_SECRET_KEY is not set");
+    return { ok: false, error: "서버 설정 오류 (TOSS_SECRET_KEY 없음)." };
+  }
+
+  // Cancel the full amount at Toss. Basic auth = base64("<secretKey>:").
+  const auth = Buffer.from(`${secretKey}:`).toString("base64");
+  let payment: { message?: string; code?: string } = {};
+  try {
+    const tossRes = await fetch(
+      `https://api.tosspayments.com/v1/payments/${order.payment_key}/cancel`,
+      {
+        method: "POST",
+        headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ cancelReason: reason || "관리자 취소" }),
+      },
+    );
+    payment = await tossRes.json();
+    if (!tossRes.ok) {
+      return { ok: false, error: payment?.message ?? "토스 결제 취소에 실패했습니다." };
+    }
+  } catch (e) {
+    console.error("[admin/cancel] Toss request failed:", e);
+    return { ok: false, error: "토스 요청 중 오류가 발생했습니다." };
+  }
+
+  const { error: updErr } = await admin
+    .from("orders")
+    .update({
+      status: "canceled",
+      canceled_at: new Date().toISOString(),
+      raw_cancel: payment,
+    })
+    .eq("id", order.id);
+  if (updErr) {
+    console.error("[admin/cancel] order update failed:", updErr.message);
+    return {
+      ok: false,
+      error: "토스 취소는 완료됐지만 주문 상태 갱신에 실패했습니다. 상태를 직접 확인하세요.",
+    };
+  }
+
+  revalidatePath("/admin");
+  revalidatePath(`/admin/orders/${order.id}`);
+  return { ok: true, message: "결제가 취소되었습니다." };
+}
+
+/**
  * Bulk tracking registration. Paste one order per line:
  *   "glo_1781... 1234567890"  (order_id and tracking separated by space/comma/tab)
  * Each matched order is moved to 배송중 with its tracking number.

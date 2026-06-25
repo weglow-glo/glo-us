@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { formatKRW } from "@/lib/product";
 import { STATUS_LABEL, type OrderStatus } from "../../status";
 import { markShipped, markPreparing, markDelivered } from "../../actions";
+import CancelOrder from "./cancel-order";
 
 export const dynamic = "force-dynamic";
 
@@ -135,6 +136,21 @@ export default async function OrderDetailPage({
           </form>
         </div>
       </Section>
+
+      {/* 결제 취소 / 환불 — only while a live Toss payment exists. */}
+      {order.payment_key &&
+        order.status !== "canceled" &&
+        order.status !== "refunded" &&
+        order.status !== "pending" &&
+        order.status !== "failed" && (
+          <section className="mt-8 rounded-xl border border-burg-400/40 bg-bg-2 p-6">
+            <h2 className="mb-1 font-sans text-lg text-burg-400">결제 취소</h2>
+            <p className="mb-4 text-xs text-ink-mute">
+              토스에서 전액 환불 처리 후 주문을 ‘결제취소’ 상태로 바꿉니다. 되돌릴 수 없습니다.
+            </p>
+            <CancelOrder id={order.id} />
+          </section>
+        )}
     </main>
   );
 }
