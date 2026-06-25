@@ -660,7 +660,11 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
 /* 체험단 변화 기록 — 주차별 가로 스트립 (before/after) */
 .ba{padding:clamp(72px,10vw,110px) 0;background:var(--bg-2);border-top:1px solid var(--ink-line);}
 .ba-sub{margin-top:12px;font-size:clamp(13px,2.4vw,15px);color:var(--ink-soft);}
-.ba-track{display:flex;gap:14px;margin-top:36px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;-webkit-overflow-scrolling:touch;}
+.ba-person{margin-top:34px;}
+.ba-person + .ba-person{margin-top:30px;padding-top:30px;border-top:1px solid var(--ink-line);}
+.ba-name{font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em;}
+.ba-name span{color:var(--ink-mute);font-weight:500;}
+.ba-track{display:flex;gap:14px;margin-top:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;-webkit-overflow-scrolling:touch;}
 .ba-shot{flex:0 0 auto;width:clamp(180px,42vw,228px);scroll-snap-align:start;}
 .ba-img{position:relative;aspect-ratio:4/5;border-radius:16px;overflow:hidden;background:linear-gradient(160deg,var(--bg-3),var(--burg-50) 120%);background-size:cover;background-position:center;box-shadow:0 16px 32px rgba(58,26,34,.12),inset 0 0 0 1px rgba(58,26,34,.05);}
 .ba-wk{position:absolute;left:12px;bottom:12px;background:rgba(255,250,250,.92);backdrop-filter:saturate(160%) blur(6px);-webkit-backdrop-filter:saturate(160%) blur(6px);border-radius:100px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--ink);letter-spacing:-.01em;}
@@ -1022,15 +1026,39 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
   <div class="ctr">
     <div class="ey clay"><span class="dash"></span>실제 체험단 기록</div>
     <h2 class="po-h">주차별로, <em>눈으로 확인하세요.</em></h2>
-    <p class="ba-sub">한 체험단 참여자의 사용 전부터 8주까지의 변화 기록입니다.</p>
-    <div class="ba-track">
-      <figure class="ba-shot is-before"><div class="ba-img" style="background-image:url('/assets/images/ba-0-before.jpg')"><span class="ba-wk">사용 전</span></div></figure>
-      <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba-2w.jpg')"><span class="ba-wk">2주</span></div></figure>
-      <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba-4w.jpg')"><span class="ba-wk">4주</span></div></figure>
-      <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba-8w.jpg')"><span class="ba-wk">8주</span></div></figure>
+    <p class="ba-sub">체험단 참여자들의 사용 전부터 8주까지의 변화 기록입니다.</p>
+
+    <div class="ba-person">
+      <div class="ba-name">김OO님 <span>· 서울 40대 · 8주 기록</span></div>
+      <div class="ba-track">
+        <figure class="ba-shot is-before"><div class="ba-img" style="background-image:url('/assets/images/ba-0-before.jpg')"><span class="ba-wk">사용 전</span></div></figure>
+        <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba-2w.jpg')"><span class="ba-wk">2주</span></div></figure>
+        <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba-4w.jpg')"><span class="ba-wk">4주</span></div></figure>
+        <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba-8w.jpg')"><span class="ba-wk">8주</span></div></figure>
+      </div>
     </div>
-    <p class="ba-meta"><b>체험단 참여자 · 8주 기록</b> · 동일 조명·각도에서 촬영</p>
-    <p class="ba-note">* 개인의 사용 후기이며 변화에는 개인차가 있습니다. 본 제품은 일반 식품으로, 질병의 예방·치료를 목적으로 하지 않으며 효과를 보장하지 않습니다.</p>
+
+    <div class="ba-person">
+      <div class="ba-name">노OO님 <span>· 서울 30대 · 8주 기록</span></div>
+      <div class="ba-track">
+        <figure class="ba-shot is-before"><div class="ba-img" style="background-image:url('/assets/images/ba2-0-before.jpg')"><span class="ba-wk">사용 전</span></div></figure>
+        <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba2-2w.jpg')"><span class="ba-wk">2주</span></div></figure>
+        <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba2-4w.jpg')"><span class="ba-wk">4주</span></div></figure>
+        <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba2-8w.jpg')"><span class="ba-wk">8주</span></div></figure>
+      </div>
+    </div>
+
+    <div class="ba-person">
+      <div class="ba-name">차OO님 <span>· 부산 60대 · 8주 기록</span></div>
+      <div class="ba-track">
+        <figure class="ba-shot is-before"><div class="ba-img" style="background-image:url('/assets/images/ba3-0-before.jpg')"><span class="ba-wk">사용 전</span></div></figure>
+        <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba3-2w.jpg')"><span class="ba-wk">2주</span></div></figure>
+        <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba3-4w.jpg')"><span class="ba-wk">4주</span></div></figure>
+        <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba3-8w.jpg')"><span class="ba-wk">8주</span></div></figure>
+      </div>
+    </div>
+
+    <p class="ba-note">* 개인의 사용 후기이며 변화에는 개인차가 있습니다. 본 제품은 일반 식품으로, 질병의 예방·치료를 목적으로 하지 않으며 효과를 보장하지 않습니다. 동일 조명·각도에서 촬영.</p>
   </div>
 </section>
 
