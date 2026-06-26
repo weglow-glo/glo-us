@@ -733,6 +733,36 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
   .po-sci-papers li{grid-template-columns:1fr;gap:5px;padding:14px 0;}
   .pp-cite{text-align:left;}
 }
+
+/* glo 특허 성분 — Tightening-PB (dark impact) */
+.po-pb{background:var(--burg-800);color:var(--cream);padding:clamp(72px,10vw,120px) 0;}
+.po-pb-eyebrow{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.05em;color:var(--burg-50);margin-bottom:18px;}
+.po-pb-h{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-weight:300;line-height:1.25;letter-spacing:-1px;font-size:clamp(26px,4.6vw,42px);color:var(--cream);margin:0;}
+.po-pb .po-pb-h em{font-style:italic;color:var(--burg-50);}
+.po-pb-sub{margin-top:18px;max-width:660px;font-size:clamp(13.5px,2.2vw,15px);line-height:1.7;color:rgba(244,235,235,.78);}
+.po-pb-sub b{color:var(--cream);font-weight:600;}
+.po-pb-badge{display:inline-flex;align-items:center;gap:9px;margin-top:24px;padding:9px 16px;border-radius:100px;border:1px solid rgba(212,181,181,.4);background:rgba(212,181,181,.08);font-size:13px;color:var(--burg-50);}
+.po-pb-badge b{color:var(--cream);font-weight:700;letter-spacing:.02em;}
+.po-pb-badge svg{width:17px;height:17px;flex-shrink:0;}
+.po-pb-chain{margin-top:46px;}
+.po-pb-chain-lead{font-size:clamp(14px,2.2vw,15.5px);line-height:1.7;color:rgba(244,235,235,.85);max-width:680px;margin:0 0 22px;}
+.po-pb-chain-lead b{color:var(--cream);font-weight:600;}
+.po-pb-steps{list-style:none;margin:0;padding:0;display:grid;gap:10px;}
+.po-pb-step{display:grid;grid-template-columns:auto 210px 1fr;gap:18px;align-items:center;padding:16px 20px;border-radius:12px;background:rgba(244,235,235,.05);border:1px solid rgba(244,235,235,.1);}
+.po-pb-n{font-family:'Fraunces','Noto Serif KR',serif;font-style:italic;font-size:18px;color:var(--burg-50);}
+.po-pb-prob{font-size:14.5px;font-weight:700;color:var(--cream);letter-spacing:-.01em;}
+.po-pb-int{font-size:13.5px;line-height:1.5;color:rgba(244,235,235,.8);}
+.po-pb-int b{color:var(--burg-50);font-weight:600;}
+.po-pb-result{margin-top:14px;padding:16px 20px;border-radius:12px;background:var(--accent);color:var(--cream);font-size:clamp(13.5px,2.2vw,15px);font-weight:600;letter-spacing:-.01em;}
+.po-pb-foot{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px;}
+.po-pb-stat{flex:1;min-width:150px;padding:22px 18px;border-radius:12px;border:1px solid rgba(244,235,235,.12);text-align:center;}
+.po-pb-stat b{display:block;font-family:'Fraunces','Noto Serif KR',serif;font-size:24px;color:var(--cream);margin-bottom:5px;}
+.po-pb-stat span{font-size:12.5px;color:rgba(244,235,235,.7);}
+@media (max-width:680px){
+  .po-pb-step{grid-template-columns:auto 1fr;row-gap:5px;}
+  .po-pb-step .po-pb-int{grid-column:2/-1;}
+}
+
 .po-scar-top{display:flex;justify-content:space-between;align-items:center;gap:10px 16px;margin-bottom:12px;flex-wrap:wrap;}
 .po-scar-lbl{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.01em;}
 .po-scar-lbl b{color:var(--accent);font-weight:700;}
@@ -1210,6 +1240,33 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- glo 특허 성분 — Tightening-PB Complex 강조 (모공·피지 다중표적) -->
+<section class="po-pb" id="tightening-pb">
+  <div class="ctr">
+    <span class="po-pb-eyebrow">— glo 독자 특허 성분</span>
+    <h2 class="po-pb-h">콜라겐도, 글루타치온도 못 잡는<br/><em>모공과 피지</em>.</h2>
+    <p class="po-pb-sub">대부분의 이너뷰티가 톤과 탄력만 좇을 때, glo는 가장 까다로운 영역에 특허 복합체를 넣었습니다. <b>Tightening-PB Complex®</b> — 식물유래 11종으로 설계된, 모공·피지 전용 다중표적 복합물.</p>
+    <div class="po-pb-badge"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="7" r="4.5"/><path d="M8 7.2l1.5 1.5L12 5.7"/><path d="M7 11l-1.6 6 4.6-1.8 4.6 1.8L13 11"/></svg><span>KR 특허 제<b>10-2911449</b>호</span></div>
+
+    <div class="po-pb-chain">
+      <p class="po-pb-chain-lead">넓어진 모공은 한 번에 생기지 않습니다. <b>피지 → 산화 → 염증 → 탄력 저하</b>로 이어지는 연쇄 반응이죠. Tightening-PB는 그 사슬을 <b>단계마다</b> 끊도록 설계됐습니다 — 한 곳이 아니라, 모든 단계를.</p>
+      <ol class="po-pb-steps">
+        <li class="po-pb-step"><span class="po-pb-n">01</span><span class="po-pb-prob">과잉 피지 분비</span><span class="po-pb-int">피지 합성 신호(SREBP-1)를 <b>완화</b></span></li>
+        <li class="po-pb-step"><span class="po-pb-n">02</span><span class="po-pb-prob">피지 산화</span><span class="po-pb-int">식물 항산화 복합으로 산화된 피지 생성 <b>차단</b></span></li>
+        <li class="po-pb-step"><span class="po-pb-n">03</span><span class="po-pb-prob">모공 주변 미세염증</span><span class="po-pb-int">IL-1α 등 염증 신호를 <b>진정</b></span></li>
+        <li class="po-pb-step"><span class="po-pb-n">04</span><span class="po-pb-prob">콜라겐·엘라스틴 분해</span><span class="po-pb-int">분해효소(MMP) 과활성 억제로 모공 테두리 탄력 <b>보호</b></span></li>
+      </ol>
+      <div class="po-pb-result">결과 — 모공이 늘어난 채 고착되는 흐름을 끊고, 단단한 모공 환경으로.</div>
+    </div>
+
+    <div class="po-pb-foot">
+      <div class="po-pb-stat"><b>11종</b><span>식물유래 복합 성분</span></div>
+      <div class="po-pb-stat"><b>다중표적</b><span>단일 고함량이 아닌 설계</span></div>
+      <div class="po-pb-stat"><b>특허원료</b><span>KR 10-2911449</span></div>
     </div>
   </div>
 </section>
