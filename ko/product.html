@@ -162,6 +162,8 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
 .opt-name em{font-style:normal !important;font-size:9px;font-weight:700 !important;letter-spacing:.3px;color:var(--cream) !important;background:var(--accent);padding:2px 6px;border-radius:100px;flex-shrink:0;}
 .opt-note{font-size:10px;font-weight:500;color:var(--accent);letter-spacing:-.02em;white-space:nowrap;}
 .opt-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.opt-prices{display:flex;flex-direction:column;align-items:flex-end;line-height:1.18;}
+.opt-was{font-size:10.5px;font-weight:500;color:var(--ink-faint);text-decoration:line-through;text-decoration-color:var(--burg-50);}
 .opt-price{font-size:13px;font-weight:600;color:var(--ink);}
 .opt-disc{font-size:10px;font-weight:700;color:var(--accent);background:rgba(138,74,82,.1);padding:2px 6px;border-radius:100px;min-width:46px;text-align:center;box-sizing:border-box;flex-shrink:0;}
 .buy-float{display:none;}
@@ -177,6 +179,7 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
   .opt-name em{font-size:8.5px;padding:2px 5px;}
   .opt-note{font-size:9px;}
   .opt-right{gap:6px;}
+  .opt-was{font-size:9.5px;}
   .opt-price{font-size:12px;}
   .opt-disc{min-width:40px;font-size:9px;padding:2px 5px;}
 }
@@ -794,23 +797,23 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
         <div class="opt-list" role="radiogroup" aria-label="구성 선택">
           <button type="button" class="opt active" data-key="1m" role="radio" aria-checked="true">
             <span class="opt-name">1개월 분</span>
-            <span class="opt-right"><span class="opt-price">59,500원</span><span class="opt-disc">-50%</span></span>
+            <span class="opt-right"><span class="opt-prices"><s class="opt-was">119,000원</s><span class="opt-price">59,500원</span></span><span class="opt-disc">-50%</span></span>
           </button>
           <button type="button" class="opt" data-key="2m" role="radio" aria-checked="false">
             <span class="opt-name">2개월 분 <em>추천</em></span>
-            <span class="opt-right"><span class="opt-price">107,100원</span><span class="opt-disc">-55%</span></span>
+            <span class="opt-right"><span class="opt-prices"><s class="opt-was">238,000원</s><span class="opt-price">107,100원</span></span><span class="opt-disc">-55%</span></span>
           </button>
           <button type="button" class="opt" data-key="3m" role="radio" aria-checked="false">
             <span class="opt-name">3개월 분 <em>베스트</em> <span class="opt-note">눈에 띄는 효과</span></span>
-            <span class="opt-right"><span class="opt-price">142,800원</span><span class="opt-disc">-60%</span></span>
+            <span class="opt-right"><span class="opt-prices"><s class="opt-was">357,000원</s><span class="opt-price">142,800원</span></span><span class="opt-disc">-60%</span></span>
           </button>
           <button type="button" class="opt" data-key="4m" role="radio" aria-checked="false">
             <span class="opt-name">4개월 분</span>
-            <span class="opt-right"><span class="opt-price">166,600원</span><span class="opt-disc">-65%</span></span>
+            <span class="opt-right"><span class="opt-prices"><s class="opt-was">476,000원</s><span class="opt-price">166,600원</span></span><span class="opt-disc">-65%</span></span>
           </button>
           <button type="button" class="opt" data-key="6m" role="radio" aria-checked="false">
             <span class="opt-name">6개월 분</span>
-            <span class="opt-right"><span class="opt-price">214,200원</span><span class="opt-disc">-70%</span></span>
+            <span class="opt-right"><span class="opt-prices"><s class="opt-was">714,000원</s><span class="opt-price">214,200원</span></span><span class="opt-disc">-70%</span></span>
           </button>
         </div>
         <a href="/checkout?option=1m" class="buy-btn" id="buy-btn">사전결제하기</a>
@@ -1026,12 +1029,12 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
   <div class="ctr">
     <div class="ey clay"><span class="dash"></span>실제 체험단 기록</div>
     <h2 class="po-h">주차별로, <em>눈으로 확인하세요.</em></h2>
-    <p class="ba-sub">체험단 참여자들의 사용 전부터 8주까지의 변화 기록입니다.</p>
+    <p class="ba-sub">체험단 참여자들의 복용 전부터 8주까지의 변화 기록입니다.</p>
 
     <div class="ba-person">
       <div class="ba-name">김OO님 <span>· 서울 40대 · 8주 기록</span></div>
       <div class="ba-track">
-        <figure class="ba-shot is-before"><div class="ba-img" style="background-image:url('/assets/images/ba-0-before.jpg')"><span class="ba-wk">사용 전</span></div></figure>
+        <figure class="ba-shot is-before"><div class="ba-img" style="background-image:url('/assets/images/ba-0-before.jpg')"><span class="ba-wk">복용 전</span></div></figure>
         <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba-2w.jpg')"><span class="ba-wk">2주</span></div></figure>
         <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba-4w.jpg')"><span class="ba-wk">4주</span></div></figure>
         <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba-8w.jpg')"><span class="ba-wk">8주</span></div></figure>
@@ -1041,7 +1044,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
     <div class="ba-person">
       <div class="ba-name">노OO님 <span>· 서울 30대 · 8주 기록</span></div>
       <div class="ba-track">
-        <figure class="ba-shot is-before"><div class="ba-img" style="background-image:url('/assets/images/ba2-0-before.jpg')"><span class="ba-wk">사용 전</span></div></figure>
+        <figure class="ba-shot is-before"><div class="ba-img" style="background-image:url('/assets/images/ba2-0-before.jpg')"><span class="ba-wk">복용 전</span></div></figure>
         <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba2-2w.jpg')"><span class="ba-wk">2주</span></div></figure>
         <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba2-4w.jpg')"><span class="ba-wk">4주</span></div></figure>
         <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba2-8w.jpg')"><span class="ba-wk">8주</span></div></figure>
@@ -1051,7 +1054,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
     <div class="ba-person">
       <div class="ba-name">차OO님 <span>· 부산 60대 · 8주 기록</span></div>
       <div class="ba-track">
-        <figure class="ba-shot is-before"><div class="ba-img" style="background-image:url('/assets/images/ba3-0-before.jpg')"><span class="ba-wk">사용 전</span></div></figure>
+        <figure class="ba-shot is-before"><div class="ba-img" style="background-image:url('/assets/images/ba3-0-before.jpg')"><span class="ba-wk">복용 전</span></div></figure>
         <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba3-2w.jpg')"><span class="ba-wk">2주</span></div></figure>
         <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba3-4w.jpg')"><span class="ba-wk">4주</span></div></figure>
         <figure class="ba-shot"><div class="ba-img" style="background-image:url('/assets/images/ba3-8w.jpg')"><span class="ba-wk">8주</span></div></figure>
