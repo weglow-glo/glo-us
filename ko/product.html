@@ -505,6 +505,8 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .po-mech-step-l{font-size:clamp(11px,2.2vw,13px);color:var(--ink-soft);line-height:1.35;text-align:center;}
 .po-mech-step-l b{display:block;color:var(--ink);font-weight:600;}
 .po-mech-arrow{color:var(--accent);font-size:clamp(13px,3vw,16px);align-self:center;margin-top:-14px;flex-shrink:0;}
+.po-mech-tri-extra{margin-top:18px;padding-top:16px;border-top:1px dashed var(--ink-line);text-align:center;font-size:13.5px;line-height:1.5;color:var(--ink-soft);}
+.po-mech-tri-extra b{color:var(--accent);font-weight:700;}
 /* champagne / water-droplet zone (CSS recreation of the designer's background) */
 .po-mech-zone{margin-top:48px;border-radius:24px;overflow:hidden;text-align:center;padding:clamp(40px,7vw,72px) clamp(20px,5vw,52px);
   background:
@@ -906,7 +908,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <li>요즘 들어 탄력이 없어지고 처지는 느낌이다.</li>
       <li>화장으로도 피부 톤이 안 올라온다.</li>
     </ul>
-    <p class="po-pain-foot">그 고민, <b>glo</b>는 한 포에 담았습니다.<br>미백 · 탄력 · 수분 — <em>하루 한 포면 충분합니다.</em></p>
+    <p class="po-pain-foot">그 고민, <b>glo</b>는 한 포에 담았습니다.<br>미백 · 탄력 · 수분 · 항산화 — <em>하루 한 포면 충분합니다.</em></p>
   </div>
 </section>
 
@@ -917,23 +919,23 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
     <p class="po-mech-sub">겉에 바르는 게 아니라, 속에서 만드는 차이</p>
     <div class="po-mech-steps">
       <div class="po-mech-step">
-        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><rect x="9.5" y="4" width="5" height="16" rx="1"/><line x1="9.5" y1="7" x2="14.5" y2="7"/><path d="M18.5 5.5c0 0-1.4 1.9-1.4 2.9a1.4 1.4 0 0 0 2.8 0c0-1-1.4-2.9-1.4-2.9z"/></svg></span>
-        <span class="po-mech-step-l"><b>glo</b>1포 섭취</span>
+        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><path d="M12 2.5v2.5M12 19v2.5M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2.5 12h2.5M19 12h2.5M4.2 19.8l1.8-1.8M18 6l1.8-1.8"/></svg></span>
+        <span class="po-mech-step-l"><b>미백</b>피부 톤</span>
       </div>
       <span class="po-mech-arrow">›</span>
       <div class="po-mech-step">
-        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><line x1="3" y1="16" x2="21" y2="16"/><path d="M8 6v6M6 10l2 2 2-2"/><path d="M16 6v6M14 10l2 2 2-2"/></svg></span>
-        <span class="po-mech-step-l"><b>장에서</b>흡수</span>
+        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><path d="M12 3.5c3.5 4.5 5.5 7.3 5.5 10.2A5.5 5.5 0 0 1 6.5 13.7C6.5 10.8 8.5 8 12 3.5z"/></svg></span>
+        <span class="po-mech-step-l"><b>수분</b>피부 장벽</span>
       </div>
       <span class="po-mech-arrow">›</span>
       <div class="po-mech-step">
-        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><path d="M3 9c3-3 6 3 9 0s6-3 9 0"/><path d="M3 15c3-3 6 3 9 0s6-3 9 0"/></svg></span>
-        <span class="po-mech-step-l"><b>혈류로</b>이동</span>
+        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><path d="M12 20V6"/><path d="M6 11l6-6 6 6"/></svg></span>
+        <span class="po-mech-step-l"><b>탄력</b>진피층</span>
       </div>
       <span class="po-mech-arrow">›</span>
       <div class="po-mech-step">
-        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><path d="M3 17h18M3 13h18"/><circle cx="7" cy="8" r="1"/><circle cx="12" cy="6" r="1"/><circle cx="17" cy="8" r="1"/></svg></span>
-        <span class="po-mech-step-l"><b>피부</b>4가지 작용</span>
+        <span class="po-mech-ico"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.5-3 7.5-7 9.5-4-2-7-5-7-9.5V6z"/><path d="M9 12l2 2 3.5-3.5"/></svg></span>
+        <span class="po-mech-step-l"><b>항산화</b>세포 방어</span>
       </div>
     </div>
     <div class="po-mech-zone">
@@ -952,6 +954,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
           <div class="po-mech-col"><div class="h">이동 차단</div><div class="s">나이아신아미드</div></div>
           <div class="po-mech-col"><div class="h">이너 선케어</div><div class="s">화이트토마토</div></div>
         </div>
+        <p class="po-mech-tri-extra">여기에 <b>피지 · 모공 개선</b>까지 — <b>Tightening-PB 특허 복합물</b></p>
       </div>
     </div>
   </div>
