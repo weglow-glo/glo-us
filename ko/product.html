@@ -505,8 +505,8 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .po-mech-step-l{font-size:clamp(11px,2.2vw,13px);color:var(--ink-soft);line-height:1.35;text-align:center;}
 .po-mech-step-l b{display:block;color:var(--ink);font-weight:600;}
 .po-mech-arrow{color:var(--accent);font-size:clamp(13px,3vw,16px);align-self:center;margin-top:-14px;flex-shrink:0;}
-.po-mech-tri-extra{margin-top:18px;padding-top:16px;border-top:1px dashed var(--ink-line);text-align:center;font-size:13.5px;line-height:1.5;color:var(--ink-soft);}
-.po-mech-tri-extra b{color:var(--accent);font-weight:700;}
+.po-mech-tri + .po-mech-tri{margin-top:clamp(34px,5vw,46px);padding-top:clamp(34px,5vw,46px);border-top:1px dashed var(--ink-line);}
+.po-mech-pore-tag{margin-top:22px;text-align:center;font-size:12px;font-weight:600;letter-spacing:.01em;color:var(--accent);}
 /* champagne / water-droplet zone (CSS recreation of the designer's background) */
 .po-mech-zone{margin-top:48px;border-radius:24px;overflow:hidden;text-align:center;padding:clamp(40px,7vw,72px) clamp(20px,5vw,52px);
   background:
@@ -954,7 +954,16 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
           <div class="po-mech-col"><div class="h">이동 차단</div><div class="s">나이아신아미드</div></div>
           <div class="po-mech-col"><div class="h">이너 선케어</div><div class="s">화이트토마토</div></div>
         </div>
-        <p class="po-mech-tri-extra">여기에 <b>피지 · 모공 개선</b>까지 — <b>Tightening-PB 특허 복합물</b></p>
+      </div>
+      <div class="po-mech-tri">
+        <h3 class="po-mech-tri-h"><em>모공 · 피지</em> 작용까지 더했어요.</h3>
+        <p class="po-mech-tri-sub">늘어진 모공은 피지 → 산화 → 탄력 저하로 이어지는 연쇄 반응. 식물유래 11종 특허 복합물이 단계마다 잡아요.</p>
+        <div class="po-mech-cols">
+          <div class="po-mech-col"><div class="h">피지 억제</div><div class="s">피지 생성 신호 완화</div></div>
+          <div class="po-mech-col"><div class="h">산화 차단</div><div class="s">식물 항산화 복합</div></div>
+          <div class="po-mech-col"><div class="h">탄력 보호</div><div class="s">모공 테두리 보호</div></div>
+        </div>
+        <p class="po-mech-pore-tag">Tightening-PB Complex® · 특허 KR 10-2911449</p>
       </div>
     </div>
   </div>
