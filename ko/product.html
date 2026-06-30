@@ -506,7 +506,7 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .po-mech-step-l b{display:block;color:var(--ink);font-weight:600;}
 .po-mech-arrow{color:var(--accent);font-size:clamp(13px,3vw,16px);align-self:center;margin-top:-14px;flex-shrink:0;}
 .po-mech-tri + .po-mech-tri{margin-top:clamp(34px,5vw,46px);padding-top:clamp(34px,5vw,46px);border-top:1px dashed var(--ink-line);}
-.po-mech-pore-tag{margin-top:22px;text-align:center;font-size:12px;font-weight:600;letter-spacing:.01em;color:var(--accent);}
+.po-mech-pore-tag{margin-top:20px;text-align:center;font-size:clamp(14px,2.6vw,16px);font-weight:700;letter-spacing:.01em;color:var(--accent);}
 /* champagne / water-droplet zone (CSS recreation of the designer's background) */
 .po-mech-zone{margin-top:48px;border-radius:24px;overflow:hidden;text-align:center;padding:clamp(40px,7vw,72px) clamp(20px,5vw,52px);
   background:
@@ -826,7 +826,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
     <div class="phero-r">
       <div class="ph-lbl">GL-01 · Skin rejuvenation</div>
       <h2 class="ph-h">매일 1포로,<br/><em>피부 나이를 되돌립니다.</em></h2>
-      <p class="ph-desc">미백, 탄력, 수분. 피부는 한 가지만 채운다고 돌아오지 않습니다. 그래서 9가지 임상 성분을 하루 한 포, 20ml에 담았습니다. 빠르면 1주부터 변화가 시작되고, 12주쯤이면 제대로 자리를 잡습니다. 언제 어떻게 달라지는지 미리 알려드릴게요.</p>
+      <p class="ph-desc">피부 나이는 바른다고 돌아오지 않습니다. 복합적인 성분들의 꾸준한 섭취로 안쪽에서부터 케어해야 합니다. glo의 GL-01은 9가지 성분을 과학적인 근거를 바탕으로 전문가들의 임상 실험을 통해 만들어졌습니다. 빠르면 1주부터 변화가 시작되고, 3개월차부턴 눈에 띄게 피부가 어려졌음을 느끼게 됩니다.</p>
       <div class="buy-box">
         <div class="opt-list" role="radiogroup" aria-label="구성 선택">
           <button type="button" class="opt active" data-key="1m" role="radio" aria-checked="true">
@@ -915,7 +915,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
 <!-- #3 메커니즘 (CSS) -->
 <section class="po-sec po-mech">
   <div class="ctr po-mech-in">
-    <h2 class="po-h">피부 나이가 <em>거꾸로</em> 가는 이유</h2>
+    <h2 class="po-h">피부 나이가 <em>젊어지는</em> 단계 구조</h2>
     <p class="po-mech-sub">겉에 바르는 게 아니라, 속에서 만드는 차이</p>
     <div class="po-mech-steps">
       <div class="po-mech-step">
@@ -939,7 +939,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       </div>
     </div>
     <div class="po-mech-zone">
-      <div class="po-mech-zone-h">[피부 속 4가지 작용]</div>
+      <div class="po-mech-zone-h">[각 4가지 단계를 위한 성분 구조]</div>
       <div class="po-mech-grid">
         <div class="po-mech-cell"><div class="t2">피부 표면 <span class="tag">[미백]</span></div><div class="s">글루타치온, 나이아신아미드,<br>화이트토마토, L-시스테인</div></div>
         <div class="po-mech-cell"><div class="t2">피부 장벽 <span class="tag">[수분]</span></div><div class="s">히알루론산, 밀크세라마이드</div></div>
@@ -948,11 +948,11 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       </div>
       <div class="po-mech-tri">
         <h3 class="po-mech-tri-h"><em>모공 · 피지</em> 개선으로 탄력 회복까지.</h3>
-        <p class="po-mech-tri-sub">늘어진 모공은 피지 → 산화 → 탄력 저하로 이어지는 연쇄 반응. 식물유래 11종 특허 복합물이 단계마다 잡아요.</p>
+        <p class="po-mech-tri-sub">늘어진 모공은 피지 → 산화 → 탄력 저하로 이어지는 연쇄적인 반응입니다. 식물 유래 11종 특허 복합물이 이 단계를 차단해 버립니다.</p>
         <div class="po-mech-cols">
-          <div class="po-mech-col"><div class="h">피지 억제</div><div class="s">피지 생성 신호 완화</div></div>
-          <div class="po-mech-col"><div class="h">산화 차단</div><div class="s">식물 항산화 복합</div></div>
-          <div class="po-mech-col"><div class="h">탄력 보호</div><div class="s">모공 테두리 보호</div></div>
+          <div class="po-mech-col"><div class="h">피지 억제</div></div>
+          <div class="po-mech-col"><div class="h">산화 차단</div></div>
+          <div class="po-mech-col"><div class="h">탄력 보호</div></div>
         </div>
         <p class="po-mech-pore-tag">Tightening-PB Complex® · 특허 KR 10-2911449</p>
       </div>
