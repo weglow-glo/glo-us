@@ -38,6 +38,37 @@ export default function ChromeBehaviors() {
     return () => document.removeEventListener("click", onClick);
   }, [router]);
 
+  // Scroll-reveal for the about-page timeline rows. JS adds the hidden class so
+  // no-JS visitors still see everything; reduced-motion skips the effect.
+  useEffect(() => {
+    const rows = [...document.querySelectorAll<HTMLElement>(".tl-row")];
+    if (!rows.length) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    rows.forEach((r) => r.classList.add("tl-reveal"));
+    let raf = 0;
+    const reveal = () => {
+      raf = 0;
+      const line = window.innerHeight * 0.88;
+      let remaining = false;
+      rows.forEach((r) => {
+        if (r.classList.contains("tl-in")) return;
+        if (r.getBoundingClientRect().top < line) r.classList.add("tl-in");
+        else remaining = true;
+      });
+      if (!remaining) window.removeEventListener("scroll", onScroll);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(reveal);
+    };
+    reveal(); // reveal whatever is already above the fold on load
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [pathname]);
+
   useEffect(() => {
     const links = document.querySelectorAll<HTMLAnchorElement>(".nav-links a");
     links.forEach((a) => {
