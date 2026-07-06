@@ -736,6 +736,17 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
   .pp-cite{text-align:left;}
 }
 
+/* 의사 인터뷰 영상 */
+.po-vid{background:var(--bg-2);border-top:1px solid var(--ink-line);padding:clamp(56px,8vw,90px) 0 clamp(100px,16vw,170px);}
+.po-vid-eyebrow{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--accent);margin-bottom:16px;}
+.po-vid .po-h{max-width:18ch;}
+.po-vid .po-h em{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-style:italic;color:var(--accent);}
+.po-vid-sub{margin-top:16px;max-width:620px;font-size:clamp(13.5px,2.2vw,15px);line-height:1.7;color:var(--ink-mute);}
+.po-vid-frame{margin:38px auto 0;max-width:880px;}
+.po-vid-el{width:100%;aspect-ratio:16/9;border-radius:16px;background:#000;display:block;object-fit:cover;box-shadow:0 24px 60px rgba(58,26,34,.2);}
+.po-vid-cap{margin-top:16px;text-align:center;font-size:13px;color:var(--ink-soft);letter-spacing:-.01em;}
+.po-vid-cap b{color:var(--ink);font-weight:700;}
+
 /* glo 특허 성분 — Tightening-PB (dark impact) */
 .po-pb{background:var(--burg-800);color:var(--cream);padding:clamp(72px,10vw,120px) 0;}
 .po-pb-eyebrow{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.05em;color:var(--burg-50);margin-bottom:18px;}
@@ -894,6 +905,20 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <span class="po-banner-off">Off</span>
     </div>
     <p class="po-banner-sub">7월 22일 정식 출시되면 정상가로 돌아갑니다.<br>이 가격은 지금, 사전결제로만 만나실 수 있습니다.</p>
+  </div>
+</section>
+
+<!-- 의사 인터뷰 영상 -->
+<section class="po-vid" id="doctor-video">
+  <div class="ctr">
+    <h2 class="po-h">glo GL-01의 효과,<br/><em>직접 들어보세요</em>.</h2>
+    <p class="po-vid-sub">공동 개발을 이끈 Dr. James Mercer가 GL-01의 성분 설계 이유를 직접 이야기합니다.</p>
+    <figure class="po-vid-frame">
+      <video class="po-vid-el" controls playsinline preload="none" poster="/assets/video/interview-poster.jpg">
+        <source src="/assets/video/dr-james-interview.mp4" type="video/mp4"/>
+      </video>
+      <figcaption class="po-vid-cap"><b>Dr. James Mercer</b> · PhD in Nutritional Science · glo GL-01 공동 개발 리드 · 1:47</figcaption>
+    </figure>
   </div>
 </section>
 
