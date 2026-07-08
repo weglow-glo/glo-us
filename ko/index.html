@@ -540,7 +540,11 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
   <div class="nav-i">
     <div class="nav-l">
       <a href="/ko/" class="logo">glo<span class="dot">.</span></a>
-      <div class="nav-links">
+      <button type="button" class="nav-burger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="nav-menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-links" id="nav-menu">
+        <a href="/ko/">Home</a>
         <a href="/ko/product.html">GL-01</a>
         <a href="/ko/science.html">Science</a>
         <a href="/ko/about.html">About</a>

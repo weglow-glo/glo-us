@@ -38,6 +38,42 @@ export default function ChromeBehaviors() {
     return () => document.removeEventListener("click", onClick);
   }, [router]);
 
+  // Mobile nav: the hamburger toggles the links dropdown (< 640px). Closes on
+  // outside click, Escape, and on route change (the effect re-runs).
+  useEffect(() => {
+    const burger = document.querySelector<HTMLButtonElement>(".nav-burger");
+    const menu = document.querySelector<HTMLElement>(".nav-links");
+    if (!burger || !menu) return;
+
+    const close = () => {
+      menu.classList.remove("is-open");
+      burger.setAttribute("aria-expanded", "false");
+    };
+    close(); // also collapses the menu after a client-side navigation
+
+    const onBurger = (e: MouseEvent) => {
+      e.stopPropagation();
+      const open = menu.classList.toggle("is-open");
+      burger.setAttribute("aria-expanded", String(open));
+    };
+    const onDocClick = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (!menu.contains(t) && !burger.contains(t)) close();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+    };
+
+    burger.addEventListener("click", onBurger);
+    document.addEventListener("click", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      burger.removeEventListener("click", onBurger);
+      document.removeEventListener("click", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [pathname]);
+
   // Scroll-reveal for the about-page timeline rows. JS adds the hidden class so
   // no-JS visitors still see everything; reduced-motion skips the effect.
   useEffect(() => {
