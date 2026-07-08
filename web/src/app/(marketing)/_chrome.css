@@ -45,19 +45,15 @@
   .nav-burger:active { background: rgba(138, 74, 82, 0.08); }
   .nav-burger span {
     display: block;
-    height: 1.3px;
+    width: 18px;
+    height: 1.5px;
     border-radius: 2px;
     background: var(--ink);
-    transition: transform 0.24s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.16s ease, width 0.24s ease;
+    transition: transform 0.24s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.16s ease;
   }
-  /* staggered widths — quieter, editorial */
-  .nav-burger span:nth-child(1) { width: 18px; }
-  .nav-burger span:nth-child(2) { width: 13px; }
-  .nav-burger span:nth-child(3) { width: 18px; }
-  .nav-burger[aria-expanded="true"] span { width: 18px; }
-  .nav-burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.3px) rotate(45deg); }
+  .nav-burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
   .nav-burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
-  .nav-burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.3px) rotate(-45deg); }
+  .nav-burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
   .nav-links.is-open {
     display: flex;
