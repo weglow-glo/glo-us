@@ -13,6 +13,7 @@ const FILTERS: Array<{ key: string; label: string }> = [
   { key: "shipped", label: "배송중" },
   { key: "delivered", label: "배송완료" },
   { key: "pending", label: "결제대기" },
+  { key: "canceled", label: "결제취소" },
   { key: "failed", label: "실패" },
 ];
 
