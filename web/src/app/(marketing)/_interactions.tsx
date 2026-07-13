@@ -367,9 +367,9 @@ export function ProductInteractions() {
     // BASE→LIMIT by the launch date with organic (irregular) box intervals.
     const scarFill = document.getElementById("po-scar-fill");
     if (scarFill) {
-      const LIMIT = 1000;
-      const BASE = 982;
-      const BASE_TIME = Date.parse("2026-07-09T17:00:00+09:00");
+      const LIMIT = 1100;
+      const BASE = 1003;
+      const BASE_TIME = Date.parse("2026-07-13T14:00:00+09:00");
       const DEADLINE = Date.parse("2026-07-22T00:00:00+09:00");
       const span = DEADLINE - BASE_TIME;
       const need = LIMIT - BASE;
