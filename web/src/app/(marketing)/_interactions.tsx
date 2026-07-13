@@ -449,6 +449,52 @@ export function ProductInteractions() {
       cleanups.push(() => clearInterval(liveIv));
     }
 
+    // 공지 팝업 — 마지막 100박스. "오늘 하루 보지 않기" stores today's date.
+    const notice = document.getElementById("po-notice");
+    if (notice) {
+      const KEY = "glo-notice-100box";
+      let hiddenToday = false;
+      try {
+        hiddenToday = localStorage.getItem(KEY) === new Date().toDateString();
+      } catch {
+        /* storage unavailable → just show */
+      }
+      if (!hiddenToday) {
+        const openT = window.setTimeout(() => {
+          notice.hidden = false;
+          document.body.style.overflow = "hidden";
+        }, 600);
+        const close = () => {
+          notice.hidden = true;
+          document.body.style.overflow = "";
+        };
+        const onClick = (e: Event) => {
+          const t = e.target as HTMLElement;
+          if (t.closest("[data-notice-today]")) {
+            try {
+              localStorage.setItem(KEY, new Date().toDateString());
+            } catch {
+              /* ignore */
+            }
+            close();
+          } else if (t.closest("[data-notice-close]")) {
+            close();
+          }
+        };
+        const onKey = (e: KeyboardEvent) => {
+          if (e.key === "Escape" && !notice.hidden) close();
+        };
+        notice.addEventListener("click", onClick);
+        document.addEventListener("keydown", onKey);
+        cleanups.push(() => {
+          clearTimeout(openT);
+          notice.removeEventListener("click", onClick);
+          document.removeEventListener("keydown", onKey);
+          document.body.style.overflow = "";
+        });
+      }
+    }
+
     return () => cleanups.forEach((c) => c());
   }, []);
 
