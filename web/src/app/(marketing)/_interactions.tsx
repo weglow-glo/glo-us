@@ -367,9 +367,9 @@ export function ProductInteractions() {
     // BASE→LIMIT by the launch date with organic (irregular) box intervals.
     const scarFill = document.getElementById("po-scar-fill");
     if (scarFill) {
-      const LIMIT = 1000;
-      const BASE = 982;
-      const BASE_TIME = Date.parse("2026-07-09T17:00:00+09:00");
+      const LIMIT = 1100;
+      const BASE = 1003;
+      const BASE_TIME = Date.parse("2026-07-13T14:00:00+09:00");
       const DEADLINE = Date.parse("2026-07-22T00:00:00+09:00");
       const span = DEADLINE - BASE_TIME;
       const need = LIMIT - BASE;
@@ -447,6 +447,52 @@ export function ProductInteractions() {
       };
       const liveIv = window.setInterval(drift, 3500);
       cleanups.push(() => clearInterval(liveIv));
+    }
+
+    // 공지 팝업 — 마지막 100박스. "오늘 하루 보지 않기" stores today's date.
+    const notice = document.getElementById("po-notice");
+    if (notice) {
+      const KEY = "glo-notice-100box";
+      let hiddenToday = false;
+      try {
+        hiddenToday = localStorage.getItem(KEY) === new Date().toDateString();
+      } catch {
+        /* storage unavailable → just show */
+      }
+      if (!hiddenToday) {
+        const openT = window.setTimeout(() => {
+          notice.hidden = false;
+          document.body.style.overflow = "hidden";
+        }, 600);
+        const close = () => {
+          notice.hidden = true;
+          document.body.style.overflow = "";
+        };
+        const onClick = (e: Event) => {
+          const t = e.target as HTMLElement;
+          if (t.closest("[data-notice-today]")) {
+            try {
+              localStorage.setItem(KEY, new Date().toDateString());
+            } catch {
+              /* ignore */
+            }
+            close();
+          } else if (t.closest("[data-notice-close]")) {
+            close();
+          }
+        };
+        const onKey = (e: KeyboardEvent) => {
+          if (e.key === "Escape" && !notice.hidden) close();
+        };
+        notice.addEventListener("click", onClick);
+        document.addEventListener("keydown", onKey);
+        cleanups.push(() => {
+          clearTimeout(openT);
+          notice.removeEventListener("click", onClick);
+          document.removeEventListener("keydown", onKey);
+          document.body.style.overflow = "";
+        });
+      }
     }
 
     return () => cleanups.forEach((c) => c());

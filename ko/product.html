@@ -748,6 +748,28 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
 .po-vid-cap b{color:var(--ink);font-weight:700;}
 .po-vid-note{margin-top:12px;text-align:center;font-size:11.5px;color:var(--ink-faint);line-height:1.6;}
 
+/* 공지 팝업 — 마지막 100박스 */
+.po-notice{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
+.po-notice[hidden]{display:none;}
+.po-notice-backdrop{position:absolute;inset:0;background:rgba(26,15,20,.48);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+@keyframes poNoticeIn{from{opacity:0;transform:translateY(14px) scale(.97);}to{opacity:1;transform:none;}}
+.po-notice-card{position:relative;width:min(420px,100%);background:var(--bg-1);border:1px solid rgba(212,181,181,.5);border-radius:20px;padding:clamp(28px,6vw,38px) clamp(22px,5vw,34px) clamp(20px,4vw,26px);box-shadow:0 30px 80px rgba(26,15,20,.35);text-align:center;animation:poNoticeIn .32s cubic-bezier(.2,.7,.2,1);}
+.po-notice-logo{font-family:'Fraunces','Noto Serif KR',serif;font-weight:300;font-size:26px;letter-spacing:-1px;color:var(--ink);line-height:1;}
+.po-notice-logo .dot{font-style:italic;color:var(--accent);}
+.po-notice-eyebrow{margin-top:14px;font-size:11px;font-weight:700;letter-spacing:1.6px;color:var(--accent);}
+.po-notice-card h3{margin:12px 0 0;font-size:clamp(18px,4.4vw,21px);font-weight:700;line-height:1.42;letter-spacing:-.02em;color:var(--ink);}
+.po-notice .po-notice-card h3 em{font-style:normal;color:var(--accent);}
+.po-notice-body{margin:14px 0 0;font-size:13.5px;line-height:1.75;color:var(--ink-soft);text-align:left;word-break:keep-all;}
+.po-notice-body b{color:var(--accent);font-weight:700;}
+.po-notice-sign{margin-top:14px;text-align:right;font-size:12.5px;font-weight:600;color:var(--ink-mute);}
+.po-notice-actions{display:flex;gap:8px;margin-top:22px;padding-top:16px;border-top:1px solid var(--ink-line);}
+.po-notice-actions button{flex:1;padding:13px 10px;border-radius:100px;font-size:13.5px;font-weight:600;cursor:pointer;transition:background .2s,color .2s,border-color .2s;}
+.po-notice-today{background:none;border:1px solid var(--ink-line);color:var(--ink-mute);}
+.po-notice-today:hover{border-color:var(--burg-50);color:var(--ink);}
+.po-notice-close{background:var(--burg-600);border:1px solid var(--burg-600);color:var(--cream);}
+.po-notice-close:hover{background:var(--burg-400);}
+@media (prefers-reduced-motion:reduce){.po-notice-card{animation:none;}}
+
 /* glo 특허 성분 — Tightening-PB (dark impact) */
 .po-pb{background:var(--burg-800);color:var(--cream);padding:clamp(72px,10vw,120px) 0;}
 .po-pb-eyebrow{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.05em;color:var(--burg-50);margin-bottom:18px;}
@@ -818,6 +840,22 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
 
 <a id="main" tabindex="-1" aria-hidden="true"></a>
 
+<!-- 공지 팝업 — 1,000박스 소진 · 마지막 100박스 추가 -->
+<div class="po-notice" id="po-notice" role="dialog" aria-modal="true" aria-labelledby="po-notice-title" hidden>
+  <div class="po-notice-backdrop" data-notice-close></div>
+  <div class="po-notice-card">
+    <div class="po-notice-logo">glo<span class="dot">.</span></div>
+    <div class="po-notice-eyebrow">- 공지 사항 -</div>
+    <h3 id="po-notice-title">준비된 1,000박스 조기 소진,<br/><em>마지막 100박스 추가 생산</em>.</h3>
+    <p class="po-notice-body">초기 준비된 1,000박스가 생각지도 못하게 벌써 모두 소진되었습니다. 그래서 저희가 아주 어렵게 연구진들께 100박스 샘플링을 추가로 요청드렸습니다. 이에, <b>마지막 100박스만 7월 22일 전까지 사전 할인 이벤트로 추가 진행하겠습니다.</b> 많은 관심 주셔서 감사합니다.</p>
+    <div class="po-notice-sign">— glo 운영팀</div>
+    <div class="po-notice-actions">
+      <button type="button" class="po-notice-today" data-notice-today>오늘 하루 보지 않기</button>
+      <button type="button" class="po-notice-close" data-notice-close>닫기</button>
+    </div>
+  </div>
+</div>
+
 <!-- PRODUCT HERO -->
 <section class="phero" id="buy">
   <div class="ctr phero-g">
@@ -879,13 +917,13 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
   <div class="ctr po-scar-in">
     <div class="po-live"><span class="po-live-dot"></span>현재 <b id="po-live-n">47</b>명이 보고 있어요</div>
     <div class="po-scar-top">
-      <span class="po-scar-lbl">사전결제 한정 <b>1,000박스</b></span>
+      <span class="po-scar-lbl">사전결제 한정 <b>1,000+100박스</b></span>
       <span class="po-scar-cd" id="po-scar-cd">정식 출시까지 <b>—</b></span>
     </div>
-    <div class="po-scar-bar"><div class="po-scar-fill" id="po-scar-fill" style="width:98.2%"></div></div>
+    <div class="po-scar-bar"><div class="po-scar-fill" id="po-scar-fill" style="width:91.2%"></div></div>
     <div class="po-scar-foot">
-      <span><b id="po-scar-count">982</b>박스 사전결제 완료</span>
-      <span class="po-scar-left"><b id="po-scar-left">18</b>박스 남음</span>
+      <span><b id="po-scar-count">1,003</b>박스 사전결제 완료</span>
+      <span class="po-scar-left"><b id="po-scar-left">97</b>박스 남음</span>
     </div>
   </div>
 </section>
