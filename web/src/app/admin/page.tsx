@@ -78,12 +78,20 @@ export default async function AdminPage({
         <h1 className="font-sans text-3xl font-light text-ink">
           주문 관리 <span className="text-sm text-ink-mute">({orders.length})</span>
         </h1>
-        <a
-          href={exportHref}
-          className="rounded-full bg-burg-600 px-5 py-2.5 text-sm font-semibold text-bg-1 transition hover:bg-burg-400"
-        >
-          CSV 내보내기
-        </a>
+        <div className="flex items-center gap-2">
+          <a
+            href="/admin/po-export"
+            className="rounded-full border border-burg-600 px-5 py-2.5 text-sm font-semibold text-burg-600 transition hover:bg-burg-600 hover:text-bg-1"
+          >
+            발주 CSV
+          </a>
+          <a
+            href={exportHref}
+            className="rounded-full bg-burg-600 px-5 py-2.5 text-sm font-semibold text-bg-1 transition hover:bg-burg-400"
+          >
+            CSV 내보내기
+          </a>
+        </div>
       </div>
 
       {/* Settled revenue */}
