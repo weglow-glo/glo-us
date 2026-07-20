@@ -554,3 +554,155 @@ export function ScienceInteractions() {
 
   return null;
 }
+
+/**
+ * Landing-page motion: hero entrance choreography, scroll-driven section
+ * reveals, stat count-ups, and a subtle hero parallax. GSAP is imported
+ * dynamically so other marketing pages pay zero bundle cost. Everything is
+ * additive — with JS off (or reduced motion) the page renders untouched.
+ */
+export function LandingInteractions() {
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let disposed = false;
+    const cleanups: Array<() => void> = [];
+
+    (async () => {
+      const [{ gsap }, { ScrollTrigger }] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ]);
+      if (disposed) return;
+      gsap.registerPlugin(ScrollTrigger);
+
+      // If the tab is hidden (opened in background), rAF doesn't run — defer
+      // init until first visible so nothing sits at its hidden "from" state
+      // and the hero choreography plays when the page is actually seen.
+      if (document.hidden) {
+        await new Promise<void>((resolve) => {
+          const onVis = () => {
+            if (!document.hidden) {
+              document.removeEventListener("visibilitychange", onVis);
+              resolve();
+            }
+          };
+          document.addEventListener("visibilitychange", onVis);
+          cleanups.push(() => document.removeEventListener("visibilitychange", onVis));
+        });
+        if (disposed) return;
+      }
+
+      const ctx = gsap.context(() => {
+        // ── 1) Hero entrance choreography ─────────────────────────────
+        const heroBits = [
+          ".hero .ey",
+          ".hero h1",
+          ".hero .hero-sub",
+          ".hero .hero-cta",
+          ".hero .hero-attrib",
+        ].filter((s) => document.querySelector(s));
+        if (heroBits.length) {
+          const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+          tl.fromTo(
+            heroBits,
+            { y: 26, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.85, stagger: 0.11 },
+          );
+          const vid = document.querySelector(".hero .hero-video");
+          if (vid) {
+            tl.fromTo(
+              vid,
+              { scale: 1.045, opacity: 0 },
+              { scale: 1, opacity: 1, duration: 1.15, ease: "power2.out" },
+              0.25,
+            );
+          }
+        }
+
+        // ── 2) Scroll reveals — every section after the hero ──────────
+        document
+          .querySelectorAll<HTMLElement>(
+            "section.thesis, section.out, section.timeline, section.ai-sec, section.prod, section.sci-tease, section.test, section.advisors, section.wait, section.final",
+          )
+          .forEach((sec) => {
+            gsap.fromTo(
+              sec,
+              { y: 44, opacity: 0 },
+              {
+                y: 0,
+                opacity: 1,
+                duration: 0.9,
+                ease: "power3.out",
+                scrollTrigger: { trigger: sec, start: "top 86%", once: true },
+              },
+            );
+          });
+
+        // Card grids stagger in a touch after their section.
+        [".thesis-stat", ".ai-stat", ".doc", ".tl-cell"].forEach((sel) => {
+          const items = gsap.utils.toArray<HTMLElement>(sel);
+          if (items.length < 2) return;
+          gsap.fromTo(
+            items,
+            { y: 26, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.7,
+              ease: "power2.out",
+              stagger: 0.09,
+              scrollTrigger: { trigger: items[0], start: "top 88%", once: true },
+            },
+          );
+        });
+
+        // ── 3) Stat count-ups (leading number, suffix preserved) ──────
+        document
+          .querySelectorAll<HTMLElement>(".thesis-stat b, .ai-stat-n em")
+          .forEach((el) => {
+            const raw = el.textContent ?? "";
+            const m = raw.match(/^([0-9,.]+)(.*)$/);
+            if (!m) return;
+            const target = parseFloat(m[1].replace(/,/g, ""));
+            if (!isFinite(target) || target <= 0) return;
+            const suffix = m[2] ?? "";
+            const state = { n: 0 };
+            gsap.to(state, {
+              n: target,
+              duration: 1.4,
+              ease: "power2.out",
+              scrollTrigger: { trigger: el, start: "top 90%", once: true },
+              onUpdate: () => {
+                el.textContent = `${Math.round(state.n).toLocaleString("ko-KR")}${suffix}`;
+              },
+            });
+          });
+
+        // ── 4) Subtle hero parallax (scrub) ───────────────────────────
+        const heroR = document.querySelector(".hero .hero-r");
+        if (heroR) {
+          gsap.to(heroR, {
+            y: -34,
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".hero",
+              start: "top top",
+              end: "bottom top",
+              scrub: 0.6,
+            },
+          });
+        }
+      });
+
+      cleanups.push(() => ctx.revert());
+    })();
+
+    return () => {
+      disposed = true;
+      cleanups.forEach((c) => c());
+    };
+  }, []);
+
+  return null;
+}
