@@ -623,7 +623,7 @@ export function LandingInteractions() {
         // ── 2) Scroll reveals — every section after the hero ──────────
         document
           .querySelectorAll<HTMLElement>(
-            "section.thesis, section.out, section.timeline, section.ai-sec, section.prod, section.sci-tease, section.test, section.advisors, section.wait, section.final",
+            "section.fscan, section.thesis, section.out, section.timeline, section.ai-sec, section.prod, section.sci-tease, section.test, section.advisors, section.wait, section.final",
           )
           .forEach((sec) => {
             gsap.fromTo(
@@ -696,6 +696,186 @@ export function LandingInteractions() {
       });
 
       cleanups.push(() => ctx.revert());
+
+      // ── 5) 3D face scan (Three.js + MediaPipe canonical mesh) ───────
+      const stage = document.getElementById("fscan-stage");
+      if (stage) {
+        const [THREE, { FACE_V, FACE_E }] = await Promise.all([
+          import("three"),
+          import("./_face-mesh"),
+        ]);
+        if (disposed) return;
+
+        const renderer = new THREE.WebGLRenderer({
+          alpha: true,
+          antialias: true,
+          powerPreference: "low-power",
+        });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        stage.prepend(renderer.domElement);
+
+        const scene = new THREE.Scene();
+        const cam = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+        cam.position.set(0, 0, 22);
+        const group = new THREE.Group();
+        group.position.y = 0.4;
+        scene.add(group);
+
+        // Points (vertex-colored so the scan band can sweep through them).
+        const n = FACE_V.length;
+        const pos = new Float32Array(n * 3);
+        FACE_V.forEach((p, i) => pos.set(p, i * 3));
+        const colors = new Float32Array(n * 3);
+        const pgeo = new THREE.BufferGeometry();
+        pgeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+        pgeo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+        const points = new THREE.Points(
+          pgeo,
+          new THREE.PointsMaterial({ size: 0.17, vertexColors: true, transparent: true, opacity: 0.95 }),
+        );
+        group.add(points);
+
+        // Wireframe edges — quiet rose, low opacity.
+        const epos = new Float32Array(FACE_E.length * 6);
+        FACE_E.forEach(([a, b], i) => {
+          epos.set(FACE_V[a], i * 6);
+          epos.set(FACE_V[b], i * 6 + 3);
+        });
+        const lgeo = new THREE.BufferGeometry();
+        lgeo.setAttribute("position", new THREE.BufferAttribute(epos, 3));
+        const lines = new THREE.LineSegments(
+          lgeo,
+          new THREE.LineBasicMaterial({ color: 0xb88787, transparent: true, opacity: 0.16 }),
+        );
+        group.add(lines);
+
+        const resize = () => {
+          const r = stage.getBoundingClientRect();
+          if (!r.width || !r.height) return;
+          renderer.setSize(r.width, r.height, false);
+          cam.aspect = r.width / r.height;
+          cam.updateProjectionMatrix();
+        };
+        resize();
+        const ro = new ResizeObserver(resize);
+        ro.observe(stage);
+
+        // Pointer tilt (desktop) — small, so it reads as depth not gimmick.
+        let px = 0;
+        let py = 0;
+        const onMove = (e: PointerEvent) => {
+          px = e.clientX / window.innerWidth - 0.5;
+          py = e.clientY / window.innerHeight - 0.5;
+        };
+        window.addEventListener("pointermove", onMove, { passive: true });
+
+        // Scroll adds yaw across the section (the "왔다갔다").
+        let scrollRot = 0;
+        const rotST = ScrollTrigger.create({
+          trigger: ".fscan",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.5,
+          onUpdate: (self) => {
+            scrollRot = (self.progress - 0.5) * 1.15;
+          },
+        });
+
+        // Metric bars fill when the section arrives.
+        document.querySelectorAll<HTMLElement>(".fm-fill").forEach((f) => {
+          gsap.fromTo(
+            f,
+            { width: "0%" },
+            {
+              width: `${f.dataset.w ?? 0}%`,
+              duration: 1.1,
+              ease: "power2.out",
+              scrollTrigger: { trigger: f, start: "top 92%", once: true },
+            },
+          );
+        });
+
+        const tags = [...stage.querySelectorAll<HTMLElement>(".fscan-tag")].map((el) => ({
+          el,
+          i: parseInt(el.dataset.anchor ?? "0", 10),
+        }));
+        const scanEl = stage.querySelector<HTMLElement>(".fscan-scanline");
+        const v3 = new THREE.Vector3();
+        const YMAX = 9;
+
+        // Render only while the section is near the viewport.
+        let raf = 0;
+        let running = false;
+        const clock = new THREE.Clock();
+        const render = () => {
+          raf = requestAnimationFrame(render);
+          const t = clock.getElapsedTime();
+          const ramp = Math.min(t / 1.6, 1); // global ease-in after first frame
+          group.rotation.y = Math.sin(t * 0.3) * 0.42 + px * 0.38 + scrollRot;
+          group.rotation.x = Math.sin(t * 0.19) * 0.07 + py * 0.2;
+
+          // Scan band sweeps vertically through the point colors.
+          const scanY = Math.sin(t * 0.45) * (YMAX * 0.72);
+          for (let i = 0; i < n; i++) {
+            const k = Math.max(0, 1 - Math.abs(FACE_V[i][1] - scanY) / 1.5);
+            colors[i * 3] = 0.7 + k * 0.28;
+            colors[i * 3 + 1] = 0.62 + k * 0.16;
+            colors[i * 3 + 2] = 0.62 + k * 0.16;
+          }
+          (pgeo.attributes.color as InstanceType<typeof THREE.BufferAttribute>).needsUpdate = true;
+          if (scanEl) {
+            scanEl.style.top = `${50 - (scanY / YMAX) * 36}%`;
+            scanEl.style.opacity = String(0.75 * ramp);
+          }
+
+          renderer.render(scene, cam);
+
+          // Project HUD tags onto their anchor vertices; fade when facing away.
+          const w = renderer.domElement.clientWidth;
+          const h = renderer.domElement.clientHeight;
+          for (const { el, i } of tags) {
+            const p = FACE_V[i];
+            v3.set(p[0], p[1], p[2]);
+            group.localToWorld(v3);
+            const facing = Math.min(Math.max((v3.z + 2) / 4, 0), 1);
+            v3.project(cam);
+            el.style.left = `${(v3.x * 0.5 + 0.5) * w}px`;
+            el.style.top = `${(-v3.y * 0.5 + 0.5) * h}px`;
+            el.style.opacity = String(facing * ramp);
+          }
+        };
+        const setRunning = (on: boolean) => {
+          if (on === running) return;
+          running = on;
+          if (on) {
+            clock.start();
+            render();
+          } else {
+            cancelAnimationFrame(raf);
+          }
+        };
+        const visST = ScrollTrigger.create({
+          trigger: ".fscan",
+          start: "top 98%",
+          end: "bottom top",
+          onToggle: (self) => setRunning(self.isActive),
+        });
+        if (visST.isActive) setRunning(true);
+
+        cleanups.push(() => {
+          setRunning(false);
+          rotST.kill();
+          visST.kill();
+          ro.disconnect();
+          window.removeEventListener("pointermove", onMove);
+          pgeo.dispose();
+          lgeo.dispose();
+          (points.material as InstanceType<typeof THREE.PointsMaterial>).dispose();
+          (lines.material as InstanceType<typeof THREE.LineBasicMaterial>).dispose();
+          renderer.dispose();
+          renderer.domElement.remove();
+        });
+      }
     })();
 
     return () => {
