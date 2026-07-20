@@ -368,8 +368,8 @@ export function ProductInteractions() {
     const scarFill = document.getElementById("po-scar-fill");
     if (scarFill) {
       const LIMIT = 1100;
-      const BASE = 1003;
-      const BASE_TIME = Date.parse("2026-07-13T14:00:00+09:00");
+      const BASE = 1070;
+      const BASE_TIME = Date.parse("2026-07-20T13:30:00+09:00");
       const DEADLINE = Date.parse("2026-07-22T00:00:00+09:00");
       const span = DEADLINE - BASE_TIME;
       const need = LIMIT - BASE;
