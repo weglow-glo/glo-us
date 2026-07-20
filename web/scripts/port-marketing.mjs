@@ -22,7 +22,7 @@ const OUT = join(REPO, "web", "src", "app", "(marketing)");
 // `interactions` names a client component exported from (marketing)/_interactions.tsx
 // that re-attaches the page's original inline-script behavior.
 const PAGES = [
-  { src: "index.html", route: "", css: "landing" },
+  { src: "index.html", route: "", css: "landing", interactions: "LandingInteractions" },
   { src: "product.html", route: "product", css: "product", interactions: "ProductInteractions" },
   { src: "science.html", route: "science", css: "science", interactions: "ScienceInteractions" },
   { src: "about.html", route: "about", css: "about" },
@@ -141,8 +141,10 @@ function buildPage({ src, route, css, interactions }) {
   writeFileSync(join(dir, `${css}.css`), styles, "utf8");
 
   // 6) Write page.tsx. JSON.stringify safely escapes the HTML string literal.
+  // Route pages live one level below (marketing)/; the root landing page lives in it.
+  const interactionsPath = route ? "../_interactions" : "./_interactions";
   const importLine = interactions
-    ? `import "./${css}.css";\nimport { ${interactions} } from "../_interactions";`
+    ? `import "./${css}.css";\nimport { ${interactions} } from "${interactionsPath}";`
     : `import "./${css}.css";`;
   const render = interactions
     ? `  return (
