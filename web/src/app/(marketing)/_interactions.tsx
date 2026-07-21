@@ -716,7 +716,7 @@ export function LandingInteractions() {
 
         const scene = new THREE.Scene();
         const cam = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
-        cam.position.set(0, 0, 22);
+        cam.position.set(0, 0, 27);
         const group = new THREE.Group();
         group.position.y = 0.4;
         scene.add(group);
@@ -831,16 +831,17 @@ export function LandingInteractions() {
           renderer.render(scene, cam);
 
           // Project HUD tags onto their anchor vertices; fade when facing away.
-          const w = renderer.domElement.clientWidth;
-          const h = renderer.domElement.clientHeight;
+          // Clamped inside the stage so labels never spill over neighboring UI.
+          const clamp = (x: number, lo: number, hi: number) =>
+            Math.min(Math.max(x, lo), hi);
           for (const { el, i } of tags) {
             const p = FACE_V[i];
             v3.set(p[0], p[1], p[2]);
             group.localToWorld(v3);
-            const facing = Math.min(Math.max((v3.z + 2) / 4, 0), 1);
+            const facing = clamp((v3.z + 2) / 4, 0, 1);
             v3.project(cam);
-            el.style.left = `${(v3.x * 0.5 + 0.5) * w}px`;
-            el.style.top = `${(-v3.y * 0.5 + 0.5) * h}px`;
+            el.style.left = `${clamp((v3.x * 0.5 + 0.5) * 100, 8, 92)}%`;
+            el.style.top = `${clamp((-v3.y * 0.5 + 0.5) * 100, 6, 92)}%`;
             el.style.opacity = String(facing * ramp);
           }
         };
