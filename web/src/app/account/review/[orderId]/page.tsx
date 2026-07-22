@@ -45,7 +45,7 @@ export default async function ReviewPage({
   const admin = createAdminClient();
   const { data: existing } = await admin
     .from("reviews")
-    .select("id, user_id, rating, body, media_status, created_at")
+    .select("id, user_id, rating, body, status, media_status, created_at")
     .eq("order_id", orderId)
     .eq("product_code", PRODUCT.code)
     .maybeSingle<{
@@ -53,12 +53,14 @@ export default async function ReviewPage({
       user_id: string | null;
       rating: number;
       body: string;
+      status: string;
       media_status: string;
       created_at: string;
     }>();
 
   const editable =
     existing &&
+    existing.status === "approved" &&
     existing.user_id === user.id &&
     Date.now() - Date.parse(existing.created_at) <= EDIT_WINDOW_MS;
 
@@ -87,7 +89,11 @@ export default async function ReviewPage({
           </>
         ) : (
           <div className="mt-8 rounded-xl border border-ink-line bg-bg-2 p-6 text-sm leading-relaxed text-ink-soft">
-            이 주문의 리뷰는 <b className="text-ink">게시 완료</b>되었습니다.
+            {existing.status === "hidden" ? (
+              <>이 주문의 리뷰는 운영 정책에 따라 <b className="text-ink">게시가 중단</b>되었습니다. 문의는 채널톡으로 부탁드립니다.</>
+            ) : (
+            <>이 주문의 리뷰는 <b className="text-ink">게시 완료</b>되었습니다.</>
+            )}
             {existing.media_status === "pending" &&
               " 첨부하신 사진·영상은 검수 중이며, 승인되면 공개되고 2,000P가 추가 적립됩니다."}{" "}
             수정 기한(48시간)이 지나 내용은 변경할 수 없습니다. 삭제가 필요하면 채널톡으로

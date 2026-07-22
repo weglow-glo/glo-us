@@ -37,6 +37,12 @@ drop policy if exists "reviews_public_read" on public.reviews;
 create policy "reviews_public_read" on public.reviews
   for select using (status = 'approved');
 
+-- 본인 리뷰는 숨김 상태여도 본인에게는 보인다
+-- (마이페이지에서 '리뷰 쓰기' 버튼이 다시 나타나는 혼란 방지)
+drop policy if exists "reviews_select_own" on public.reviews;
+create policy "reviews_select_own" on public.reviews
+  for select using (auth.uid() = user_id);
+
 -- 2) 포인트 장부 — 잔액은 delta 합. 적립(+)/사용(-)을 한 테이블에 기록한다.
 create table if not exists public.points (
   id uuid primary key default gen_random_uuid(),
