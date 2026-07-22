@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { formatKRW } from "@/lib/product";
 import { CARRIERS } from "@/lib/carriers";
 import { STATUS_LABEL, type OrderStatus } from "./status";
-import { bulkTracking, bulkPrepareAll } from "./actions";
+import { bulkTracking, bulkPrepareAll, resendFailedNotices } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -71,6 +71,14 @@ export default async function AdminPage({
     .returns<{ amount: number; status: string }[]>();
   const totalRevenue = (revenueRows ?? []).reduce((sum, r) => sum + (r.amount ?? 0), 0);
   const settledCount = revenueRows?.length ?? 0;
+
+  // 배송중인데 발송 문자가 아직 안 나간 주문 (발송 실패 등)
+  const { count: unnotifiedCount } = await admin
+    .from("orders")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "shipped")
+    .not("tracking_number", "is", null)
+    .is("shipping_notified_at", null);
   const exportHref = status ? `/admin/export?status=${status}` : "/admin/export";
 
   return (
@@ -141,6 +149,22 @@ export default async function AdminPage({
           결제완료 → 배송준비중 일괄 전환
         </button>
       </form>
+
+      {/* 발송 문자 미발송 건 재발송 */}
+      {!!unnotifiedCount && (
+        <form
+          action={resendFailedNotices}
+          className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-burg-200 bg-bg-3 px-5 py-4"
+        >
+          <div className="text-sm text-ink-soft">
+            배송중이지만 발송 문자가 나가지 않은 주문{" "}
+            <b className="text-ink">{unnotifiedCount}건</b>이 있습니다. 한 번에 25건씩 재발송합니다.
+          </div>
+          <button className="rounded-full bg-burg-600 px-5 py-2 text-sm font-semibold text-bg-1 transition hover:bg-burg-400">
+            발송 문자 재발송
+          </button>
+        </form>
+      )}
 
       {/* Bulk tracking registration */}
       <details className="mt-4 rounded-xl border border-ink-line bg-bg-2 p-5">

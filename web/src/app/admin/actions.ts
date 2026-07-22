@@ -213,3 +213,76 @@ export async function bulkTracking(formData: FormData) {
 
   revalidatePath("/admin");
 }
+
+/**
+ * 발송 문자가 실패한 주문에 다시 보낸다.
+ * (배송중 + 송장번호 있음 + 아직 알림 성공 기록 없음)
+ *
+ * 한 번에 25건씩만 처리한다 — 서버리스 함수 실행 시간 제한 때문이며,
+ * 남은 건이 있으면 버튼을 다시 누르면 된다.
+ */
+export async function resendFailedNotices() {
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("orders")
+    .select("order_id, carrier, tracking_number, customer_name, customer_phone, shipping_address")
+    .eq("status", "shipped")
+    .not("tracking_number", "is", null)
+    .is("shipping_notified_at", null)
+    .limit(25)
+    .returns<
+      {
+        order_id: string;
+        carrier: string | null;
+        tracking_number: string;
+        customer_name: string | null;
+        customer_phone: string | null;
+        shipping_address: { recipient?: string; phone?: string } | null;
+      }[]
+    >();
+
+  // 소량씩 병렬로 — 순차로 돌리면 25건에서도 함수 시간 제한에 걸린다.
+  const CONCURRENCY = 5;
+  const rows = data ?? [];
+  for (let i = 0; i < rows.length; i += CONCURRENCY) {
+    await Promise.all(
+      rows.slice(i, i + CONCURRENCY).map(async (o) => {
+        const to = normalizePhone(o.shipping_address?.phone ?? o.customer_phone);
+        if (!to) {
+          await admin.from("notifications").insert({
+            order_id: o.order_id,
+            kind: "shipped",
+            channel: "lms",
+            status: "failed",
+            error: "연락처 없음 또는 형식 오류",
+          });
+          return;
+        }
+        const r = await sendShippingNotice({
+          to,
+          orderId: o.order_id,
+          name: o.shipping_address?.recipient ?? o.customer_name,
+          carrier: o.carrier,
+          trackingNumber: o.tracking_number,
+        });
+        await admin.from("notifications").insert({
+          order_id: o.order_id,
+          kind: "shipped",
+          channel: r.channel,
+          to_phone: to,
+          status: r.ok ? "sent" : "failed",
+          provider_message_id: r.messageId ?? null,
+          error: r.error ?? null,
+        });
+        if (r.ok) {
+          await admin
+            .from("orders")
+            .update({ shipping_notified_at: new Date().toISOString() })
+            .eq("order_id", o.order_id);
+        }
+      }),
+    );
+  }
+
+  revalidatePath("/admin");
+}
