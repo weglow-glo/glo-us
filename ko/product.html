@@ -437,6 +437,10 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .rev-more{font-size:13px;color:var(--ink);font-weight:500;border:none;background:none;border-bottom:1px solid var(--ink-line);padding:0 0 1px;cursor:pointer;font-family:inherit;margin-left:4px;}
 .rev-more:hover{border-color:var(--accent);}
 .rev-sort{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft);white-space:nowrap;}
+.rev-media-toggle{display:inline-flex;align-items:center;gap:6px;margin-right:14px;padding:8px 14px;border-radius:100px;border:1px solid var(--ink-line);background:var(--bg-2);font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:border-color .15s,background .15s,color .15s;}
+.rev-media-toggle svg{width:15px;height:15px;}
+.rev-media-toggle:hover{border-color:var(--burg-50);color:var(--ink);}
+.rev-media-toggle.is-on{background:var(--burg-600);border-color:var(--burg-600);color:var(--cream);}
 .rev-sort-v{font-weight:500;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:4px;border-bottom:1px solid var(--ink-line);padding-bottom:1px;}
 .rev-sort-l{color:var(--ink-mute);}
 .rev-sort-select{font-family:inherit;font-size:13px;font-weight:500;color:var(--ink);background:none;border:none;border-bottom:1px solid var(--ink-line);padding:2px 18px 3px 2px;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238a4a52' stroke-width='1.4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 2px center;}
@@ -1521,7 +1525,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
           <button class="rev-chip">민감성 피부</button>
         </div>
       </div>
-      <div class="rev-sort"><span class="rev-sort-l">정렬</span><select id="rev-sort" class="rev-sort-select"><option value="rating_desc">평점 높은 순</option><option value="recent">최신순</option><option value="helpful">도움 순</option></select></div>
+      <div class="rev-sort"><button type="button" id="rev-media-only" class="rev-media-toggle" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2.5"/><circle cx="12" cy="13" r="3.6"/><path d="M8.5 6l1.2-2h4.6l1.2 2"/></svg>포토·영상만</button><span class="rev-sort-l">정렬</span><select id="rev-sort" class="rev-sort-select"><option value="rating_desc">평점 높은 순</option><option value="recent">최신순</option><option value="helpful">도움 순</option></select></div>
     </div>
 
     <div class="rev-list" id="rev-list">
