@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { normalizePhone, sendShippingNotice } from "@/lib/notify";
 
 /** Enter a tracking number → 배송중 (dispatched / in transit). */
 export async function markShipped(formData: FormData) {
@@ -139,6 +140,8 @@ export async function cancelOrder(
  */
 export async function bulkTracking(formData: FormData) {
   const raw = String(formData.get("bulk") ?? "");
+  const carrier = String(formData.get("carrier") ?? "").trim() || null;
+  const notify = formData.get("notify") === "on";
   const admin = createAdminClient();
   const now = new Date().toISOString();
 
@@ -151,10 +154,61 @@ export async function bulkTracking(formData: FormData) {
     .map(([orderId, tracking]) => ({ orderId, tracking }));
 
   for (const { orderId, tracking } of rows) {
-    await admin
+    const { data } = await admin
       .from("orders")
-      .update({ status: "shipped", tracking_number: tracking, shipped_at: now })
-      .eq("order_id", orderId);
+      .update({
+        status: "shipped",
+        tracking_number: tracking,
+        carrier,
+        shipped_at: now,
+      })
+      .eq("order_id", orderId)
+      .select("order_id, customer_name, customer_phone, shipping_address")
+      .maybeSingle<{
+        order_id: string;
+        customer_name: string | null;
+        customer_phone: string | null;
+        shipping_address: { recipient?: string; phone?: string } | null;
+      }>();
+
+    if (!notify || !data) continue;
+
+    // 수령인 연락처를 우선한다 (주문자와 받는 사람이 다를 수 있음).
+    const to = normalizePhone(data.shipping_address?.phone ?? data.customer_phone);
+    if (!to) {
+      await admin.from("notifications").insert({
+        order_id: orderId,
+        kind: "shipped",
+        channel: "lms",
+        status: "failed",
+        error: "연락처 없음 또는 형식 오류",
+      });
+      continue;
+    }
+
+    const r = await sendShippingNotice({
+      to,
+      orderId,
+      name: data.shipping_address?.recipient ?? data.customer_name,
+      carrier,
+      trackingNumber: tracking,
+    });
+
+    await admin.from("notifications").insert({
+      order_id: orderId,
+      kind: "shipped",
+      channel: r.channel,
+      to_phone: to,
+      status: r.ok ? "sent" : "failed",
+      provider_message_id: r.messageId ?? null,
+      error: r.error ?? null,
+    });
+    if (r.ok) {
+      await admin
+        .from("orders")
+        .update({ shipping_notified_at: new Date().toISOString() })
+        .eq("order_id", orderId);
+    }
   }
 
   revalidatePath("/admin");
