@@ -167,6 +167,7 @@ export function ProductInteractions() {
       let offset = 0;
       let sort = "rating_desc";
       let q = "";
+      let mediaOnly = false;
       let loading = false;
       const LIMIT = 8;
 
@@ -176,7 +177,7 @@ export function ProductInteractions() {
         loadBtn.disabled = true;
         try {
           const res = await fetch(
-            `/api/reviews?offset=${reset ? 0 : offset}&limit=${LIMIT}&sort=${sort}&q=${encodeURIComponent(q)}`,
+            `/api/reviews?offset=${reset ? 0 : offset}&limit=${LIMIT}&sort=${sort}&q=${encodeURIComponent(q)}${mediaOnly ? "&media=1" : ""}`,
             { cache: "no-store" },
           );
           if (!res.ok) throw new Error("reviews api");
@@ -223,6 +224,17 @@ export function ProductInteractions() {
       };
       sortSel?.addEventListener("change", onSort);
       cleanups.push(() => sortSel?.removeEventListener("change", onSort));
+
+      // 포토·영상만 보기 토글
+      const mediaBtn = document.getElementById("rev-media-only");
+      const onMediaToggle = () => {
+        mediaOnly = !mediaOnly;
+        mediaBtn?.classList.toggle("is-on", mediaOnly);
+        mediaBtn?.setAttribute("aria-pressed", String(mediaOnly));
+        fetchPage(true);
+      };
+      mediaBtn?.addEventListener("click", onMediaToggle);
+      cleanups.push(() => mediaBtn?.removeEventListener("click", onMediaToggle));
 
       const search = document.getElementById("rev-search-input") as HTMLInputElement | null;
       let deb: number | undefined;

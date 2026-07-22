@@ -19,11 +19,18 @@ export async function GET(request: Request) {
   const limit = Math.min(MAX_LIMIT, Math.max(1, Number(url.searchParams.get("limit")) || 8));
   const sort = url.searchParams.get("sort") ?? "rating_desc";
   const q = url.searchParams.get("q")?.trim();
+  const mediaOnly = url.searchParams.get("media") === "1";
 
   const supabase = await createClient();
   let query = supabase.from("reviews").select(COLUMNS, { count: "exact" });
 
   if (q) query = query.ilike("body", `%${q}%`);
+  if (mediaOnly) {
+    // 사진·영상이 있고, 반려로 미디어가 숨겨진 리뷰는 제외
+    query = query
+      .or("photos.neq.[],videos.neq.[]")
+      .in("media_status", ["pending", "approved"]);
+  }
 
   // Ordering. Secondary key keeps pages stable.
   if (sort === "recent") {
