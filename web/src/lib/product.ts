@@ -20,13 +20,14 @@ export type ProductOption = {
   badge?: string;
 };
 
-/** Selectable duration bundles. Price is the trusted server-side amount. */
+/** Selectable duration bundles. Price is the trusted server-side amount.
+ *  Launch pricing (2026-07-22): 119,000/월 소비자가에 수량별 10–30% 할인. */
 export const OPTIONS: ProductOption[] = [
-  { key: "1m", months: 1, label: "1개월 분", price: 59500 },
-  { key: "2m", months: 2, label: "2개월 분", price: 107100, badge: "추천" },
-  { key: "3m", months: 3, label: "3개월 분", price: 142800, badge: "베스트" },
-  { key: "4m", months: 4, label: "4개월 분", price: 166600 },
-  { key: "6m", months: 6, label: "6개월 분", price: 214200 },
+  { key: "1m", months: 1, label: "1개월 분", price: 107100 },
+  { key: "2m", months: 2, label: "2개월 분", price: 202300, badge: "추천" },
+  { key: "3m", months: 3, label: "3개월 분", price: 285600, badge: "베스트" },
+  { key: "4m", months: 4, label: "4개월 분", price: 357000 },
+  { key: "6m", months: 6, label: "6개월 분", price: 499800 },
 ];
 
 export function getOption(key: string | undefined | null): ProductOption {
