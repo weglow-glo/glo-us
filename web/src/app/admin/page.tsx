@@ -83,7 +83,7 @@ export default async function AdminPage({
             href="/admin/po-export"
             className="rounded-full border border-burg-600 px-5 py-2.5 text-sm font-semibold text-burg-600 transition hover:bg-burg-600 hover:text-bg-1"
           >
-            발주 CSV
+            발주 엑셀
           </a>
           <a
             href={exportHref}
