@@ -450,6 +450,19 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .rev-name .loc{font-weight:400;color:var(--ink-mute);font-size:11px;letter-spacing:.6px;text-transform:uppercase;margin-left:6px;}
 .rev-verified{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:500;color:var(--accent);}
 .rev-photos{position:relative;display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.rev-photos:not(.is-pending) img,.rev-photos:not(.is-pending) video{cursor:zoom-in;}
+/* 리뷰 미디어 라이트박스 */
+.rev-lb{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(26,15,20,.93);touch-action:pan-y;}
+.rev-lb[hidden]{display:none;}
+.rev-lb-media{display:flex;align-items:center;justify-content:center;max-width:100vw;max-height:100vh;}
+.rev-lb-media img,.rev-lb-media video{max-width:92vw;max-height:80vh;border-radius:12px;object-fit:contain;box-shadow:0 30px 80px rgba(0,0,0,.5);}
+.rev-lb-close{position:absolute;top:calc(env(safe-area-inset-top,0px) + 16px);right:16px;width:44px;height:44px;border-radius:50%;background:rgba(255,250,250,.12);border:none;color:var(--cream);font-size:22px;line-height:1;cursor:pointer;z-index:2;}
+.rev-lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;background:rgba(255,250,250,.12);border:none;color:var(--cream);font-size:22px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;}
+.rev-lb-nav:disabled{opacity:.25;cursor:default;}
+.rev-lb-prev{left:12px;}
+.rev-lb-next{right:12px;}
+.rev-lb-count{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);left:50%;transform:translateX(-50%);font-size:13px;font-weight:600;letter-spacing:.6px;color:rgba(244,235,235,.85);background:rgba(255,250,250,.12);padding:6px 14px;border-radius:100px;}
+@media (max-width:640px){.rev-lb-nav{display:none;}}
 .rev-photos img,.rev-photos video{width:84px;height:84px;object-fit:cover;border-radius:10px;border:1px solid var(--ink-line);background:#000;}
 .rev-photos.is-pending img,.rev-photos.is-pending video{filter:blur(10px);pointer-events:none;}
 .rev-photos.is-pending{overflow:hidden;border-radius:10px;}
