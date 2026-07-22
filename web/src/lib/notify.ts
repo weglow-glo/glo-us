@@ -152,16 +152,22 @@ export async function sendShippingNotice(opts: ShippingNotice): Promise<NotifyRe
   }
 }
 
-/** 배송완료 7일 후 리뷰 요청 문자 본문 */
-export function reviewRequestMessage(opts: { name: string | null }): string {
+/** 배송완료 7일 후 리뷰 요청 문자 본문. 금액은 지급 정책(app_settings)에서 받는다. */
+export function reviewRequestMessage(opts: {
+  name: string | null;
+  textPoint?: number;
+  totalPoint?: number;
+}): string {
+  const t = (opts.textPoint ?? 3000).toLocaleString("ko-KR");
+  const total = (opts.totalPoint ?? 5000).toLocaleString("ko-KR");
   return [
     `[glo] 일주일 드셔보셨나요?`,
     ``,
     `${opts.name ? opts.name + " 고객님, " : ""}glo GL-01과 함께한 첫 일주일은 어떠셨나요?`,
     ``,
     `후기를 남겨주시면 다음 구매에 쓸 수 있는 포인트를 드립니다.`,
-    `· 텍스트 후기 3,000P`,
-    `· 사진 포함 5,000P`,
+    `· 텍스트 후기 ${t}P`,
+    `· 사진 포함 ${total}P`,
     ``,
     `리뷰 작성`,
     `${SITE}/account`,
@@ -173,6 +179,8 @@ export function reviewRequestMessage(opts: { name: string | null }): string {
 export async function sendReviewRequest(opts: {
   to: string;
   name: string | null;
+  textPoint?: number;
+  totalPoint?: number;
 }): Promise<NotifyResult> {
   const key = process.env.SOLAPI_API_KEY;
   const secret = process.env.SOLAPI_API_SECRET;
