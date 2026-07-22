@@ -1,19 +1,19 @@
-import crypto from "node:crypto";
 import { carrierName, trackingUrlOf } from "./carriers";
 
 /**
- * 배송 알림 발송.
+ * 배송 알림 발송 — 센드온(Sendon).
  *
- * 현재는 문자(LMS)로 보낸다. 알림톡 템플릿 심사가 끝나면 sendShippingNotice의
- * payload만 알림톡(type: "ATA")으로 바꾸면 되고, 솔라피가 알림톡 실패 시 문자로
- * 자동 대체발송하므로 이 함수의 인터페이스는 그대로 둔다.
+ * 지금은 문자(LMS)로 보낸다. 알림톡 템플릿 심사가 끝나면 알림톡 API로 바꾸고,
+ * fallback을 CUSTOM/LMS로 두면 알림톡 실패 시 이 문구가 문자로 자동 대체발송된다.
+ * (알림톡 body: { sendProfileId, templateId, to:[{phone, variables}], fallback })
  *
  * 필요한 환경변수 (web/.env.local — 절대 커밋하지 말 것):
- *   SOLAPI_API_KEY, SOLAPI_API_SECRET, SOLAPI_SENDER   (발신번호: 사전 등록된 번호만 가능)
- * 알림톡 전환 시 추가: SOLAPI_PFID, SOLAPI_TEMPLATE_SHIPPED
+ *   SENDON_ID        센드온 계정 ID
+ *   SENDON_API_KEY   콘솔에서 발급한 API Key
+ *   SENDON_SENDER    사전 등록된 발신번호 (숫자만)
  */
 
-const API = "https://api.solapi.com/messages/v4/send-many/detail";
+const API = "https://api.sendon.io/v2/messages/sms";
 
 export type NotifyResult = {
   ok: boolean;
@@ -27,16 +27,6 @@ export function normalizePhone(raw: string | null | undefined): string | null {
   const d = String(raw ?? "").replace(/\D/g, "");
   if (d.length < 10 || d.length > 11) return null;
   return d;
-}
-
-function authHeader(key: string, secret: string): string {
-  const date = new Date().toISOString();
-  const salt = crypto.randomBytes(16).toString("hex");
-  const signature = crypto
-    .createHmac("sha256", secret)
-    .update(date + salt)
-    .digest("hex");
-  return `HMAC-SHA256 apiKey=${key}, date=${date}, salt=${salt}, signature=${signature}`;
 }
 
 export function shippingMessage(opts: {
@@ -65,23 +55,22 @@ export async function sendShippingNotice(opts: {
   carrier: string | null;
   trackingNumber: string;
 }): Promise<NotifyResult> {
-  const key = process.env.SOLAPI_API_KEY;
-  const secret = process.env.SOLAPI_API_SECRET;
-  const from = process.env.SOLAPI_SENDER;
-  if (!key || !secret || !from) {
-    return { ok: false, channel: "lms", error: "발송 환경변수(SOLAPI_*) 미설정" };
+  const id = process.env.SENDON_ID;
+  const key = process.env.SENDON_API_KEY;
+  const from = process.env.SENDON_SENDER;
+  if (!id || !key || !from) {
+    return { ok: false, channel: "lms", error: "발송 환경변수(SENDON_*) 미설정" };
   }
 
   const body = {
-    messages: [
-      {
-        to: opts.to,
-        from: from.replace(/\D/g, ""),
-        type: "LMS",
-        subject: "[glo] 상품 발송 안내",
-        text: shippingMessage(opts),
-      },
-    ],
+    type: "LMS",
+    from: from.replace(/\D/g, ""),
+    to: [opts.to],
+    // 한글 32자 제한. 짧게 유지할 것.
+    title: "[glo] 상품 발송 안내",
+    message: shippingMessage(opts),
+    // 배송 안내는 정보성 메시지이므로 광고 아님 (광고 표기 의무 없음).
+    isAd: false,
   };
 
   try {
@@ -89,23 +78,23 @@ export async function sendShippingNotice(opts: {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: authHeader(key, secret),
+        Authorization: `Basic ${Buffer.from(`${id}:${key}`).toString("base64")}`,
       },
       body: JSON.stringify(body),
     });
-    const json = (await res.json()) as {
-      failedMessageList?: Array<{ statusMessage?: string }>;
-      messageList?: Array<{ messageId?: string }>;
+    const json = (await res.json().catch(() => ({}))) as {
+      code?: number;
       message?: string;
+      data?: { groupId?: string };
     };
-    if (!res.ok) {
-      return { ok: false, channel: "lms", error: json.message ?? `HTTP ${res.status}` };
+    if (!res.ok || (json.code && json.code !== 200)) {
+      return {
+        ok: false,
+        channel: "lms",
+        error: json.message ?? `HTTP ${res.status}`,
+      };
     }
-    const failed = json.failedMessageList?.[0];
-    if (failed) {
-      return { ok: false, channel: "lms", error: failed.statusMessage ?? "발송 실패" };
-    }
-    return { ok: true, channel: "lms", messageId: json.messageList?.[0]?.messageId };
+    return { ok: true, channel: "lms", messageId: json.data?.groupId };
   } catch (e) {
     return { ok: false, channel: "lms", error: e instanceof Error ? e.message : String(e) };
   }
