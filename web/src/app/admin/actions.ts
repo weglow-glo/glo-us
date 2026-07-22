@@ -188,6 +188,7 @@ export async function bulkTracking(formData: FormData) {
 
     const r = await sendShippingNotice({
       to,
+      orderId,
       name: data.shipping_address?.recipient ?? data.customer_name,
       carrier,
       trackingNumber: tracking,
