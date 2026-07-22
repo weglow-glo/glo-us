@@ -108,14 +108,11 @@ export default async function AccountPage() {
           </b>
           <span className="ml-1 text-xs text-accent">내역 →</span>
         </Link>
-        <span className="ml-2 text-xs text-ink-faint">
-          리뷰 작성 시 적립 · 적립일로부터 6개월 사용 가능
-          {pointExpiring > 0 && (
-            <b className="ml-1 text-burg-400">
-              · {pointExpiring.toLocaleString("ko-KR")}P가 30일 내 만료 예정
-            </b>
-          )}
-        </span>
+        {pointExpiring > 0 && (
+          <b className="ml-2 text-xs text-burg-400">
+            {pointExpiring.toLocaleString("ko-KR")}P가 30일 내 만료 예정
+          </b>
+        )}
       </p>
 
       {/* Orders */}
