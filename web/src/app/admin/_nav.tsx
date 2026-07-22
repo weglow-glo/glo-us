@@ -14,6 +14,11 @@ const TABS: Array<{ href: string; label: string; match: (p: string) => boolean }
     label: "회원관리",
     match: (p) => p.startsWith("/admin/members"),
   },
+  {
+    href: "/admin/reviews",
+    label: "리뷰관리",
+    match: (p) => p.startsWith("/admin/reviews"),
+  },
 ];
 
 export default function AdminNav() {

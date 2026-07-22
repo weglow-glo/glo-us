@@ -50,6 +50,15 @@ export default async function AccountPage() {
 
   const list = orders ?? [];
 
+  // 배송완료 주문의 리뷰 작성 여부 + 포인트 잔액 (둘 다 RLS로 본인 것만)
+  const orderIds = list.map((o) => o.order_id);
+  const { data: myReviews } = orderIds.length
+    ? await supabase.from("reviews").select("order_id, status").in("order_id", orderIds)
+    : { data: [] as { order_id: string; status: string }[] };
+  const reviewByOrder = new Map((myReviews ?? []).map((r) => [r.order_id, r.status]));
+  const { data: pointRows } = await supabase.from("points").select("delta");
+  const pointBalance = (pointRows ?? []).reduce((s, r) => s + (r.delta ?? 0), 0);
+
   return (
     <main id="main" className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
       <div className="flex items-center justify-between">
@@ -75,6 +84,10 @@ export default async function AccountPage() {
         <span className="text-accent">{name}</span>님, 반가워요.
       </h1>
       {email && <p className="mt-3 text-sm text-ink-soft">{email}</p>}
+      <p className="mt-2 text-sm text-ink-soft">
+        보유 포인트 <b className="font-sans text-accent">{pointBalance.toLocaleString("ko-KR")}P</b>
+        <span className="ml-2 text-xs text-ink-faint">리뷰 작성 시 적립 · 다음 구매에 사용</span>
+      </p>
 
       {/* Orders */}
       <section className="mt-10">
@@ -120,6 +133,19 @@ export default async function AccountPage() {
                       </span>
                     </div>
                   </Link>
+                  {order.status === "delivered" && !reviewByOrder.has(order.order_id) && (
+                    <div className="mt-2 flex items-center justify-between rounded-xl border border-burg-50 bg-bg-3 px-5 py-3">
+                      <span className="text-xs text-ink-soft">
+                        잘 받으셨나요? 후기를 남기면 <b className="text-accent">최대 5,000P</b>를 드려요.
+                      </span>
+                      <Link
+                        href={`/account/review/${order.order_id}`}
+                        className="shrink-0 rounded-full bg-burg-600 px-3.5 py-1.5 text-xs font-semibold text-bg-1 transition hover:bg-burg-400"
+                      >
+                        리뷰 쓰기
+                      </Link>
+                    </div>
+                  )}
                 </li>
               );
             })}
