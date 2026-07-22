@@ -381,6 +381,110 @@ export function ProductInteractions() {
         reviewsRoot.removeEventListener("click", onVote);
         mo.disconnect();
       });
+
+      // 리뷰 미디어 라이트박스 — 썸네일 클릭 시 확대, 좌우/스와이프로 넘김.
+      // 검수 중(is-pending) 미디어는 pointer-events:none이라 열리지 않는다.
+      const lb = document.createElement("div");
+      lb.className = "rev-lb";
+      lb.hidden = true;
+      lb.setAttribute("role", "dialog");
+      lb.setAttribute("aria-modal", "true");
+      lb.setAttribute("aria-label", "리뷰 사진 크게 보기");
+      lb.innerHTML =
+        '<button type="button" class="rev-lb-close" aria-label="닫기">✕</button>' +
+        '<button type="button" class="rev-lb-nav rev-lb-prev" aria-label="이전">‹</button>' +
+        '<div class="rev-lb-media"></div>' +
+        '<button type="button" class="rev-lb-nav rev-lb-next" aria-label="다음">›</button>' +
+        '<span class="rev-lb-count"></span>';
+      document.body.appendChild(lb);
+      const lbMedia = lb.querySelector<HTMLElement>(".rev-lb-media")!;
+      const lbCount = lb.querySelector<HTMLElement>(".rev-lb-count")!;
+      const lbPrev = lb.querySelector<HTMLButtonElement>(".rev-lb-prev")!;
+      const lbNext = lb.querySelector<HTMLButtonElement>(".rev-lb-next")!;
+
+      let lbItems: Array<{ type: "img" | "video"; src: string }> = [];
+      let lbIdx = 0;
+      const lbRender = () => {
+        const it = lbItems[lbIdx];
+        if (!it) return;
+        lbMedia.innerHTML =
+          it.type === "video"
+            ? `<video src="${it.src}" controls autoplay playsinline></video>`
+            : `<img src="${it.src}" alt="리뷰 사진 크게 보기"/>`;
+        const many = lbItems.length > 1;
+        lbCount.style.display = many ? "" : "none";
+        lbPrev.style.display = many ? "" : "none";
+        lbNext.style.display = many ? "" : "none";
+        lbCount.textContent = `${lbIdx + 1} / ${lbItems.length}`;
+        lbPrev.disabled = lbIdx === 0;
+        lbNext.disabled = lbIdx === lbItems.length - 1;
+      };
+      const lbOpen = (items: typeof lbItems, idx: number) => {
+        lbItems = items;
+        lbIdx = idx;
+        lb.hidden = false;
+        document.body.style.overflow = "hidden";
+        lbRender();
+      };
+      const lbClose = () => {
+        lb.hidden = true;
+        lbMedia.innerHTML = ""; // 재생 중 영상 정지
+        document.body.style.overflow = "";
+      };
+      const lbStep = (d: number) => {
+        const next = lbIdx + d;
+        if (next < 0 || next >= lbItems.length) return;
+        lbIdx = next;
+        lbRender();
+      };
+
+      const onThumbClick = (e: Event) => {
+        const t = e.target as HTMLElement;
+        const el = t.closest(".rev-photos:not(.is-pending) img, .rev-photos:not(.is-pending) video");
+        if (!el) return;
+        const wrap = el.closest(".rev-photos")!;
+        const all = [...wrap.querySelectorAll<HTMLElement>("img, video")];
+        const items = all.map((m) => ({
+          type: (m.tagName === "VIDEO" ? "video" : "img") as "img" | "video",
+          src: (m as HTMLImageElement | HTMLVideoElement).src,
+        }));
+        lbOpen(items, all.indexOf(el as HTMLElement));
+      };
+      const onLbClick = (e: Event) => {
+        const t = e.target as HTMLElement;
+        if (t.closest(".rev-lb-close")) return lbClose();
+        if (t.closest(".rev-lb-prev")) return lbStep(-1);
+        if (t.closest(".rev-lb-next")) return lbStep(1);
+        if (!t.closest(".rev-lb-media *")) lbClose(); // 배경 클릭
+      };
+      const onLbKey = (e: KeyboardEvent) => {
+        if (lb.hidden) return;
+        if (e.key === "Escape") lbClose();
+        if (e.key === "ArrowLeft") lbStep(-1);
+        if (e.key === "ArrowRight") lbStep(1);
+      };
+      // 스와이프
+      let touchX: number | null = null;
+      const onTouchStart = (e: TouchEvent) => {
+        touchX = e.touches[0]?.clientX ?? null;
+      };
+      const onTouchEnd = (e: TouchEvent) => {
+        if (touchX === null) return;
+        const dx = (e.changedTouches[0]?.clientX ?? touchX) - touchX;
+        touchX = null;
+        if (Math.abs(dx) > 40) lbStep(dx < 0 ? 1 : -1);
+      };
+      reviewsRoot.addEventListener("click", onThumbClick);
+      lb.addEventListener("click", onLbClick);
+      lb.addEventListener("touchstart", onTouchStart, { passive: true });
+      lb.addEventListener("touchend", onTouchEnd, { passive: true });
+      document.addEventListener("keydown", onLbKey);
+      cleanups.push(() => {
+        reviewsRoot.removeEventListener("click", onThumbClick);
+        document.removeEventListener("keydown", onLbKey);
+        document.body.style.overflow = "";
+        lb.remove();
+      });
     }
 
     // "현재 N명이 보고 있어요" — random 20–80, drifts a little to feel live.

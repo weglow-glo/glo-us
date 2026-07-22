@@ -168,7 +168,8 @@ export function reviewRequestMessage(opts: { name: string | null }): string {
   ].join("\n");
 }
 
-/** 리뷰 요청 문자 1건 (LMS) */
+/** 리뷰 요청 1건 — SOLAPI_TEMPLATE_REVIEW가 채워지면 알림톡, 아니면 문자(LMS).
+ *  알림톡 실패 시에는 같은 요청의 text가 문자로 자동 대체발송된다. */
 export async function sendReviewRequest(opts: {
   to: string;
   name: string | null;
@@ -179,6 +180,24 @@ export async function sendReviewRequest(opts: {
   if (!key || !secret || !from) {
     return { ok: false, channel: "lms", error: "발송 환경변수(SOLAPI_*) 미설정" };
   }
+  const pfId = process.env.SOLAPI_PFID;
+  const templateId = process.env.SOLAPI_TEMPLATE_REVIEW;
+  const useAlimtalk = Boolean(pfId && templateId);
+  const message: Record<string, unknown> = {
+    to: opts.to,
+    from: from.replace(/\D/g, ""),
+    text: reviewRequestMessage(opts),
+    subject: "[glo] 후기 이벤트 안내",
+  };
+  if (useAlimtalk) {
+    message.kakaoOptions = {
+      pfId,
+      templateId,
+      variables: { "#{고객명}": opts.name ?? "고객" },
+      disableSms: false,
+    };
+  }
+  const channel: NotifyResult["channel"] = useAlimtalk ? "alimtalk" : "lms";
   try {
     const res = await fetch(API, {
       method: "POST",
@@ -186,16 +205,7 @@ export async function sendReviewRequest(opts: {
         "Content-Type": "application/json",
         Authorization: authHeader(key, secret),
       },
-      body: JSON.stringify({
-        messages: [
-          {
-            to: opts.to,
-            from: from.replace(/\D/g, ""),
-            text: reviewRequestMessage(opts),
-            subject: "[glo] 후기 이벤트 안내",
-          },
-        ],
-      }),
+      body: JSON.stringify({ messages: [message] }),
     });
     const json = (await res.json().catch(() => ({}))) as {
       failedMessageList?: Array<{ statusMessage?: string }>;
@@ -205,13 +215,13 @@ export async function sendReviewRequest(opts: {
       message?: string;
     };
     if (!res.ok) {
-      return { ok: false, channel: "lms", error: json.errorMessage ?? json.message ?? `HTTP ${res.status}` };
+      return { ok: false, channel, error: json.errorMessage ?? json.message ?? `HTTP ${res.status}` };
     }
     const failed = json.failedMessageList?.[0];
-    if (failed) return { ok: false, channel: "lms", error: failed.statusMessage ?? "발송 실패" };
-    return { ok: true, channel: "lms", messageId: json.messageList?.[0]?.messageId ?? json.groupId };
+    if (failed) return { ok: false, channel, error: failed.statusMessage ?? "발송 실패" };
+    return { ok: true, channel, messageId: json.messageList?.[0]?.messageId ?? json.groupId };
   } catch (e) {
-    return { ok: false, channel: "lms", error: e instanceof Error ? e.message : String(e) };
+    return { ok: false, channel, error: e instanceof Error ? e.message : String(e) };
   }
 }
 
