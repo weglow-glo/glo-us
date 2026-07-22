@@ -1,4 +1,4 @@
-import { carrierName, trackingUrlOf } from "./carriers";
+import { carrierName } from "./carriers";
 import { PRODUCT } from "./product";
 
 /**
@@ -41,10 +41,13 @@ export function trackUrl(orderId: string): string {
 
 export function shippingMessage(opts: {
   name: string | null;
+  orderId: string;
   carrier: string | null;
   trackingNumber: string;
 }): string {
-  const url = trackingUrlOf(opts.carrier, opts.trackingNumber);
+  // 알림톡의 #{배송조회링크}와 같은 주소를 쓴다. 택배사 직링크를 쓰면 택배사가
+  // 바뀌거나 송장이 정정될 때 이미 보낸 링크가 죽는다.
+  const url = trackUrl(opts.orderId);
   const lines = [
     `[glo] 상품이 발송되었습니다.`,
     ``,
@@ -53,7 +56,7 @@ export function shippingMessage(opts: {
     `· 택배사: ${carrierName(opts.carrier)}`,
     `· 송장번호: ${opts.trackingNumber}`,
   ];
-  if (url) lines.push(``, `배송 조회`, url);
+  lines.push(``, `배송 조회`, url);
   return lines.join("\n");
 }
 
