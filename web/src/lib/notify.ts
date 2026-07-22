@@ -151,3 +151,66 @@ export async function sendShippingNotice(opts: ShippingNotice): Promise<NotifyRe
     return { ok: false, channel, error: e instanceof Error ? e.message : String(e) };
   }
 }
+
+/** 배송완료 7일 후 리뷰 요청 문자 본문 */
+export function reviewRequestMessage(opts: { name: string | null }): string {
+  return [
+    `[glo] 일주일 드셔보셨나요?`,
+    ``,
+    `${opts.name ? opts.name + " 고객님, " : ""}glo GL-01과 함께한 첫 일주일은 어떠셨나요?`,
+    ``,
+    `후기를 남겨주시면 다음 구매에 쓸 수 있는 포인트를 드립니다.`,
+    `· 텍스트 후기 3,000P`,
+    `· 사진 포함 5,000P`,
+    ``,
+    `리뷰 작성`,
+    `${SITE}/account`,
+  ].join("\n");
+}
+
+/** 리뷰 요청 문자 1건 (LMS) */
+export async function sendReviewRequest(opts: {
+  to: string;
+  name: string | null;
+}): Promise<NotifyResult> {
+  const key = process.env.SOLAPI_API_KEY;
+  const secret = process.env.SOLAPI_API_SECRET;
+  const from = process.env.SOLAPI_SENDER;
+  if (!key || !secret || !from) {
+    return { ok: false, channel: "lms", error: "발송 환경변수(SOLAPI_*) 미설정" };
+  }
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authHeader(key, secret),
+      },
+      body: JSON.stringify({
+        messages: [
+          {
+            to: opts.to,
+            from: from.replace(/\D/g, ""),
+            text: reviewRequestMessage(opts),
+            subject: "[glo] 후기 이벤트 안내",
+          },
+        ],
+      }),
+    });
+    const json = (await res.json().catch(() => ({}))) as {
+      failedMessageList?: Array<{ statusMessage?: string }>;
+      messageList?: Array<{ messageId?: string }>;
+      groupId?: string;
+      errorMessage?: string;
+      message?: string;
+    };
+    if (!res.ok) {
+      return { ok: false, channel: "lms", error: json.errorMessage ?? json.message ?? `HTTP ${res.status}` };
+    }
+    const failed = json.failedMessageList?.[0];
+    if (failed) return { ok: false, channel: "lms", error: failed.statusMessage ?? "발송 실패" };
+    return { ok: true, channel: "lms", messageId: json.messageList?.[0]?.messageId ?? json.groupId };
+  } catch (e) {
+    return { ok: false, channel: "lms", error: e instanceof Error ? e.message : String(e) };
+  }
+}

@@ -130,6 +130,9 @@ export function ProductInteractions() {
         helpful_up: number;
         helpful_down: number;
         review_date: string;
+        photos?: string[];
+        videos?: string[];
+        media_status?: string;
       };
       const esc = (s: unknown) =>
         String(s ?? "").replace(
@@ -139,7 +142,25 @@ export function ProductInteractions() {
       const card = (r: Rev) => {
         const stars = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
         const date = (r.review_date || "").replace(/-/g, ".");
-        return `<article class="rev-item" data-id="${esc(r.id)}"><div class="rev-author"><div class="rev-name">${esc(r.author_name)} <span class="loc">${esc(r.location)}</span></div><div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div></div><div class="rev-body"><div class="rev-body-stars" aria-label="${r.rating}점 / 5점">${stars}</div><p class="rev-text">${esc(r.body)}</p></div><div class="rev-meta"><div class="rev-date">${date}</div><div class="rev-helpful"><span class="rev-helpful-q">도움됐나요?</span><button class="rev-vote" data-dir="up">↑ <span>${r.helpful_up}</span></button><button class="rev-vote" data-dir="down">↓ <span>${r.helpful_down}</span></button></div></div></article>`;
+        // 미디어: 검수 전(pending)엔 블러 + "검수 중", 반려(rejected)면 숨김
+        const ms = r.media_status ?? "none";
+        const showMedia = ms === "approved" || ms === "pending";
+        const mediaHtml = !showMedia
+          ? ""
+          : [
+              ...(r.photos ?? []).map(
+                (u) => `<img src="${esc(u)}" alt="리뷰 사진" loading="lazy"/>`,
+              ),
+              ...(r.videos ?? []).map(
+                (u) => `<video src="${esc(u)}" controls preload="metadata" playsinline></video>`,
+              ),
+            ].join("");
+        const photos = mediaHtml
+          ? `<div class="rev-photos${ms === "pending" ? " is-pending" : ""}">${mediaHtml}${
+              ms === "pending" ? `<span class="rev-media-badge">검수 중</span>` : ""
+            }</div>`
+          : "";
+        return `<article class="rev-item" data-id="${esc(r.id)}"><div class="rev-author"><div class="rev-name">${esc(r.author_name)} <span class="loc">${esc(r.location)}</span></div><div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div></div><div class="rev-body"><div class="rev-body-stars" aria-label="${r.rating}점 / 5점">${stars}</div><p class="rev-text">${esc(r.body)}</p>${photos}</div><div class="rev-meta"><div class="rev-date">${date}</div><div class="rev-helpful"><span class="rev-helpful-q">도움됐나요?</span><button class="rev-vote" data-dir="up">↑ <span>${r.helpful_up}</span></button><button class="rev-vote" data-dir="down">↓ <span>${r.helpful_down}</span></button></div></div></article>`;
       };
 
       let dynamic = false;

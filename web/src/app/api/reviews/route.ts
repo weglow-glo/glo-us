@@ -3,7 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-const COLUMNS = "id, author_name, location, rating, body, helpful_up, helpful_down, review_date";
+// RLS(reviews_public_read)가 승인된 리뷰만 돌려주므로 status 필터는 불필요.
+const COLUMNS =
+  "id, author_name, location, rating, body, helpful_up, helpful_down, review_date, photos, videos, media_status";
 const MAX_LIMIT = 24;
 
 /**

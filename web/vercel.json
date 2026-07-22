@@ -4,6 +4,10 @@
     {
       "path": "/api/cron/track-sync",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/review-request",
+      "schedule": "0 1 * * *"
     }
   ]
 }

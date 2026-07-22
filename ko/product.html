@@ -449,6 +449,11 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .rev-name{font-size:14px;font-weight:500;color:var(--ink);}
 .rev-name .loc{font-weight:400;color:var(--ink-mute);font-size:11px;letter-spacing:.6px;text-transform:uppercase;margin-left:6px;}
 .rev-verified{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:500;color:var(--accent);}
+.rev-photos{position:relative;display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.rev-photos img,.rev-photos video{width:84px;height:84px;object-fit:cover;border-radius:10px;border:1px solid var(--ink-line);background:#000;}
+.rev-photos.is-pending img,.rev-photos.is-pending video{filter:blur(10px);pointer-events:none;}
+.rev-photos.is-pending{overflow:hidden;border-radius:10px;}
+.rev-media-badge{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;letter-spacing:.4px;color:var(--ink);background:rgba(255,250,250,.35);border-radius:10px;}
 .rev-verified-dot{width:14px;height:14px;border-radius:50%;background:var(--accent);color:var(--cream);display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;line-height:1;}
 .rev-body{display:flex;flex-direction:column;gap:10px;}
 .rev-body-stars{display:flex;color:var(--accent);font-size:14px;letter-spacing:1px;}
@@ -877,7 +882,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
 <!-- Sticky 섹션 탭 (상세정보 / 리뷰) -->
 <nav class="ptabs" aria-label="섹션 바로가기">
   <a href="#detail" class="ptab is-active">상세정보</a>
-  <a href="#reviews" class="ptab">체험단 후기 <span class="ptab-n">753</span></a>
+  <a href="#reviews" class="ptab">고객 후기 <span class="ptab-n">753</span></a>
 </nav>
 
 <!-- 공식 런칭 이벤트 배너 (CSS) -->
@@ -1466,9 +1471,9 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
   <div class="ctr">
     <div class="rev-head">
       <div>
-        <div class="ey clay"><span class="dash"></span>출시 전 체험단 후기</div>
+        <div class="ey clay"><span class="dash"></span>고객 후기</div>
         <h2>먼저 써본 분들이<br/><em>전하는</em> 이야기.</h2>
-        <p class="rev-intro">한국 정식 출시 전, <b>체험단 1,000명</b>이 직접 사용하고 <b>753개</b>의 후기를 남겼습니다. 좋은 후기만 골라 싣지 않고, 받은 그대로 공개합니다.</p>
+        <p class="rev-intro">지금까지 <b>753개</b>의 후기가 쌓였습니다. 좋은 후기만 골라 싣지 않고, 받은 그대로 공개합니다.</p>
       </div>
       <div class="rev-stats">
         <div class="rev-summary">
@@ -1512,7 +1517,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <article class="rev-item">
         <div class="rev-author">
           <div class="rev-name">김 OO <span class="loc">서울</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
@@ -1531,7 +1536,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <article class="rev-item">
         <div class="rev-author">
           <div class="rev-name">박 OO <span class="loc">서울</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
@@ -1550,7 +1555,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <article class="rev-item">
         <div class="rev-author">
           <div class="rev-name">이 OO <span class="loc">부산</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
@@ -1569,7 +1574,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <article class="rev-item">
         <div class="rev-author">
           <div class="rev-name">최 OO <span class="loc">성남</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
@@ -1588,7 +1593,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <article class="rev-item">
         <div class="rev-author">
           <div class="rev-name">정 OO <span class="loc">대구</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
@@ -1607,7 +1612,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <article class="rev-item">
         <div class="rev-author">
           <div class="rev-name">한 OO <span class="loc">서울</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
@@ -1626,7 +1631,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <article class="rev-item is-collapsed">
         <div class="rev-author">
           <div class="rev-name">윤 OO <span class="loc">인천</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
@@ -1645,7 +1650,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <article class="rev-item is-collapsed">
         <div class="rev-author">
           <div class="rev-name">강 OO <span class="loc">서울</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
@@ -1664,7 +1669,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <article class="rev-item is-collapsed">
         <div class="rev-author">
           <div class="rev-name">조 OO <span class="loc">수원</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
@@ -1683,7 +1688,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <article class="rev-item is-collapsed">
         <div class="rev-author">
           <div class="rev-name">임 OO <span class="loc">광주</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
@@ -1702,7 +1707,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <article class="rev-item is-collapsed">
         <div class="rev-author">
           <div class="rev-name">서 OO <span class="loc">대전</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
@@ -1721,7 +1726,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <article class="rev-item is-collapsed">
         <div class="rev-author">
           <div class="rev-name">신 OO <span class="loc">서울</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
@@ -1740,7 +1745,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <article class="rev-item is-collapsed">
         <div class="rev-author">
           <div class="rev-name">오 OO <span class="loc">용인</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
@@ -1759,7 +1764,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <article class="rev-item is-collapsed">
         <div class="rev-author">
           <div class="rev-name">배 OO <span class="loc">제주</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
@@ -1778,7 +1783,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <article class="rev-item is-collapsed">
         <div class="rev-author">
           <div class="rev-name">문 OO <span class="loc">서울</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>체험단 후기</div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
         </div>
         <div class="rev-body">
           <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
