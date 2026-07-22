@@ -1,9 +1,11 @@
+import ExcelJS from "exceljs";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
 /**
- * 발주 CSV — matches the 위글로우 수기발주 양식 (업로드용 sheet, 23 columns).
+ * 발주 엑셀 — matches the 위글로우 수기발주 양식 (업로드용 sheet, 23 columns).
+ * Emits .xlsx because the shipping program only accepts Excel uploads.
  * Defaults to orders awaiting fulfillment (paid + preparing); pass ?status= to
  * override with a single status. Filled columns mirror the template's sample
  * row (송하인 4종 고정 + 정리한품목명/수량/성함/연락처/주소) plus 우편번호 and
@@ -42,11 +44,6 @@ type Row = {
   created_at: string;
 };
 
-function cell(v: unknown): string {
-  const s = String(v ?? "");
-  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-}
-
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const status = searchParams.get("status");
@@ -66,44 +63,52 @@ export async function GET(request: Request) {
     return new Response(`error: ${error.message}`, { status: 500 });
   }
 
-  const lines = [HEADERS.join(",")];
+  const wb = new ExcelJS.Workbook();
+  const ws = wb.addWorksheet("업로드용");
+  ws.addRow(HEADERS);
+  ws.getRow(1).font = { bold: true };
+
   for (const o of data ?? []) {
     const sa = o.shipping_address ?? {};
     const addr = [sa.address, sa.detail].filter(Boolean).join(" ");
-    lines.push(
-      [
-        SENDER.name, SENDER.phone, SENDER.postcode, SENDER.address,
-        "", // 회원아이디
-        "", // 주문시간
-        "", // 결제금액
-        "", // 주문상태
-        "", // 상품상태
-        "", // 주문번호
-        "", // 상품주문번호
-        "", // 품목명
-        "", // 옵션
-        "", // 단계변경
-        ITEM_NAME,
-        o.quantity,
-        sa.memo || "",
-        sa.recipient || o.customer_name || "",
-        sa.phone || o.customer_phone || "",
-        "", // 연락처2
-        "", // 의사메모
-        sa.postcode || "",
-        addr,
-      ]
-        .map(cell)
-        .join(","),
-    );
+    ws.addRow([
+      SENDER.name, SENDER.phone, SENDER.postcode, SENDER.address,
+      "", // 회원아이디
+      "", // 주문시간
+      "", // 결제금액
+      "", // 주문상태
+      "", // 상품상태
+      "", // 주문번호
+      "", // 상품주문번호
+      "", // 품목명
+      "", // 옵션
+      "", // 단계변경
+      ITEM_NAME,
+      o.quantity,
+      sa.memo || "",
+      sa.recipient || o.customer_name || "",
+      sa.phone || o.customer_phone || "",
+      "", // 연락처2
+      "", // 의사메모
+      sa.postcode || "",
+      addr,
+    ]);
   }
 
-  // BOM so Excel/the shipping program reads UTF-8 Korean correctly.
-  const csv = "﻿" + lines.join("\r\n");
-  return new Response(csv, {
+  // Phone/postcode columns as text so leading zeros survive in Excel.
+  for (const col of [2, 3, 19, 20, 22]) {
+    ws.getColumn(col).numFmt = "@";
+  }
+  ws.columns.forEach((c, i) => {
+    c.width = [15, 15, 13, 40][i] ?? (i === 22 ? 44 : 16);
+  });
+
+  const buf = await wb.xlsx.writeBuffer();
+  return new Response(buf as ArrayBuffer, {
     headers: {
-      "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="glo-po.csv"`,
+      "Content-Type":
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "Content-Disposition": `attachment; filename="glo-po.xlsx"`,
     },
   });
 }
