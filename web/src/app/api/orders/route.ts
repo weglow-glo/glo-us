@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { PRODUCT, getOption, orderNameOf, generateOrderId } from "@/lib/product";
+import { pointBalance } from "@/lib/points";
 
 /**
  * Create a pending order before launching the Toss payment widget.
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
       detail?: string;
       memo?: string;
     };
+    usePoints?: number;
   };
   try {
     body = await request.json();
@@ -31,7 +33,6 @@ export async function POST(request: Request) {
 
   // Price + quantity come from the trusted option table, not the client.
   const opt = getOption(body.option);
-  const amount = opt.price;
   const order_id = generateOrderId();
 
   // Attach the order to the logged-in user, if any (guest checkout allowed).
@@ -41,6 +42,19 @@ export async function POST(request: Request) {
   } = await supabase.auth.getUser();
 
   const admin = createAdminClient();
+
+  // 포인트 사용 — 잔액은 서버에서 검증하고, 실제 차감은 결제 승인 시점에 한다.
+  // 토스 최소 결제금액(100원)을 남겨야 하므로 상품가 - 100 까지만 쓸 수 있다.
+  let usePoints = Math.max(0, Math.floor(Number(body.usePoints) || 0));
+  if (usePoints > 0) {
+    if (!user)
+      return NextResponse.json({ error: "포인트는 로그인 후 사용할 수 있습니다." }, { status: 401 });
+    const balance = await pointBalance(admin, user.id);
+    if (usePoints > balance)
+      return NextResponse.json({ error: "보유 포인트가 부족합니다." }, { status: 400 });
+    usePoints = Math.min(usePoints, opt.price - 100);
+  }
+  const amount = opt.price - usePoints;
   const { error } = await admin.from("orders").insert({
     order_id,
     user_id: user?.id ?? null,
@@ -48,6 +62,7 @@ export async function POST(request: Request) {
     product_code: PRODUCT.code,
     quantity: opt.months,
     amount,
+    used_points: usePoints,
     order_name: orderNameOf(opt),
     customer_name: body.customerName ?? null,
     customer_email: body.customerEmail ?? user?.email ?? null,

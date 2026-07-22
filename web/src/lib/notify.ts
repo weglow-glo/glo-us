@@ -214,3 +214,64 @@ export async function sendReviewRequest(opts: {
     return { ok: false, channel: "lms", error: e instanceof Error ? e.message : String(e) };
   }
 }
+
+/** 포인트 만료 30일 전 안내 문자 (공정위 소멸 사전 안내) */
+export async function sendPointsExpiryNotice(opts: {
+  to: string;
+  name: string | null;
+  amount: number;
+  expiresAt: string;
+}): Promise<NotifyResult> {
+  const key = process.env.SOLAPI_API_KEY;
+  const secret = process.env.SOLAPI_API_SECRET;
+  const from = process.env.SOLAPI_SENDER;
+  if (!key || !secret || !from) {
+    return { ok: false, channel: "lms", error: "발송 환경변수(SOLAPI_*) 미설정" };
+  }
+  const d = new Date(opts.expiresAt);
+  const dateStr = `${d.getMonth() + 1}월 ${d.getDate()}일`;
+  const text = [
+    `[glo] 포인트 소멸 예정 안내`,
+    ``,
+    `${opts.name ? opts.name + " 고객님, " : ""}보유하신 포인트 중 ${opts.amount.toLocaleString(
+      "ko-KR",
+    )}P가 ${dateStr}부터 순차 소멸됩니다.`,
+    ``,
+    `소멸 전에 다음 구매에 사용해 보세요.`,
+    `${SITE}/product`,
+  ].join("\n");
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authHeader(key, secret),
+      },
+      body: JSON.stringify({
+        messages: [
+          {
+            to: opts.to,
+            from: from.replace(/\D/g, ""),
+            text,
+            subject: "[glo] 포인트 소멸 안내",
+          },
+        ],
+      }),
+    });
+    const json = (await res.json().catch(() => ({}))) as {
+      failedMessageList?: Array<{ statusMessage?: string }>;
+      messageList?: Array<{ messageId?: string }>;
+      groupId?: string;
+      errorMessage?: string;
+      message?: string;
+    };
+    if (!res.ok) {
+      return { ok: false, channel: "lms", error: json.errorMessage ?? json.message ?? `HTTP ${res.status}` };
+    }
+    const failed = json.failedMessageList?.[0];
+    if (failed) return { ok: false, channel: "lms", error: failed.statusMessage ?? "발송 실패" };
+    return { ok: true, channel: "lms", messageId: json.messageList?.[0]?.messageId ?? json.groupId };
+  } catch (e) {
+    return { ok: false, channel: "lms", error: e instanceof Error ? e.message : String(e) };
+  }
+}

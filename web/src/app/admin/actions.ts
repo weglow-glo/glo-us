@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { normalizePhone, sendShippingNotice } from "@/lib/notify";
+import { settleRefundPoints } from "@/lib/points";
 
 /** Enter a tracking number → 배송중 (dispatched / in transit). */
 export async function markShipped(formData: FormData) {
@@ -75,9 +76,16 @@ export async function cancelOrder(
   const admin = createAdminClient();
   const { data: order } = await admin
     .from("orders")
-    .select("id, status, payment_key")
+    .select("id, order_id, status, payment_key, user_id, used_points")
     .eq("id", id)
-    .single<{ id: string; status: string; payment_key: string | null }>();
+    .single<{
+      id: string;
+      order_id: string;
+      status: string;
+      payment_key: string | null;
+      user_id: string | null;
+      used_points: number | null;
+    }>();
 
   if (!order) return { ok: false, error: "주문을 찾을 수 없습니다." };
   if (order.status === "canceled" || order.status === "refunded")
@@ -127,6 +135,13 @@ export async function cancelOrder(
       error: "토스 취소는 완료됐지만 주문 상태 갱신에 실패했습니다. 상태를 직접 확인하세요.",
     };
   }
+
+  // 포인트 정산 — 사용분 복원 + 이 주문 리뷰 적립분 회수 (베스트에포트)
+  await settleRefundPoints(admin, {
+    order_id: order.order_id,
+    user_id: order.user_id,
+    used_points: order.used_points,
+  });
 
   revalidatePath("/admin");
   revalidatePath(`/admin/orders/${order.id}`);
