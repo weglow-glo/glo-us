@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { grantPoints } from "@/lib/points";
 
 /** 미디어 검수 승인 시 추가 지급 포인트 (텍스트 3,000P는 제출 시 이미 지급됨) */
 const POINT_MEDIA = 2000;
@@ -25,13 +26,13 @@ export async function approveMedia(formData: FormData) {
     .eq("id", id);
   if (error) return;
 
-  // points_ref_reason_uidx가 중복 지급을 막는다.
+  // 로트 생성(6개월 유효) — points_ref_reason_uidx가 중복 지급을 막는다.
   if (review.user_id) {
-    await admin.from("points").insert({
-      user_id: review.user_id,
+    await grantPoints(admin, {
+      userId: review.user_id,
       delta: POINT_MEDIA,
       reason: "review_media",
-      ref_id: id,
+      refId: id,
     });
   }
 

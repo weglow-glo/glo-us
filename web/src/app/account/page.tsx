@@ -56,8 +56,20 @@ export default async function AccountPage() {
     ? await supabase.from("reviews").select("order_id, status").in("order_id", orderIds)
     : { data: [] as { order_id: string; status: string }[] };
   const reviewByOrder = new Map((myReviews ?? []).map((r) => [r.order_id, r.status]));
-  const { data: pointRows } = await supabase.from("points").select("delta");
-  const pointBalance = (pointRows ?? []).reduce((s, r) => s + (r.delta ?? 0), 0);
+  // 잔액 = 만료되지 않은 적립 로트의 남은 양 (docs/points-policy.md)
+  const nowIso = new Date().toISOString();
+  const soonIso = new Date(Date.now() + 30 * 86400000).toISOString();
+  const { data: pointRows } = await supabase
+    .from("points")
+    .select("remaining, expires_at")
+    .gt("delta", 0)
+    .gt("remaining", 0)
+    .gt("expires_at", nowIso);
+  const lots = pointRows ?? [];
+  const pointBalance = lots.reduce((s, r) => s + (r.remaining ?? 0), 0);
+  const pointExpiring = lots
+    .filter((r) => r.expires_at && r.expires_at <= soonIso)
+    .reduce((s, r) => s + (r.remaining ?? 0), 0);
 
   return (
     <main id="main" className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
@@ -86,7 +98,14 @@ export default async function AccountPage() {
       {email && <p className="mt-3 text-sm text-ink-soft">{email}</p>}
       <p className="mt-2 text-sm text-ink-soft">
         보유 포인트 <b className="font-sans text-accent">{pointBalance.toLocaleString("ko-KR")}P</b>
-        <span className="ml-2 text-xs text-ink-faint">리뷰 작성 시 적립 · 다음 구매에 사용</span>
+        <span className="ml-2 text-xs text-ink-faint">
+          리뷰 작성 시 적립 · 적립일로부터 6개월 사용 가능
+          {pointExpiring > 0 && (
+            <b className="ml-1 text-burg-400">
+              · {pointExpiring.toLocaleString("ko-KR")}P가 30일 내 만료 예정
+            </b>
+          )}
+        </span>
       </p>
 
       {/* Orders */}

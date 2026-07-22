@@ -54,7 +54,14 @@ export default function CheckoutClient({
 
   const [optionKey, setOptionKey] = useState(() => getOption(initialOption).key);
   const opt = useMemo(() => getOption(optionKey), [optionKey]);
-  const amount = opt.price;
+
+  // 포인트 — 잔액은 서버에서, 사용액은 [0, min(잔액, 상품가-100)]로 클램프.
+  // (토스 최소 결제금액 100원을 남겨야 한다)
+  const [pointBalance, setPointBalance] = useState(0);
+  const [pointInput, setPointInput] = useState(0);
+  const maxUsable = Math.max(0, Math.min(pointBalance, opt.price - 100));
+  const usePoints = Math.max(0, Math.min(pointInput, maxUsable));
+  const amount = opt.price - usePoints;
   const regularAmount = regularOf(opt);
   const discount = discountOf(opt);
 
@@ -101,6 +108,10 @@ export default function CheckoutClient({
 
   useEffect(() => {
     loadAddresses(true);
+    fetch("/api/points/me", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d: { balance?: number }) => setPointBalance(d.balance ?? 0))
+      .catch(() => {});
     metaTrack("InitiateCheckout", {
       content_ids: ["GL-01"],
       content_type: "product",
@@ -252,6 +263,7 @@ export default function CheckoutClient({
           customerEmail: accountEmail,
           customerPhone: phone,
           shippingAddress: { recipient, phone, postcode, address, detail, memo },
+          usePoints,
         }),
       });
       const data = await res.json();
@@ -417,6 +429,46 @@ export default function CheckoutClient({
             </select>
           </div>
         </div>
+        {pointBalance > 0 && (
+          <div className="mt-6 border-t border-ink-line pt-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <span className="text-sm font-medium text-ink-soft">포인트 사용</span>
+                <p className="mt-0.5 text-xs text-ink-faint">
+                  보유 {pointBalance.toLocaleString("ko-KR")}P
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  max={maxUsable}
+                  value={pointInput === 0 ? "" : pointInput}
+                  placeholder="0"
+                  onChange={(e) =>
+                    setPointInput(Math.max(0, Math.floor(Number(e.target.value) || 0)))
+                  }
+                  onBlur={() => setPointInput(usePoints)}
+                  className="w-28 rounded-md border border-ink-line bg-bg-1 px-3 py-2 text-right text-sm text-ink outline-none focus:border-accent"
+                />
+                <span className="text-sm text-ink-mute">P</span>
+                <button
+                  type="button"
+                  onClick={() => setPointInput(maxUsable)}
+                  className="rounded-full border border-ink-line px-3 py-1.5 text-xs font-medium text-ink-soft transition hover:border-accent hover:text-accent"
+                >
+                  전액 사용
+                </button>
+              </div>
+            </div>
+            {usePoints > 0 && (
+              <p className="mt-2 text-right text-xs text-accent">
+                −{formatKRW(usePoints)} 차감
+              </p>
+            )}
+          </div>
+        )}
         <div className="mt-6 flex items-center justify-between border-t border-ink-line pt-4">
           <span className="text-sm font-semibold uppercase tracking-wide text-ink-mute">결제 금액</span>
           <span className="flex items-baseline gap-2">

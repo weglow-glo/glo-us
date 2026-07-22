@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PRODUCT } from "@/lib/product";
+import { grantPoints } from "@/lib/points";
 
 export const dynamic = "force-dynamic";
 
@@ -135,14 +136,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "저장에 실패했습니다. 다시 시도해주세요." }, { status: 500 });
   }
 
-  // 텍스트분 포인트 즉시 적립 (unique 제약이 중복을 막는다)
-  const { error: ptErr } = await admin.from("points").insert({
-    user_id: user.id,
+  // 텍스트분 포인트 즉시 적립 — 로트 생성(6개월 유효), 중복은 유니크 제약이 차단
+  const pt = await grantPoints(admin, {
+    userId: user.id,
     delta: POINT_TEXT,
     reason: "review_text",
-    ref_id: inserted.id,
+    refId: inserted.id,
   });
-  if (ptErr) console.error("[reviews/submit] point grant failed:", ptErr.message);
+  if (!pt.ok && !pt.duplicate)
+    console.error("[reviews/submit] point grant failed:", pt.error);
 
   return NextResponse.json({ ok: true, pendingMedia: hasMedia });
 }

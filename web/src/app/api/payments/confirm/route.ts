@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendOrderConfirmation } from "@/lib/email";
 import { sendMetaPurchase } from "@/lib/meta-capi";
+import { usePoints, grantPoints } from "@/lib/points";
 
 const TOSS_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
 
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
   const { data: order, error: lookupError } = await admin
     .from("orders")
     .select(
-      "id, amount, status, order_name, customer_name, customer_email, customer_phone, user_id, shipping_address",
+      "id, amount, status, order_name, customer_name, customer_email, customer_phone, user_id, shipping_address, used_points",
     )
     .eq("order_id", orderId)
     .single();
@@ -62,6 +63,28 @@ export async function POST(request: Request) {
     );
   }
 
+  // 1.5) 포인트를 먼저 차감한다 (FIFO, 원자적). 잔액이 그 사이 소진됐으면 승인 전에
+  //      중단하고, 토스 승인이 실패하면 아래에서 되돌린다.
+  const usedPoints = (order.used_points as number | null) ?? 0;
+  if (usedPoints > 0 && order.user_id) {
+    const pu = await usePoints(admin, {
+      userId: order.user_id,
+      amount: usedPoints,
+      refId: orderId,
+      reason: "order_use",
+    });
+    if (!pu.ok) {
+      return NextResponse.json(
+        {
+          error: pu.insufficient
+            ? "포인트 잔액이 부족합니다. 처음부터 다시 시도해주세요."
+            : "포인트 처리에 실패했습니다. 다시 시도해주세요.",
+        },
+        { status: 400 },
+      );
+    }
+  }
+
   // 2) Confirm with Toss. Basic auth = base64("<secretKey>:").
   const auth = Buffer.from(`${secretKey}:`).toString("base64");
   const tossRes = await fetch(TOSS_CONFIRM_URL, {
@@ -75,6 +98,15 @@ export async function POST(request: Request) {
   const payment = await tossRes.json();
 
   if (!tossRes.ok) {
+    // 승인 실패 → 먼저 차감한 포인트를 복원한다.
+    if (usedPoints > 0 && order.user_id) {
+      await grantPoints(admin, {
+        userId: order.user_id,
+        delta: usedPoints,
+        reason: "order_use_revert",
+        refId: orderId,
+      });
+    }
     // Toss returns { code, message } on failure.
     await admin
       .from("orders")

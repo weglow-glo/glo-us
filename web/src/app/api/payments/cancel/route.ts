@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { settleRefundPoints } from "@/lib/points";
 import { isCancelable } from "@/lib/order-status";
 
 /**
@@ -35,9 +36,15 @@ export async function POST(request: Request) {
   //    this user's order.
   const { data: order } = await supabase
     .from("orders")
-    .select("id, status, payment_key")
+    .select("id, status, payment_key, user_id, used_points")
     .eq("order_id", orderId)
-    .single<{ id: string; status: string; payment_key: string | null }>();
+    .single<{
+      id: string;
+      status: string;
+      payment_key: string | null;
+      user_id: string | null;
+      used_points: number | null;
+    }>();
 
   if (!order) {
     return NextResponse.json({ error: "주문을 찾을 수 없습니다." }, { status: 404 });
@@ -104,6 +111,13 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
+
+  // 포인트 정산 — 사용분 복원 + 이 주문 리뷰 적립분 회수 (베스트에포트)
+  await settleRefundPoints(admin, {
+    order_id: orderId,
+    user_id: order.user_id,
+    used_points: order.used_points,
+  });
 
   return NextResponse.json({ ok: true });
 }
