@@ -108,11 +108,6 @@ export default async function TrackPage({
 
           <p className="mt-5 text-center text-xs leading-relaxed text-ink-faint">
             택배사 시스템에 반영되기까지 몇 시간이 걸릴 수 있습니다.
-            <br />
-            문의{" "}
-            <a href="tel:02-467-1024" className="underline">
-              02-467-1024
-            </a>
           </p>
         </div>
       )}
