@@ -43,8 +43,7 @@ export function shippingMessage(opts: {
     `· 택배사: ${carrierName(opts.carrier)}`,
     `· 송장번호: ${opts.trackingNumber}`,
   ];
-  if (url) lines.push(``, `배송조회`, url);
-  lines.push(``, `문의: 02-467-1024`);
+  if (url) lines.push(``, `배송 조회`, url);
   return lines.join("\n");
 }
 
