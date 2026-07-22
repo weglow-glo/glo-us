@@ -122,3 +122,37 @@ export async function settleRefundPoints(
     console.error("[points] clawback error:", e);
   }
 }
+
+/** 포인트 지급 정책 — app_settings에서 읽고, 없으면 기본값. (관리자에서 동적 조정) */
+export type PointPolicy = { review_text: number; review_media: number };
+export const DEFAULT_POINT_POLICY: PointPolicy = { review_text: 3000, review_media: 2000 };
+
+export async function getPointPolicy(admin: SupabaseClient): Promise<PointPolicy> {
+  try {
+    const { data } = await admin
+      .from("app_settings")
+      .select("value")
+      .eq("key", "point_policy")
+      .maybeSingle<{ value: Partial<PointPolicy> }>();
+    const v = data?.value ?? {};
+    const text = Number(v.review_text);
+    const media = Number(v.review_media);
+    return {
+      review_text: Number.isFinite(text) && text >= 0 ? text : DEFAULT_POINT_POLICY.review_text,
+      review_media: Number.isFinite(media) && media >= 0 ? media : DEFAULT_POINT_POLICY.review_media,
+    };
+  } catch {
+    return DEFAULT_POINT_POLICY;
+  }
+}
+
+/** 내역 표시용 사유 라벨 */
+export const POINT_REASON_LABEL: Record<string, string> = {
+  review_text: "리뷰 적립",
+  review_media: "사진·영상 리뷰 추가 적립",
+  order_use: "주문 결제 사용",
+  order_use_revert: "결제 실패 복원",
+  order_refund_restore: "주문 환불 복원",
+  review_clawback: "환불 주문 리뷰 적립 회수",
+  admin_adjust: "관리자 조정",
+};

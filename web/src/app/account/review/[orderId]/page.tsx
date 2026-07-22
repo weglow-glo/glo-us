@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PRODUCT } from "@/lib/product";
+import { getPointPolicy } from "@/lib/points";
 import { ReviewForm } from "./review-form";
 
 export const dynamic = "force-dynamic";
@@ -43,6 +44,8 @@ export default async function ReviewPage({
   if (!order) notFound();
 
   const admin = createAdminClient();
+  const policy = await getPointPolicy(admin);
+  const fmtP = (n: number) => n.toLocaleString("ko-KR");
   const { data: existing } = await admin
     .from("reviews")
     .select("id, user_id, rating, body, status, media_status, created_at")
@@ -95,7 +98,7 @@ export default async function ReviewPage({
             <>이 주문의 리뷰는 <b className="text-ink">게시 완료</b>되었습니다.</>
             )}
             {existing.media_status === "pending" &&
-              " 첨부하신 사진·영상은 검수 중이며, 승인되면 공개되고 2,000P가 추가 적립됩니다."}{" "}
+              ` 첨부하신 사진·영상은 검수 중이며, 승인되면 공개되고 ${fmtP(policy.review_media)}P가 추가 적립됩니다.`}{" "}
             수정 기한(48시간)이 지나 내용은 변경할 수 없습니다. 삭제가 필요하면 채널톡으로
             문의해주세요.
           </div>
@@ -107,11 +110,12 @@ export default async function ReviewPage({
       ) : (
         <>
           <div className="mt-5 rounded-xl border border-burg-50 bg-bg-3 px-5 py-4 text-xs leading-relaxed text-ink-soft">
-            리뷰를 게시하면 <b className="text-accent">3,000P</b>가 바로 적립되고, 사진·영상이
-            검수를 통과하면 <b className="text-accent">2,000P</b>가 추가 적립됩니다. 포인트는
-            다음 구매 시 사용할 수 있습니다.
+            리뷰를 게시하면 <b className="text-accent">{fmtP(policy.review_text)}P</b>가 바로
+            적립되고, 사진·영상이 검수를 통과하면{" "}
+            <b className="text-accent">{fmtP(policy.review_media)}P</b>가 추가 적립됩니다.
+            포인트는 다음 구매 시 사용할 수 있습니다.
           </div>
-          <ReviewForm orderId={order.order_id} />
+          <ReviewForm orderId={order.order_id} textPoint={policy.review_text} mediaPoint={policy.review_media} />
         </>
       )}
     </main>

@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { normalizePhone, sendReviewRequest } from "@/lib/notify";
+import { getPointPolicy } from "@/lib/points";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -41,6 +42,7 @@ export async function GET(request: Request) {
   if (error) return Response.json({ error: error.message }, { status: 500 });
 
   const orders = data ?? [];
+  const policy = await getPointPolicy(admin);
   let sent = 0;
   let skipped = 0;
   const failures: Array<{ order_id: string; error: string }> = [];
@@ -74,6 +76,8 @@ export async function GET(request: Request) {
     const r = await sendReviewRequest({
       to,
       name: o.shipping_address?.recipient ?? o.customer_name,
+      textPoint: policy.review_text,
+      totalPoint: policy.review_text + policy.review_media,
     });
     await admin.from("notifications").insert({
       order_id: o.order_id,

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PRODUCT } from "@/lib/product";
-import { grantPoints } from "@/lib/points";
+import { grantPoints, getPointPolicy } from "@/lib/points";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +21,6 @@ export const dynamic = "force-dynamic";
 const MAX_PHOTOS = 5;
 const MAX_VIDEOS = 1;
 const WINDOW_DAYS = 90;
-const POINT_TEXT = 3000;
 
 function maskName(raw: string | null | undefined): string {
   const n = String(raw ?? "").trim();
@@ -137,9 +136,10 @@ export async function POST(request: Request) {
   }
 
   // 텍스트분 포인트 즉시 적립 — 로트 생성(6개월 유효), 중복은 유니크 제약이 차단
+  const policy = await getPointPolicy(admin);
   const pt = await grantPoints(admin, {
     userId: user.id,
-    delta: POINT_TEXT,
+    delta: policy.review_text,
     reason: "review_text",
     refId: inserted.id,
   });

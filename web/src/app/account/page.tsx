@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { formatKRW } from "@/lib/product";
 import { statusLabel, type OrderStatus } from "@/lib/order-status";
+import { getPointPolicy } from "@/lib/points";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { SignOutButton } from "./sign-out-button";
 
 type Order = {
@@ -66,6 +68,8 @@ export default async function AccountPage() {
     .gt("remaining", 0)
     .gt("expires_at", nowIso);
   const lots = pointRows ?? [];
+  const policy = await getPointPolicy(createAdminClient());
+  const maxPoint = policy.review_text + policy.review_media;
   const pointBalance = lots.reduce((s, r) => s + (r.remaining ?? 0), 0);
   const pointExpiring = lots
     .filter((r) => r.expires_at && r.expires_at <= soonIso)
@@ -97,7 +101,13 @@ export default async function AccountPage() {
       </h1>
       {email && <p className="mt-3 text-sm text-ink-soft">{email}</p>}
       <p className="mt-2 text-sm text-ink-soft">
-        보유 포인트 <b className="font-sans text-accent">{pointBalance.toLocaleString("ko-KR")}P</b>
+        <Link href="/account/points" className="group">
+          보유 포인트{" "}
+          <b className="font-sans text-accent group-hover:underline">
+            {pointBalance.toLocaleString("ko-KR")}P
+          </b>
+          <span className="ml-1 text-xs text-accent">내역 →</span>
+        </Link>
         <span className="ml-2 text-xs text-ink-faint">
           리뷰 작성 시 적립 · 적립일로부터 6개월 사용 가능
           {pointExpiring > 0 && (
@@ -155,7 +165,9 @@ export default async function AccountPage() {
                   {order.status === "delivered" && !reviewByOrder.has(order.order_id) && (
                     <div className="mt-2 flex items-center justify-between rounded-xl border border-burg-50 bg-bg-3 px-5 py-3">
                       <span className="text-xs text-ink-soft">
-                        잘 받으셨나요? 후기를 남기면 <b className="text-accent">최대 5,000P</b>를 드려요.
+                        잘 받으셨나요? 후기를 남기면{" "}
+                        <b className="text-accent">최대 {maxPoint.toLocaleString("ko-KR")}P</b>를
+                        드려요.
                       </span>
                       <Link
                         href={`/account/review/${order.order_id}`}

@@ -17,9 +17,13 @@ type Uploaded = { path: string; kind: "image" | "video"; preview: string };
 export function ReviewForm({
   orderId,
   edit,
+  textPoint = 3000,
+  mediaPoint = 2000,
 }: {
   orderId: string;
   edit?: { reviewId: string; rating: number; body: string };
+  textPoint?: number;
+  mediaPoint?: number;
 }) {
   const router = useRouter();
   const [rating, setRating] = useState(edit?.rating ?? 5);
@@ -141,14 +145,17 @@ export function ReviewForm({
           <>리뷰가 수정되었습니다.</>
         ) : done.pendingMedia ? (
           <>
-            리뷰가 게시되었고 <b className="text-accent">3,000P</b>가 적립되었습니다. 첨부하신
-            사진·영상은 검수 후 공개되며, 승인되면 <b className="text-accent">2,000P</b>가 추가
+            리뷰가 게시되었고{" "}
+            <b className="text-accent">{textPoint.toLocaleString("ko-KR")}P</b>가
+            적립되었습니다. 첨부하신 사진·영상은 검수 후 공개되며, 승인되면{" "}
+            <b className="text-accent">{mediaPoint.toLocaleString("ko-KR")}P</b>가 추가
             적립됩니다.
           </>
         ) : (
           <>
-            리뷰가 게시되었고 <b className="text-accent">3,000P</b>가 적립되었습니다. 소중한
-            후기 감사합니다.
+            리뷰가 게시되었고{" "}
+            <b className="text-accent">{textPoint.toLocaleString("ko-KR")}P</b>가
+            적립되었습니다. 소중한 후기 감사합니다.
           </>
         )}
       </div>
@@ -247,8 +254,8 @@ export function ReviewForm({
             )}
           </div>
           <p className="mt-2 text-[11px] text-ink-faint">
-            사진·영상은 검수 후 공개됩니다 (그 전까지 흐리게 표시). 승인 시 2,000P가 추가
-            적립됩니다.
+            사진·영상은 검수 후 공개됩니다 (그 전까지 흐리게 표시). 승인 시{" "}
+            {mediaPoint.toLocaleString("ko-KR")}P가 추가 적립됩니다.
           </p>
           <input
             ref={fileRef}
