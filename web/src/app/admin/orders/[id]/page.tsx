@@ -22,6 +22,7 @@ type Order = {
   order_id: string;
   status: OrderStatus;
   amount: number;
+  used_points: number | null;
   quantity: number;
   product_code: string;
   order_name: string;
@@ -76,7 +77,15 @@ export default async function OrderDetailPage({
 
       <Section title="주문">
         <Row k="상품" v={`${order.order_name} (${order.product_code} × ${order.quantity})`} />
-        <Row k="결제금액" v={formatKRW(order.amount)} />
+        {(order.used_points ?? 0) > 0 ? (
+          <>
+            <Row k="상품 금액" v={formatKRW(order.amount + (order.used_points ?? 0))} />
+            <Row k="포인트 사용" v={`-${(order.used_points ?? 0).toLocaleString("ko-KR")}P`} />
+            <Row k="실결제 금액" v={formatKRW(order.amount)} />
+          </>
+        ) : (
+          <Row k="결제금액" v={formatKRW(order.amount)} />
+        )}
         <Row k="주문일시" v={fmtDate(order.created_at)} />
       </Section>
 
