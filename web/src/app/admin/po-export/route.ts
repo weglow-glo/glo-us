@@ -78,7 +78,7 @@ export async function GET(request: Request) {
       "", // 결제금액
       "", // 주문상태
       "", // 상품상태
-      "", // 주문번호
+      o.order_id,
       "", // 상품주문번호
       "", // 품목명
       "", // 옵션
