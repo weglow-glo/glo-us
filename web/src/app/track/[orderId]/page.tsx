@@ -42,8 +42,12 @@ export default async function TrackPage({
 
   return (
     <main className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-16">
-      <div className="font-sans text-3xl font-light tracking-tight text-ink">
-        glo<span className="text-accent">.</span>
+      {/* 본 사이트 로고와 동일하게 — Fraunces 300 + 이탤릭 액센트 dot */}
+      <div
+        className="font-display text-[30px] font-light leading-none text-ink"
+        style={{ letterSpacing: "-1.3px" }}
+      >
+        glo<span className="italic text-accent">.</span>
       </div>
 
       {!data ? (
@@ -72,7 +76,8 @@ export default async function TrackPage({
             <div className="flex justify-between gap-4">
               <dt className="text-ink-mute">상품</dt>
               <dd className="text-right font-medium text-ink">
-                {PRODUCT.name}
+                {/* 마케팅 페이지의 .gloword와 동일하게 'glo'만 Fraunces로 */}
+                <span className="font-display">glo</span> {PRODUCT.code}
                 {data.quantity ? ` · ${data.quantity}박스` : ""}
               </dd>
             </div>
