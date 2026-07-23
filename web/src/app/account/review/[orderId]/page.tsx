@@ -13,9 +13,9 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-const EDIT_WINDOW_MS = 48 * 3600 * 1000;
+const EDIT_WINDOW_MS = 24 * 3600 * 1000;
 
-/** 배송완료된 본인 주문의 리뷰 작성/수정 (48시간 이내). */
+/** 배송완료된 본인 주문의 리뷰 작성/수정 (24시간 이내, 검수 완료 전). */
 export default async function ReviewPage({
   params,
 }: {
@@ -65,6 +65,7 @@ export default async function ReviewPage({
     existing &&
     existing.status === "approved" &&
     existing.user_id === user.id &&
+    !["approved", "rejected"].includes(existing.media_status) &&
     Date.now() - Date.parse(existing.created_at) <= EDIT_WINDOW_MS;
 
   return (
@@ -81,8 +82,9 @@ export default async function ReviewPage({
         editable ? (
           <>
             <div className="mt-5 rounded-xl border border-ink-line bg-bg-2 px-5 py-4 text-xs leading-relaxed text-ink-soft">
-              작성 후 <b className="text-ink">48시간 이내</b>에는 별점과 내용을 수정할 수
-              있습니다. 첨부한 사진·영상은 교체할 수 없습니다.
+              작성 후 <b className="text-ink">24시간 이내</b>에는 별점과 내용을 수정할 수
+              있습니다. 첨부한 사진·영상은 교체할 수 없고, 검수가 완료되면 수정할 수
+              없습니다.
               {existing.media_status === "pending" && " 첨부 미디어는 검수 중입니다."}
             </div>
             <ReviewForm
@@ -99,8 +101,10 @@ export default async function ReviewPage({
             )}
             {existing.media_status === "pending" &&
               ` 첨부하신 사진·영상은 검수 중이며, 승인되면 공개되고 ${fmtP(policy.review_media)}P가 추가 적립됩니다.`}{" "}
-            수정 기한(48시간)이 지나 내용은 변경할 수 없습니다. 삭제가 필요하면 채널톡으로
-            문의해주세요.
+            {existing.media_status === "approved" || existing.media_status === "rejected"
+              ? " 검수가 완료된 리뷰는 수정할 수 없습니다."
+              : " 수정 기한(24시간)이 지나 내용은 변경할 수 없습니다."}{" "}
+            삭제가 필요하면 채널톡으로 문의해주세요.
           </div>
         )
       ) : order.status !== "delivered" ? (
