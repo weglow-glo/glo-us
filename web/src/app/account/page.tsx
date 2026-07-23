@@ -177,7 +177,7 @@ export default async function AccountPage() {
                   {reviewByOrder.has(order.order_id) && (
                     <div className="mt-2 flex items-center justify-between rounded-xl border border-ink-line bg-bg-2 px-5 py-3">
                       <span className="text-xs text-ink-soft">
-                        이 주문의 리뷰를 작성하셨습니다. 작성 후 48시간 이내에는 수정할 수
+                        이 주문의 리뷰를 작성하셨습니다. 작성 후 24시간 이내에는 수정할 수
                         있어요.
                       </span>
                       <Link

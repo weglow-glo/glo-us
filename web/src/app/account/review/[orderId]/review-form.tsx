@@ -279,7 +279,8 @@ export function ReviewForm({
       </button>
       <p className="text-center text-[11px] leading-relaxed text-ink-faint">
         게시된 리뷰에는 작성자 표시(예: 김 OO)와 지역이 함께 노출됩니다. 리뷰는 작성 후
-        48시간 이내에만 수정할 수 있으며, 삭제가 필요하면 채널톡으로 문의해주세요.
+        24시간 이내(검수 완료 전)에만 수정할 수 있으며, 삭제가 필요하면 채널톡으로
+        문의해주세요.
       </p>
     </div>
   );
