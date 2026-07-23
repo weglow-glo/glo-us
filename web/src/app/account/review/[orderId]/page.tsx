@@ -48,7 +48,7 @@ export default async function ReviewPage({
   const fmtP = (n: number) => n.toLocaleString("ko-KR");
   const { data: existing } = await admin
     .from("reviews")
-    .select("id, user_id, rating, body, status, media_status, created_at")
+    .select("id, user_id, rating, body, status, media_status, created_at, photos, videos")
     .eq("order_id", orderId)
     .eq("product_code", PRODUCT.code)
     .maybeSingle<{
@@ -59,6 +59,8 @@ export default async function ReviewPage({
       status: string;
       media_status: string;
       created_at: string;
+      photos: string[];
+      videos: string[];
     }>();
 
   const editable =
@@ -82,14 +84,22 @@ export default async function ReviewPage({
         editable ? (
           <>
             <div className="mt-5 rounded-xl border border-ink-line bg-bg-2 px-5 py-4 text-xs leading-relaxed text-ink-soft">
-              작성 후 <b className="text-ink">24시간 이내</b>에는 별점과 내용을 수정할 수
-              있습니다. 첨부한 사진·영상은 교체할 수 없고, 검수가 완료되면 수정할 수
-              없습니다.
+              작성 후 <b className="text-ink">24시간 이내</b>에는 별점과 내용을 수정하고
+              사진·영상을 추가할 수 있습니다. 기존 첨부는 삭제·교체할 수 없으며, 검수가
+              완료되면 수정할 수 없습니다.
               {existing.media_status === "pending" && " 첨부 미디어는 검수 중입니다."}
             </div>
             <ReviewForm
               orderId={order.order_id}
-              edit={{ reviewId: existing.id, rating: existing.rating, body: existing.body }}
+              textPoint={policy.review_text}
+              mediaPoint={policy.review_media}
+              edit={{
+                reviewId: existing.id,
+                rating: existing.rating,
+                body: existing.body,
+                photos: existing.photos ?? [],
+                videos: existing.videos ?? [],
+              }}
             />
           </>
         ) : (
