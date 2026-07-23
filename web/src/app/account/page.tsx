@@ -174,6 +174,20 @@ export default async function AccountPage() {
                       </Link>
                     </div>
                   )}
+                  {reviewByOrder.has(order.order_id) && (
+                    <div className="mt-2 flex items-center justify-between rounded-xl border border-ink-line bg-bg-2 px-5 py-3">
+                      <span className="text-xs text-ink-soft">
+                        이 주문의 리뷰를 작성하셨습니다. 작성 후 48시간 이내에는 수정할 수
+                        있어요.
+                      </span>
+                      <Link
+                        href={`/account/review/${order.order_id}`}
+                        className="shrink-0 rounded-full border border-ink-line px-3.5 py-1.5 text-xs font-semibold text-ink-soft transition hover:border-accent hover:text-accent"
+                      >
+                        내 리뷰 보기·수정
+                      </Link>
+                    </div>
+                  )}
                 </li>
               );
             })}
