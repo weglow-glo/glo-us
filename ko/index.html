@@ -274,7 +274,12 @@ body{padding-top:0;}
 .ai-l p{font-size:16px;line-height:1.78;color:rgba(244,235,235,.94);margin-top:26px;letter-spacing:-.05px;max-width:520px;}
 .ai-l p em{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-style:italic;color:#f0d4b8;}
 .ai-stats{display:grid;grid-template-columns:1fr;gap:14px;}
-.ai-stat{background:rgba(255,250,245,.07);backdrop-filter:saturate(180%) blur(32px);-webkit-backdrop-filter:saturate(180%) blur(32px);border:1px solid rgba(240,212,184,.22);padding:24px 28px;display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;border-radius:14px;box-shadow:0 16px 50px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,0,0,.14);}
+.ai-stat{background:rgba(255,250,245,.07);backdrop-filter:saturate(180%) blur(32px);-webkit-backdrop-filter:saturate(180%) blur(32px);border:1px solid rgba(240,212,184,.22);padding:24px 28px;display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;border-radius:14px;transition:border-color .2s,background .2s,transform .2s;box-shadow:0 16px 50px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,0,0,.14);}
+.ai-stat.is-static{cursor:default;}
+.ai-stat:not(.is-static):hover{background:rgba(255,250,245,.12);border-color:rgba(240,212,184,.45);transform:translateY(-2px);}
+.ai-stat-go{display:flex;align-items:center;justify-content:flex-end;color:var(--burg-100);transition:color .2s,transform .2s;}
+.ai-stat-go svg{width:40px;height:24px;}
+.ai-stat:hover .ai-stat-go{color:var(--burg-50);transform:translateX(4px);}
 .ai-stat-n{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-weight:400;font-size:60px;line-height:.9;color:var(--cream);letter-spacing:-2px;min-width:140px;}
 .ai-stat-n em{font-style:italic;}
 .ai-stat-n .u{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-weight:500;font-size:13.5px;color:rgba(244,235,235,.78);letter-spacing:0;display:block;margin-top:10px;}
@@ -468,7 +473,9 @@ footer{background:var(--bd);padding:68px 0 32px;color:rgba(242,232,216,.62);}
   .tl-video-card{max-width:100%;margin:0;}
   .tl-head{gap:32px;}
   .cards,.tl-grid,.docs,.sci-tease-g,.adv-stats,.foot-g,.prod-g{grid-template-columns:1fr;}
-  .ai-stat{grid-template-columns:1fr;gap:12px;}
+  .ai-stat{grid-template-columns:1fr auto;gap:12px 16px;}
+  .ai-stat-go{grid-column:2;grid-row:1 / span 2;align-self:center;justify-self:end;}
+  .ai-stat-go svg{width:32px;height:20px;}
   /* Product preview — tighten padding + stack spec rows so KR text doesn't clip on narrow phones */
   .prod-l,.prod-r{padding:48px 24px;min-height:auto;}
   .prod-r{border-left:none;border-top:1px solid var(--ink-line);padding-top:48px;}
@@ -774,21 +781,23 @@ html[lang="ko"] p,html[lang="ko"] .hero-sub,html[lang="ko"] .tl-desc,html[lang="
       <p>9가지 성분을 임상 용량에서 충돌 없이 배치하려면 1,000,000번의 시뮬레이션이 필요합니다. AI를 활용하여 완벽한 조합을 찾아냈습니다.</p>
     </div>
     <div class="ai-stats">
-      <div class="ai-stat">
+      <a href="/ko/science.html" class="ai-stat">
         <div class="ai-stat-n"><em>200,000</em><span class="u">건의 데이터</span></div>
         <div class="ai-stat-r">
           <div class="ai-stat-l">01 · 데이터 구축</div>
           <div class="ai-stat-t">임상 및 논문 데이터 수집 · 분석</div>
         </div>
-      </div>
-      <div class="ai-stat">
+        <span class="ai-stat-go" aria-hidden="true"><svg viewBox="0 0 40 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h30"/><path d="M26 4l8 8-8 8"/></svg></span>
+      </a>
+      <a href="/ko/science.html" class="ai-stat">
         <div class="ai-stat-n"><em>1,000,000</em><span class="u">번의 시뮬레이션</span></div>
         <div class="ai-stat-r">
           <div class="ai-stat-l">02 · The search</div>
           <div class="ai-stat-t">AI 모델을 통한 빅 데이터 모델링</div>
         </div>
-      </div>
-      <div class="ai-stat">
+        <span class="ai-stat-go" aria-hidden="true"><svg viewBox="0 0 40 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h30"/><path d="M26 4l8 8-8 8"/></svg></span>
+      </a>
+      <div class="ai-stat is-static">
         <div class="ai-stat-n"><em>5</em><span class="u">specialists · 4 yrs</span></div>
         <div class="ai-stat-r">
           <div class="ai-stat-l">03 · 임상 검증</div>
