@@ -27,6 +27,7 @@ export function ReviewForm({
     body: string;
     photos?: string[];
     videos?: string[];
+    canAddMedia?: boolean;
   };
   textPoint?: number;
   mediaPoint?: number;
@@ -44,6 +45,7 @@ export function ReviewForm({
 
   const lockedPhotos = edit?.photos ?? [];
   const lockedVideos = edit?.videos ?? [];
+  const canAddMedia = edit ? edit.canAddMedia !== false : true;
   const photoCount = lockedPhotos.length + media.filter((m) => m.kind === "image").length;
   const videoCount = lockedVideos.length + media.filter((m) => m.kind === "video").length;
 
@@ -281,7 +283,7 @@ export function ReviewForm({
                 </button>
               </div>
             ))}
-            {photoCount + videoCount < MAX_PHOTOS + MAX_VIDEOS && (
+            {canAddMedia && photoCount + videoCount < MAX_PHOTOS + MAX_VIDEOS && (
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
@@ -292,10 +294,16 @@ export function ReviewForm({
               </button>
             )}
           </div>
-          <p className="mt-2 text-[11px] text-ink-faint">
-            사진·영상은 검수 후 공개됩니다 (그 전까지 흐리게 표시). 승인 시{" "}
-            {mediaPoint.toLocaleString("ko-KR")}P가 추가 적립됩니다.
-          </p>
+          {canAddMedia ? (
+            <p className="mt-2 text-[11px] text-ink-faint">
+              사진·영상은 검수 후 공개됩니다 (그 전까지 흐리게 표시). 승인 시{" "}
+              {mediaPoint.toLocaleString("ko-KR")}P가 추가 적립됩니다.
+            </p>
+          ) : (
+            <p className="mt-2 text-[11px] text-ink-faint">
+              검수가 완료되어 사진·영상은 더 추가할 수 없습니다.
+            </p>
+          )}
           <input
             ref={fileRef}
             type="file"
