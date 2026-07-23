@@ -104,11 +104,14 @@ export async function GET(request: Request) {
   });
 
   const buf = await wb.xlsx.writeBuffer();
+  // 파일명에 오늘 날짜(KST)를 붙인다 — glo-po-2026-07-23.xlsx
+  const today = new Date()
+    .toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" }); // YYYY-MM-DD
   return new Response(buf as ArrayBuffer, {
     headers: {
       "Content-Type":
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "Content-Disposition": `attachment; filename="glo-po.xlsx"`,
+      "Content-Disposition": `attachment; filename="glo-po-${today}.xlsx"`,
     },
   });
 }
