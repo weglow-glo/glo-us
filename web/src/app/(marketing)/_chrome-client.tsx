@@ -35,7 +35,31 @@ export default function ChromeBehaviors() {
       router.push(href);
     };
     document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
+
+    // 체감 속도의 핵심: 마케팅 페이지는 전부 정적이므로 미리 받아두면 전환이
+    // 즉시 된다. 주요 4개는 첫 페인트를 방해하지 않게 잠깐 뒤에 일괄 프리페치,
+    // 나머지(약관 등)는 링크에 포인터가 올라올 때 프리페치.
+    const MAIN = ["/", "/product", "/science", "/about"];
+    const warm = window.setTimeout(() => {
+      MAIN.filter((p) => p !== location.pathname).forEach((p) => router.prefetch(p));
+    }, 600);
+    const prefetched = new Set<string>();
+    const onOver = (e: PointerEvent) => {
+      const a = (e.target as HTMLElement | null)?.closest?.("a");
+      const href = a?.getAttribute("href");
+      if (!href || !href.startsWith("/")) return;
+      const path = new URL(href, location.origin).pathname;
+      if (!MARKETING.has(path) || prefetched.has(path)) return;
+      prefetched.add(path);
+      router.prefetch(path);
+    };
+    document.addEventListener("pointerover", onOver, { passive: true });
+
+    return () => {
+      document.removeEventListener("click", onClick);
+      clearTimeout(warm);
+      document.removeEventListener("pointerover", onOver);
+    };
   }, [router]);
 
   // Mobile nav: the hamburger toggles the links dropdown (< 640px). Closes on
