@@ -52,23 +52,25 @@ export default async function AccountPage() {
 
   const list = orders ?? [];
 
-  // 배송완료 주문의 리뷰 작성 여부 + 포인트 잔액 (둘 다 RLS로 본인 것만)
+  // 배송완료 주문의 리뷰 작성 여부 + 포인트 잔액 + 지급 정책 — 왕복을 줄이기 위해
+  // 서로 독립인 쿼리는 병렬로 실행한다 (마이페이지 TTFB에 직결).
   const orderIds = list.map((o) => o.order_id);
-  const { data: myReviews } = orderIds.length
-    ? await supabase.from("reviews").select("order_id, status").in("order_id", orderIds)
-    : { data: [] as { order_id: string; status: string }[] };
-  const reviewByOrder = new Map((myReviews ?? []).map((r) => [r.order_id, r.status]));
-  // 잔액 = 만료되지 않은 적립 로트의 남은 양 (docs/points-policy.md)
   const nowIso = new Date().toISOString();
   const soonIso = new Date(Date.now() + 30 * 86400000).toISOString();
-  const { data: pointRows } = await supabase
-    .from("points")
-    .select("remaining, expires_at")
-    .gt("delta", 0)
-    .gt("remaining", 0)
-    .gt("expires_at", nowIso);
-  const lots = pointRows ?? [];
-  const policy = await getPointPolicy(createAdminClient());
+  const [reviewsRes, pointsRes, policy] = await Promise.all([
+    orderIds.length
+      ? supabase.from("reviews").select("order_id, status").in("order_id", orderIds)
+      : Promise.resolve({ data: [] as { order_id: string; status: string }[] }),
+    supabase
+      .from("points")
+      .select("remaining, expires_at")
+      .gt("delta", 0)
+      .gt("remaining", 0)
+      .gt("expires_at", nowIso),
+    getPointPolicy(createAdminClient()),
+  ]);
+  const reviewByOrder = new Map((reviewsRes.data ?? []).map((r) => [r.order_id, r.status]));
+  const lots = pointsRes.data ?? [];
   const maxPoint = policy.review_text + policy.review_media;
   const pointBalance = lots.reduce((s, r) => s + (r.remaining ?? 0), 0);
   const pointExpiring = lots

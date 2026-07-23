@@ -15,7 +15,6 @@ import {
   discountOf,
   formatPct,
   formatKRW,
-  PREORDER,
 } from "@/lib/product";
 import type { Address } from "@/lib/address";
 import { metaTrack } from "@/lib/meta";
@@ -406,7 +405,7 @@ export default function CheckoutClient({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <span className="inline-block rounded-full bg-accent px-2.5 py-1 text-[11px] font-bold tracking-wide text-cream">
-              사전할인 {formatPct(discount)}
+              런칭 할인 {formatPct(discount)}
             </span>
             <p className="mt-2 font-sans text-xl text-ink">{PREORDER_NAME}</p>
             <p className="mt-1 text-sm text-ink-mute">20ml 데일리 샷 · 스킨 롱제비티</p>
@@ -477,10 +476,9 @@ export default function CheckoutClient({
           </span>
         </div>
         <p className="mt-4 rounded-md bg-bg-3 px-4 py-3 text-xs leading-relaxed text-ink-soft">
-          <b className="text-accent">{PREORDER.shipNote}</b>
+          <b className="text-accent">결제 후 순차 배송</b>
           <br />
-          사전결제하신 모든 주문은 {PREORDER.shipDate}에 함께 발송됩니다. {PREORDER.shipDate}{" "}
-          정식 출시와 함께 정상가로 전환됩니다.
+          배송이 시작되면 문자로 송장번호와 배송 조회 링크를 보내드립니다.
         </p>
       </section>
 
