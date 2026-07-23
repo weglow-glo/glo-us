@@ -48,7 +48,7 @@ export default async function ReviewPage({
   const fmtP = (n: number) => n.toLocaleString("ko-KR");
   const { data: existing } = await admin
     .from("reviews")
-    .select("id, user_id, rating, body, status, media_status, created_at")
+    .select("id, user_id, rating, body, status, media_status, created_at, photos, videos")
     .eq("order_id", orderId)
     .eq("product_code", PRODUCT.code)
     .maybeSingle<{
@@ -59,14 +59,17 @@ export default async function ReviewPage({
       status: string;
       media_status: string;
       created_at: string;
+      photos: string[];
+      videos: string[];
     }>();
 
   const editable =
     existing &&
     existing.status === "approved" &&
     existing.user_id === user.id &&
-    !["approved", "rejected"].includes(existing.media_status) &&
     Date.now() - Date.parse(existing.created_at) <= EDIT_WINDOW_MS;
+  const canAddMedia =
+    !!existing && !["approved", "rejected"].includes(existing.media_status);
 
   return (
     <main className="mx-auto w-full max-w-lg flex-1 px-6 py-12">
@@ -83,13 +86,22 @@ export default async function ReviewPage({
           <>
             <div className="mt-5 rounded-xl border border-ink-line bg-bg-2 px-5 py-4 text-xs leading-relaxed text-ink-soft">
               작성 후 <b className="text-ink">24시간 이내</b>에는 별점과 내용을 수정할 수
-              있습니다. 첨부한 사진·영상은 교체할 수 없고, 검수가 완료되면 수정할 수
-              없습니다.
+              있습니다. 사진·영상 추가는 검수 전까지만 가능하고, 기존 첨부는 삭제·교체할
+              수 없습니다.
               {existing.media_status === "pending" && " 첨부 미디어는 검수 중입니다."}
             </div>
             <ReviewForm
               orderId={order.order_id}
-              edit={{ reviewId: existing.id, rating: existing.rating, body: existing.body }}
+              textPoint={policy.review_text}
+              mediaPoint={policy.review_media}
+              edit={{
+                reviewId: existing.id,
+                rating: existing.rating,
+                body: existing.body,
+                photos: existing.photos ?? [],
+                videos: existing.videos ?? [],
+                canAddMedia,
+              }}
             />
           </>
         ) : (
@@ -101,9 +113,7 @@ export default async function ReviewPage({
             )}
             {existing.media_status === "pending" &&
               ` 첨부하신 사진·영상은 검수 중이며, 승인되면 공개되고 ${fmtP(policy.review_media)}P가 추가 적립됩니다.`}{" "}
-            {existing.media_status === "approved" || existing.media_status === "rejected"
-              ? " 검수가 완료된 리뷰는 수정할 수 없습니다."
-              : " 수정 기한(24시간)이 지나 내용은 변경할 수 없습니다."}{" "}
+            수정 기한(24시간)이 지나 내용은 변경할 수 없습니다.{" "}
             삭제가 필요하면 채널톡으로 문의해주세요.
           </div>
         )

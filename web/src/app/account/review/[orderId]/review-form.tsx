@@ -21,7 +21,14 @@ export function ReviewForm({
   mediaPoint = 2000,
 }: {
   orderId: string;
-  edit?: { reviewId: string; rating: number; body: string };
+  edit?: {
+    reviewId: string;
+    rating: number;
+    body: string;
+    photos?: string[];
+    videos?: string[];
+    canAddMedia?: boolean;
+  };
   textPoint?: number;
   mediaPoint?: number;
 }) {
@@ -36,8 +43,11 @@ export function ReviewForm({
   const [done, setDone] = useState<null | { pendingMedia: boolean; edited?: boolean }>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const photoCount = media.filter((m) => m.kind === "image").length;
-  const videoCount = media.filter((m) => m.kind === "video").length;
+  const lockedPhotos = edit?.photos ?? [];
+  const lockedVideos = edit?.videos ?? [];
+  const canAddMedia = edit ? edit.canAddMedia !== false : true;
+  const photoCount = lockedPhotos.length + media.filter((m) => m.kind === "image").length;
+  const videoCount = lockedVideos.length + media.filter((m) => m.kind === "video").length;
 
   const pick = async (list: FileList | null) => {
     if (!list?.length) return;
@@ -46,7 +56,7 @@ export function ReviewForm({
     try {
       for (const f of Array.from(list)) {
         const isVideo = f.type.startsWith("video/");
-        if (isVideo && videoCount + media.filter((m) => m.kind === "video").length >= MAX_VIDEOS) {
+        if (isVideo && videoCount >= MAX_VIDEOS) {
           setError(`영상은 ${MAX_VIDEOS}개까지 첨부할 수 있습니다.`);
           continue;
         }
@@ -108,7 +118,13 @@ export function ReviewForm({
         ? await fetch("/api/reviews/edit", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ reviewId: edit.reviewId, rating, body: body.trim() }),
+            body: JSON.stringify({
+              reviewId: edit.reviewId,
+              rating,
+              body: body.trim(),
+              photos: media.filter((m) => m.kind === "image").map((m) => m.path),
+              videos: media.filter((m) => m.kind === "video").map((m) => m.path),
+            }),
           })
         : await fetch("/api/reviews/submit", {
             method: "POST",
@@ -142,7 +158,14 @@ export function ReviewForm({
     return (
       <div className="mt-8 rounded-xl border border-ink-line bg-bg-2 p-6 text-sm leading-relaxed text-ink-soft">
         {done.edited ? (
-          <>리뷰가 수정되었습니다.</>
+          done.pendingMedia ? (
+            <>
+              리뷰가 수정되었습니다. 추가하신 사진·영상은 검수 후 공개되며, 승인되면{" "}
+              <b className="text-accent">{mediaPoint.toLocaleString("ko-KR")}P</b>가 적립됩니다.
+            </>
+          ) : (
+            <>리뷰가 수정되었습니다.</>
+          )
         ) : done.pendingMedia ? (
           <>
             리뷰가 게시되었고{" "}
@@ -205,8 +228,8 @@ export function ReviewForm({
         />
       </div>
 
-      {/* 미디어 — 수정 모드에서는 교체 불가 */}
-      {!edit && (
+      {/* 미디어 — 기존 첨부는 삭제·교체 불가, 남은 슬롯만큼 추가 가능 */}
+      {(
         <div>
           <div className="text-sm font-semibold text-ink">
             사진·영상{" "}
@@ -215,6 +238,24 @@ export function ReviewForm({
             </span>
           </div>
           <div className="mt-2 flex flex-wrap gap-3">
+            {lockedPhotos.map((u, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={u}
+                src={u}
+                alt={`기존 사진 ${i + 1}`}
+                className="h-20 w-20 rounded-lg border border-ink-line object-cover opacity-80"
+              />
+            ))}
+            {lockedVideos.map((u) => (
+              <video
+                key={u}
+                src={u}
+                muted
+                playsInline
+                className="h-20 w-20 rounded-lg border border-ink-line object-cover opacity-80"
+              />
+            ))}
             {media.map((m, i) => (
               <div key={m.path} className="relative">
                 {m.kind === "video" ? (
@@ -242,7 +283,7 @@ export function ReviewForm({
                 </button>
               </div>
             ))}
-            {photoCount + videoCount < MAX_PHOTOS + MAX_VIDEOS && (
+            {canAddMedia && photoCount + videoCount < MAX_PHOTOS + MAX_VIDEOS && (
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
@@ -253,10 +294,16 @@ export function ReviewForm({
               </button>
             )}
           </div>
-          <p className="mt-2 text-[11px] text-ink-faint">
-            사진·영상은 검수 후 공개됩니다 (그 전까지 흐리게 표시). 승인 시{" "}
-            {mediaPoint.toLocaleString("ko-KR")}P가 추가 적립됩니다.
-          </p>
+          {canAddMedia ? (
+            <p className="mt-2 text-[11px] text-ink-faint">
+              사진·영상은 검수 후 공개됩니다 (그 전까지 흐리게 표시). 승인 시{" "}
+              {mediaPoint.toLocaleString("ko-KR")}P가 추가 적립됩니다.
+            </p>
+          ) : (
+            <p className="mt-2 text-[11px] text-ink-faint">
+              검수가 완료되어 사진·영상은 더 추가할 수 없습니다.
+            </p>
+          )}
           <input
             ref={fileRef}
             type="file"
