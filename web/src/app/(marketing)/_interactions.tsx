@@ -574,6 +574,75 @@ export function ScienceInteractions() {
     return () => obs.disconnect();
   }, []);
 
+  // 성분별 임상 근거 모달 + 주요 출처 아코디언.
+  // reduced-motion과 무관하게 항상 동작해야 하므로 별도 effect로 둔다.
+  useEffect(() => {
+    const cleanups: Array<() => void> = [];
+
+    const modal = document.getElementById("ev-modal");
+    const content = modal?.querySelector<HTMLElement>(".ev-content");
+    if (modal && content) {
+      let lastFocus: HTMLElement | null = null;
+      const open = (key: string, trigger: HTMLElement) => {
+        const src = document.getElementById(`ev-${key}`);
+        if (!src) return;
+        lastFocus = trigger;
+        content.innerHTML = src.innerHTML;
+        modal.hidden = false;
+        document.body.style.overflow = "hidden";
+        modal.querySelector<HTMLButtonElement>(".ev-x")?.focus();
+      };
+      const close = () => {
+        modal.hidden = true;
+        content.innerHTML = "";
+        document.body.style.overflow = "";
+        lastFocus?.focus();
+        lastFocus = null;
+      };
+      const onClick = (e: Event) => {
+        const t = e.target as HTMLElement;
+        const btn = t.closest<HTMLElement>(".ing-ev[data-ev]");
+        if (btn?.dataset.ev) return open(btn.dataset.ev, btn);
+        if (t.closest("[data-ev-close]")) close();
+      };
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === "Escape" && !modal.hidden) close();
+      };
+      document.addEventListener("click", onClick);
+      document.addEventListener("keydown", onKey);
+      cleanups.push(() => {
+        document.removeEventListener("click", onClick);
+        document.removeEventListener("keydown", onKey);
+        document.body.style.overflow = "";
+      });
+    }
+
+    // 아코디언 — 한 번에 하나만 열린다.
+    const items = [...document.querySelectorAll<HTMLElement>(".acc-item")];
+    if (items.length) {
+      const onAcc = (e: Event) => {
+        const q = (e.target as HTMLElement).closest<HTMLElement>(".acc-q");
+        if (!q) return;
+        const item = q.closest<HTMLElement>(".acc-item");
+        if (!item) return;
+        const willOpen = !item.hasAttribute("data-open");
+        items.forEach((it) => {
+          it.removeAttribute("data-open");
+          it.querySelector(".acc-q")?.setAttribute("aria-expanded", "false");
+        });
+        if (willOpen) {
+          item.setAttribute("data-open", "1");
+          q.setAttribute("aria-expanded", "true");
+        }
+      };
+      const acc = items[0].parentElement;
+      acc?.addEventListener("click", onAcc);
+      cleanups.push(() => acc?.removeEventListener("click", onAcc));
+    }
+
+    return () => cleanups.forEach((c) => c());
+  }, []);
+
   return null;
 }
 
