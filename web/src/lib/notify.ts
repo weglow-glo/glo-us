@@ -233,7 +233,9 @@ export async function sendReviewRequest(opts: {
   }
 }
 
-/** 포인트 만료 30일 전 안내 문자 (공정위 소멸 사전 안내) */
+/** 포인트 만료 30일 전 안내 (공정위 소멸 사전 안내).
+ *  SOLAPI_TEMPLATE_POINTS가 채워지면 알림톡, 아니면 문자(LMS).
+ *  알림톡 실패 시 같은 요청의 text가 문자로 자동 대체발송된다. */
 export async function sendPointsExpiryNotice(opts: {
   to: string;
   name: string | null;
@@ -248,16 +250,38 @@ export async function sendPointsExpiryNotice(opts: {
   }
   const d = new Date(opts.expiresAt);
   const dateStr = `${d.getMonth() + 1}월 ${d.getDate()}일`;
+  const amountStr = opts.amount.toLocaleString("ko-KR");
   const text = [
     `[glo] 포인트 소멸 예정 안내`,
     ``,
-    `${opts.name ? opts.name + " 고객님, " : ""}보유하신 포인트 중 ${opts.amount.toLocaleString(
-      "ko-KR",
-    )}P가 ${dateStr}부터 순차 소멸됩니다.`,
+    `${opts.name ? opts.name + " 고객님, " : ""}보유하신 포인트 중 ${amountStr}P가 ${dateStr}부터 순차 소멸됩니다.`,
     ``,
     `소멸 전에 다음 구매에 사용해 보세요.`,
-    `${SITE}/product`,
+    `${SITE}/account/points`,
   ].join("\n");
+
+  const pfId = process.env.SOLAPI_PFID;
+  const templateId = process.env.SOLAPI_TEMPLATE_POINTS;
+  const useAlimtalk = Boolean(pfId && templateId);
+  const message: Record<string, unknown> = {
+    to: opts.to,
+    from: from.replace(/\D/g, ""),
+    text,
+    subject: "[glo] 포인트 소멸 안내",
+  };
+  if (useAlimtalk) {
+    message.kakaoOptions = {
+      pfId,
+      templateId,
+      variables: {
+        "#{고객명}": opts.name ?? "고객",
+        "#{소멸예정포인트}": amountStr,
+        "#{소멸시작일}": dateStr,
+      },
+      disableSms: false,
+    };
+  }
+  const channel: NotifyResult["channel"] = useAlimtalk ? "alimtalk" : "lms";
   try {
     const res = await fetch(API, {
       method: "POST",
@@ -265,16 +289,7 @@ export async function sendPointsExpiryNotice(opts: {
         "Content-Type": "application/json",
         Authorization: authHeader(key, secret),
       },
-      body: JSON.stringify({
-        messages: [
-          {
-            to: opts.to,
-            from: from.replace(/\D/g, ""),
-            text,
-            subject: "[glo] 포인트 소멸 안내",
-          },
-        ],
-      }),
+      body: JSON.stringify({ messages: [message] }),
     });
     const json = (await res.json().catch(() => ({}))) as {
       failedMessageList?: Array<{ statusMessage?: string }>;
@@ -284,12 +299,12 @@ export async function sendPointsExpiryNotice(opts: {
       message?: string;
     };
     if (!res.ok) {
-      return { ok: false, channel: "lms", error: json.errorMessage ?? json.message ?? `HTTP ${res.status}` };
+      return { ok: false, channel, error: json.errorMessage ?? json.message ?? `HTTP ${res.status}` };
     }
     const failed = json.failedMessageList?.[0];
-    if (failed) return { ok: false, channel: "lms", error: failed.statusMessage ?? "발송 실패" };
-    return { ok: true, channel: "lms", messageId: json.messageList?.[0]?.messageId ?? json.groupId };
+    if (failed) return { ok: false, channel, error: failed.statusMessage ?? "발송 실패" };
+    return { ok: true, channel, messageId: json.messageList?.[0]?.messageId ?? json.groupId };
   } catch (e) {
-    return { ok: false, channel: "lms", error: e instanceof Error ? e.message : String(e) };
+    return { ok: false, channel, error: e instanceof Error ? e.message : String(e) };
   }
 }
