@@ -86,30 +86,24 @@ h2 em{font-style:normal;color:var(--gold);}
 .scroll-cue i{display:block;width:1px;height:52px;background:linear-gradient(180deg,var(--gold),transparent);animation:cue 2.2s var(--ease) infinite;}
 @keyframes cue{0%{transform:scaleY(0);transform-origin:0 0}45%{transform:scaleY(1);transform-origin:0 0}46%{transform-origin:0 100%}100%{transform:scaleY(0);transform-origin:0 100%}}
 
-/* ── 2. 스크롤 스크럽 (핵심) ─────────────────────────────
-   canister-rotation.mp4 은 Veo 워터마크 + 실제 패키지와 다른 디자인이라 폐기.
-   2606_glo_2-1.mp4(실제 사쉐 디자인, 워터마크 없음)로 교체하고, 영상 배경이
-   연분홍이라 섹션 자체를 밝게 간다 — 어두운 히어로 다음에 오는 명암 리듬. */
-.rot{position:relative;height:420svh;background:#efe6e6;}
-.rot-stage{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center;
-  background:radial-gradient(ellipse 110% 80% at 50% 40%,#f6efef 0%,#e7dada 60%,#dcc9c9 100%);}
+/* ── 2. 스크롤 회전 (핵심) ───────────────────────────────
+   canister-rotation.mp4 을 스크롤에 물려 360° 돌린다.
+   원본 우하단에 Veo 워터마크가 있어 delogo 로 지운 -clean 본을 쓴다. */
+.rot{position:relative;height:420svh;background:var(--burg-900);}
+.rot-stage{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center;}
 .rot-stage::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(ellipse 62% 58% at 50% 50%,transparent 34%,rgba(190,165,165,.42) 100%);}
-.rot-video{width:min(96vh,86vw);max-width:none;mix-blend-mode:multiply;}
-.rot-plinth{position:absolute;bottom:13%;left:50%;transform:translateX(-50%);width:min(40vw,380px);height:60px;
-  background:radial-gradient(ellipse,rgba(138,74,82,.16),transparent 70%);filter:blur(18px);}
-/* 스크럽 구간별로 뜨는 스펙 라벨 — 밝은 배경이라 잉크색으로 */
-.spec{position:absolute;z-index:5;max-width:270px;opacity:0;color:var(--burg-700);}
+  background:radial-gradient(ellipse 60% 55% at 50% 50%,transparent 30%,rgba(20,10,14,.82) 100%);}
+.rot-video{width:min(150vh,120vw);max-width:none;opacity:.98;}
+.rot-plinth{position:absolute;bottom:14%;left:50%;transform:translateX(-50%);width:min(46vw,420px);height:70px;
+  background:radial-gradient(ellipse,rgba(201,162,74,.20),transparent 68%);filter:blur(20px);}
+/* 회전 각도별로 뜨는 스펙 라벨 */
+.spec{position:absolute;z-index:5;max-width:270px;opacity:0;}
 .spec-n{font-family:var(--en);font-size:clamp(38px,5.4vw,66px);font-weight:300;line-height:1;letter-spacing:-2px;}
-.spec-l{margin-top:10px;font-size:13px;letter-spacing:.4px;color:rgba(42,18,24,.66);line-height:1.6;}
+.spec-l{margin-top:10px;font-size:13px;letter-spacing:.4px;color:rgba(244,235,235,.66);line-height:1.6;}
 .sp1{top:18%;left:6%;} .sp2{top:24%;right:6%;text-align:right;}
 .sp3{bottom:24%;left:8%;} .sp4{bottom:20%;right:7%;text-align:right;}
 .rot-title{position:absolute;z-index:6;top:8%;left:50%;transform:translateX(-50%);text-align:center;width:100%;padding:0 20px;}
-.rot-title h2{font-size:clamp(26px,3.6vw,50px);color:var(--burg-700);}
-.rot-title h2 em{color:var(--burg-200);}
-/* 밝은 섹션에서는 골드 그라데이션이 안 보이므로 버건디 계열로 */
-.rot .au{background:linear-gradient(100deg,#8a4a52,#5a2229 45%,#8c6b23 78%,#8a4a52);
-  background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;}
+.rot-title h2{font-size:clamp(26px,3.6vw,50px);}
 
 /* ── 3. 액체 리빌 ────────────────────────────────────────── */
 .liq{position:relative;height:200svh;background:var(--burg-900);}
@@ -169,9 +163,13 @@ h2 em{font-style:normal;color:var(--gold);}
 
 @media (max-width:900px){
   .nums-g{grid-template-columns:repeat(2,1fr);row-gap:38px;}
-  .spec{max-width:150px;} .sp1,.sp3{left:4%;} .sp2,.sp4{right:4%;}
-  .sp1{top:14%}.sp2{top:19%}.sp3{bottom:27%}.sp4{bottom:22%}
+  /* 모바일: 좁아서 라벨이 제품과 겹친다. 어차피 한 번에 하나만 뜨므로
+     제품 아래 중앙 한 자리에 모아 놓는다. */
   .rot-video{width:150vw;}
+  .spec,.sp1,.sp2,.sp3,.sp4{
+    top:auto;bottom:5%;left:50%;right:auto;transform:translateX(-50%);
+    width:min(88vw,340px);max-width:none;text-align:center;}
+  .spec-l{margin-top:6px;}
   .orb-wrap{height:390px;}
 }
 @media (max-width:480px){
@@ -215,8 +213,8 @@ h2 em{font-style:normal;color:var(--gold);}
 <!-- 2. 스크롤 회전 -->
 <section class="rot" id="rot">
   <div class="rot-stage">
-    <div class="rot-title"><h2 data-reveal>모든 각도에서 <em>완결된</em> 설계</h2></div>
-    <video class="rot-video" id="rotVideo" src="/assets/video/2606_glo_2-1.mp4" muted playsinline preload="auto" aria-label="glo GL-01 사쉐"></video>
+    <div class="rot-title"><h2 data-reveal>30일이 <em>하나의</em> 통 안에</h2></div>
+    <video class="rot-video" id="rotVideo" src="/assets/video/canister-rotation-clean.mp4" muted playsinline preload="auto" aria-label="glo GL-01 캐니스터 360° 회전"></video>
     <div class="rot-plinth" aria-hidden="true"></div>
 
     <div class="spec sp1" data-spec="0.12">
@@ -379,7 +377,11 @@ h2 em{font-style:normal;color:var(--gold);}
       scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: .6 } });
   }
 
-  /* ── 핵심: 캐니스터 회전을 스크롤로 스크럽 ───────────── */
+  /* ── 핵심: 실제 제품 컷아웃에 스크롤 3D ─────────────────
+     평면 사진이라 rotateY 를 크게 돌리면 종잇장처럼 보인다. 각도는 원통이
+     그럴듯하게 읽히는 범위(±26°)로 묶고, 대신 스페큘러 하이라이트를 회전에
+     맞춰 훑고 지나가게 해서 입체감을 만든다. */
+  /* 스크롤 진행도 → 영상 재생 위치. 스크롤한 만큼 캐니스터가 돈다. */
   var v = document.getElementById('rotVideo');
   var target = 0, cur = 0, ready = false;
   function seed() { if (!ready && v.duration) { ready = true; v.pause(); } }
@@ -390,7 +392,7 @@ h2 em{font-style:normal;color:var(--gold);}
     trigger: '#rot', start: 'top top', end: 'bottom bottom', scrub: true,
     onUpdate: function (self) { target = self.progress; }
   });
-  /* rAF 보간 — currentTime 직접 대입보다 훨씬 부드럽다 */
+  /* rAF 보간 — currentTime 을 바로 대입하면 뚝뚝 끊긴다 */
   function tick() {
     if (ready && v.duration) {
       cur += (target - cur) * 0.12;
@@ -480,5 +482,7 @@ h2 em{font-style:normal;color:var(--gold);}
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
 })();
 </script>
+
+
 </body>
 </html>
