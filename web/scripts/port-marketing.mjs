@@ -28,7 +28,8 @@ const PAGES = [
   { src: "about.html", route: "about", css: "about" },
   { src: "privacy.html", route: "privacy", css: "privacy" },
   { src: "terms.html", route: "terms", css: "terms" },
-  { src: "refund.html", route: "refund", css: "refund" },
+  // 환불 정책 페이지 임시 비공개 (2026-07-24) — 공개 복구 시 아래 줄 주석 해제
+  // { src: "refund.html", route: "refund", css: "refund" },
 ];
 
 // Order matters: rewrite specific *.html links before the bare /ko/ → / .

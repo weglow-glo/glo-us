@@ -18,7 +18,7 @@ export default function ChromeBehaviors() {
     // login, account, admin) full-load so the marketing global CSS doesn't
     // leak onto their Tailwind layout.
     const MARKETING = new Set([
-      "/", "/product", "/science", "/about", "/privacy", "/terms", "/refund",
+      "/", "/product", "/science", "/about", "/privacy", "/terms",
     ]);
     const onClick = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
