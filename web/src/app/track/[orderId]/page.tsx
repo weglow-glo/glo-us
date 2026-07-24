@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { carrierName, trackingUrlOf } from "@/lib/carriers";
 import { PRODUCT } from "@/lib/product";
@@ -111,6 +112,14 @@ export default async function TrackPage({
           </p>
         </div>
       )}
+
+      {/* 주문을 못 찾은 경우에도 사이트로 돌아갈 길은 있어야 한다 */}
+      <Link
+        href="/"
+        className="mt-4 flex min-h-11 items-center justify-center rounded-full border border-ink-line px-6 py-3.5 text-sm font-semibold text-ink-soft transition hover:border-accent hover:text-accent"
+      >
+        <span className="font-display">glo</span>&nbsp;홈페이지로 가기
+      </Link>
     </main>
   );
 }
