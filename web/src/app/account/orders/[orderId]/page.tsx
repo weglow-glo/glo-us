@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { formatKRW } from "@/lib/product";
 import { statusLabel, isCancelable, type OrderStatus } from "@/lib/order-status";
+import { carrierName, trackingUrlOf } from "@/lib/carriers";
 import CancelButton from "./cancel-button";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +28,7 @@ type Order = {
   payment_method: string | null;
   customer_phone: string | null;
   shipping_address: ShippingAddress | null;
+  carrier: string | null;
   tracking_number: string | null;
   shipped_at: string | null;
   delivered_at: string | null;
@@ -63,7 +65,7 @@ export default async function OrderDetailPage({
   const { data: order } = await supabase
     .from("orders")
     .select(
-      "order_id, order_name, product_code, quantity, status, amount, used_points, payment_method, customer_phone, shipping_address, tracking_number, shipped_at, delivered_at, created_at",
+      "order_id, order_name, product_code, quantity, status, amount, used_points, payment_method, customer_phone, shipping_address, carrier, tracking_number, shipped_at, delivered_at, created_at",
     )
     .eq("order_id", orderId)
     .single<Order>();
@@ -73,6 +75,9 @@ export default async function OrderDetailPage({
   const s = statusLabel(order.status);
   const sa = order.shipping_address ?? {};
   const cancelable = isCancelable(order.status);
+  const trackingUrl = order.tracking_number
+    ? trackingUrlOf(order.carrier, order.tracking_number)
+    : null;
 
   return (
     <main id="main" className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
@@ -127,10 +132,31 @@ export default async function OrderDetailPage({
           }
         />
         {sa.memo ? <Row k="배송메모" v={sa.memo} /> : null}
+        {order.tracking_number ? <Row k="택배사" v={carrierName(order.carrier)} /> : null}
         <Row k="송장번호" v={order.tracking_number || "아직 등록 전이에요"} />
         <Row k="발송일시" v={fmtDate(order.shipped_at)} />
         {order.delivered_at ? <Row k="배송완료" v={fmtDate(order.delivered_at)} /> : null}
       </Section>
+
+      {/* 배송 조회 — 송장이 등록된 뒤에만 노출 */}
+      {order.tracking_number ? (
+        trackingUrl ? (
+          <a
+            href={trackingUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-ink px-6 py-3.5 text-sm font-semibold text-bg-1 transition hover:bg-burg-400"
+          >
+            배송 조회하기
+            <span aria-hidden="true">→</span>
+            <span className="sr-only">({carrierName(order.carrier)} 새 창에서 열림)</span>
+          </a>
+        ) : (
+          <p className="mt-4 text-xs text-ink-faint">
+            택배사 정보가 없어 조회 링크를 제공할 수 없습니다. 고객센터로 문의해주세요.
+          </p>
+        )
+      ) : null}
 
       {/* Cancel — only while still cancelable (paid, before 배송준비중) */}
       {order.status === "canceled" ? (
