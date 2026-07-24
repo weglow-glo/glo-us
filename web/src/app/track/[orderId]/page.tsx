@@ -118,7 +118,7 @@ export default async function TrackPage({
         href="/"
         className="mt-4 flex min-h-11 items-center justify-center rounded-full border border-ink-line px-6 py-3.5 text-sm font-semibold text-ink-soft transition hover:border-accent hover:text-accent"
       >
-        glo 홈페이지로 가기
+        <span className="font-display">glo</span>&nbsp;홈페이지로 가기
       </Link>
     </main>
   );

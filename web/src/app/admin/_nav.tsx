@@ -31,8 +31,9 @@ export default function AdminNav() {
   return (
     <header className="border-b border-ink-line bg-bg-2">
       <div className="mx-auto flex max-w-6xl items-center gap-6 px-6">
-        <span className="py-4 font-sans text-lg font-light text-ink">
-          glo <span className="text-sm text-ink-mute">admin</span>
+        <span className="py-4 text-lg font-light text-ink">
+          <span className="font-display">glo</span>{" "}
+          <span className="font-sans text-sm text-ink-mute">admin</span>
         </span>
         <nav className="flex gap-1">
           {TABS.map((t) => {
