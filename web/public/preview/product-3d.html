@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>glo GL-01 — 프로토타입 (3D 모션)</title>
+<meta name="robots" content="noindex"/>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+<meta name="theme-color" content="#1a0f14"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<style>
+:root{
+  --burg-900:#140a0e; --burg-800:#1f0d13; --burg-700:#2a1218; --burg-600:#3a1a22;
+  --burg-400:#5a2229; --burg-200:#8a4a52; --burg-50:#d4b5b5;
+  --cream:#f4ebeb; --paper:#faf7f7;
+  /* 실제 패키지 금박에서 가져온 골드 */
+  --gold:#c9a24a; --gold-lt:#e8cf9a; --gold-dp:#8c6b23;
+  --kr:'Wanted Sans Variable','Wanted Sans','Pretendard Variable','Pretendard',-apple-system,system-ui,sans-serif;
+  --en:'Fraunces',Georgia,serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--burg-900);color:var(--cream);font-family:var(--kr);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+img,video{display:block;max-width:100%;}
+a{color:inherit;text-decoration:none;}
+:focus{outline:none;}
+:focus-visible{outline:2px solid var(--gold);outline-offset:4px;border-radius:6px;}
+
+/* ── 필름 그레인 + 비네트 (고급감의 8할) ─────────────────── */
+.grain{position:fixed;inset:-150%;z-index:9998;pointer-events:none;opacity:.16;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 700ms steps(3) infinite;}
+@keyframes grain{0%{transform:translate(0,0)}33%{transform:translate(-2%,1%)}66%{transform:translate(1%,-2%)}100%{transform:translate(0,0)}}
+.vig{position:fixed;inset:0;z-index:9997;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 45%,transparent 45%,rgba(10,5,8,.55) 100%);}
+/* 커서 따라다니는 골드 글로우 */
+.glow{position:fixed;width:520px;height:520px;left:0;top:0;z-index:1;pointer-events:none;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,162,74,.13),transparent 62%);
+  transform:translate3d(-50%,-50%,0);opacity:0;transition:opacity .6s;}
+
+/* ── 상단 진행 바 ────────────────────────────────────────── */
+.prog{position:fixed;top:0;left:0;height:2px;width:100%;transform-origin:0 50%;transform:scaleX(0);z-index:9999;
+  background:linear-gradient(90deg,var(--gold-dp),var(--gold-lt),var(--gold));}
+
+/* ── 공통 ────────────────────────────────────────────────── */
+.ctr{max-width:1280px;margin:0 auto;padding:0 clamp(20px,5vw,64px);}
+.ey{font-family:var(--en);font-size:12px;letter-spacing:3.4px;text-transform:uppercase;
+  color:var(--gold);display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+.ey::before{content:"";width:28px;height:1px;background:linear-gradient(90deg,var(--gold),transparent);}
+h2{font-family:var(--kr);font-weight:300;font-size:clamp(30px,4.6vw,60px);line-height:1.16;letter-spacing:-2px;}
+h2 em{font-style:normal;color:var(--gold);}
+.lead{color:rgba(244,235,235,.62);font-size:clamp(15px,1.5vw,18px);line-height:1.8;max-width:56ch;margin-top:22px;}
+
+/* 골드 그라데이션 텍스트 */
+.au{background:linear-gradient(100deg,var(--gold-dp) 0%,var(--gold-lt) 42%,var(--gold) 60%,var(--gold-dp) 100%);
+  background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:sheen 6s var(--ease) infinite;}
+@keyframes sheen{0%,100%{background-position:200% 0}50%{background-position:0 0}}
+
+/* ── 1. 히어로 ───────────────────────────────────────────── */
+.hero{position:relative;min-height:100svh;display:grid;place-items:center;overflow:hidden;
+  background:radial-gradient(ellipse 120% 80% at 50% 12%,#4a1f28 0%,var(--burg-800) 45%,var(--burg-900) 100%);}
+.hero-glowring{position:absolute;top:50%;left:50%;width:min(88vw,780px);aspect-ratio:1;transform:translate(-50%,-50%);
+  border-radius:50%;background:radial-gradient(circle,rgba(201,162,74,.16),transparent 60%);filter:blur(46px);}
+.hero-in{position:relative;z-index:3;text-align:center;padding:120px 20px 140px;}
+.hero-kicker{font-family:var(--en);font-size:12.5px;letter-spacing:4.6px;text-transform:uppercase;color:rgba(232,207,154,.72);margin-bottom:30px;}
+.hero h1{font-family:var(--kr);font-weight:200;font-size:clamp(44px,8.4vw,116px);line-height:1.02;letter-spacing:-4px;}
+.hero h1 .wm{font-family:var(--en);font-weight:300;font-style:italic;}
+.hero-sub{margin:34px auto 0;max-width:34ch;color:rgba(244,235,235,.6);font-size:clamp(14px,1.6vw,18px);line-height:1.8;}
+/* 문자 단위 마스크 리빌 */
+.ln{display:block;overflow:hidden;padding-bottom:.08em;}
+.ch{display:inline-block;will-change:transform,opacity;}
+/* 떠 있는 사쉐 */
+.hero-sachet{position:absolute;z-index:2;top:50%;left:50%;width:min(56vw,340px);
+  transform:translate(-50%,-46%);filter:drop-shadow(0 50px 70px rgba(0,0,0,.62));}
+.hero-sachet video{width:100%;mix-blend-mode:screen;}
+.scroll-cue{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:4;
+  font-family:var(--en);font-size:10.5px;letter-spacing:3px;text-transform:uppercase;color:rgba(244,235,235,.42);
+  display:flex;flex-direction:column;align-items:center;gap:12px;}
+.scroll-cue i{display:block;width:1px;height:52px;background:linear-gradient(180deg,var(--gold),transparent);animation:cue 2.2s var(--ease) infinite;}
+@keyframes cue{0%{transform:scaleY(0);transform-origin:0 0}45%{transform:scaleY(1);transform-origin:0 0}46%{transform-origin:0 100%}100%{transform:scaleY(0);transform-origin:0 100%}}
+
+/* ── 2. 스크롤 회전 (핵심) ───────────────────────────────── */
+.rot{position:relative;height:420svh;background:var(--burg-900);}
+.rot-stage{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center;}
+.rot-stage::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 55% at 50% 50%,transparent 30%,rgba(20,10,14,.82) 100%);}
+.rot-video{width:min(150vh,120vw);max-width:none;opacity:.98;}
+.rot-plinth{position:absolute;bottom:14%;left:50%;transform:translateX(-50%);width:min(46vw,420px);height:70px;
+  background:radial-gradient(ellipse,rgba(201,162,74,.20),transparent 68%);filter:blur(20px);}
+/* 회전 각도별로 뜨는 스펙 라벨 */
+.spec{position:absolute;z-index:5;max-width:270px;opacity:0;}
+.spec-n{font-family:var(--en);font-size:clamp(38px,5.4vw,66px);font-weight:300;line-height:1;letter-spacing:-2px;}
+.spec-l{margin-top:10px;font-size:13px;letter-spacing:.4px;color:rgba(244,235,235,.66);line-height:1.6;}
+.sp1{top:18%;left:6%;} .sp2{top:24%;right:6%;text-align:right;}
+.sp3{bottom:24%;left:8%;} .sp4{bottom:20%;right:7%;text-align:right;}
+.rot-title{position:absolute;z-index:6;top:8%;left:50%;transform:translateX(-50%);text-align:center;width:100%;padding:0 20px;}
+.rot-title h2{font-size:clamp(26px,3.6vw,50px);}
+
+/* ── 3. 액체 리빌 ────────────────────────────────────────── */
+.liq{position:relative;height:200svh;background:var(--burg-900);}
+.liq-stage{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center;}
+.liq-mask{position:absolute;inset:0;overflow:hidden;clip-path:circle(16% at 50% 50%);}
+.liq-mask video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.liq-mask::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,10,14,.30),rgba(20,10,14,.62));}
+.liq-copy{position:relative;z-index:4;text-align:center;padding:0 24px;}
+.liq-copy h2{text-shadow:0 4px 40px rgba(0,0,0,.6);}
+
+/* ── 4. 3D 성분 오비트 ───────────────────────────────────── */
+.orb{padding:clamp(90px,13vw,170px) 0;background:linear-gradient(180deg,var(--burg-900),var(--burg-800) 45%,var(--burg-900));}
+.orb-head{text-align:center;margin-bottom:clamp(40px,6vw,72px);}
+.orb-head .lead{margin-inline:auto;}
+.orb-wrap{position:relative;height:min(66vw,440px);perspective:1400px;}
+.orb-ring{position:absolute;inset:0;transform-style:preserve-3d;animation:spin 34s linear infinite;}
+@keyframes spin{to{transform:rotateY(360deg)}}
+.orb-wrap:hover .orb-ring{animation-play-state:paused;}
+.node{position:absolute;top:50%;left:50%;width:132px;margin:-58px 0 0 -66px;text-align:center;
+  transform-style:preserve-3d;backface-visibility:hidden;}
+.node-d{width:132px;height:116px;display:grid;place-content:center;border-radius:14px;
+  background:linear-gradient(155deg,rgba(244,235,235,.09),rgba(244,235,235,.02));
+  border:1px solid rgba(201,162,74,.24);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:border-color .3s,background .3s,box-shadow .3s;}
+.node:hover .node-d{border-color:var(--gold);box-shadow:0 12px 40px rgba(201,162,74,.22);background:linear-gradient(155deg,rgba(201,162,74,.16),rgba(244,235,235,.03));}
+.node-n{font-family:var(--en);font-style:italic;font-size:13px;color:var(--gold);letter-spacing:.6px;}
+.node-t{font-size:12.5px;font-weight:600;margin-top:7px;letter-spacing:-.2px;line-height:1.35;}
+.node-mg{font-family:var(--en);font-size:15px;color:rgba(244,235,235,.58);margin-top:5px;}
+.orb-core{position:absolute;top:50%;left:50%;width:190px;height:190px;margin:-95px 0 0 -95px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,162,74,.20),transparent 66%);filter:blur(14px);}
+
+/* ── 5. 카운터 ───────────────────────────────────────────── */
+.nums{padding:clamp(70px,10vw,130px) 0;border-top:1px solid rgba(201,162,74,.15);border-bottom:1px solid rgba(201,162,74,.15);
+  background:var(--burg-800);}
+.nums-g{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,4vw,48px);text-align:center;}
+.num-v{font-family:var(--en);font-weight:300;font-size:clamp(32px,5vw,68px);line-height:1;letter-spacing:-2px;}
+.num-u{font-family:var(--en);font-size:clamp(15px,2vw,24px);color:var(--gold);margin-left:3px;}
+.num-l{margin-top:12px;font-size:12.5px;letter-spacing:.4px;color:rgba(244,235,235,.55);}
+
+/* ── 6. CTA ──────────────────────────────────────────────── */
+.cta{position:relative;padding:clamp(100px,15vw,190px) 0;text-align:center;overflow:hidden;
+  background:radial-gradient(ellipse 90% 70% at 50% 108%,#4a1f28,var(--burg-900) 62%);}
+.cta h2{margin-bottom:20px;}
+.btn{position:relative;display:inline-flex;align-items:center;gap:14px;margin-top:40px;
+  padding:20px 46px;border-radius:100px;font-size:15px;font-weight:600;letter-spacing:-.2px;
+  color:var(--burg-900);background:linear-gradient(100deg,var(--gold-lt),var(--gold) 52%,var(--gold-dp));
+  box-shadow:0 16px 44px rgba(201,162,74,.3);transition:transform .35s var(--ease),box-shadow .35s var(--ease);
+  min-height:44px;cursor:pointer;}
+.btn:hover{box-shadow:0 22px 60px rgba(201,162,74,.44);}
+.btn svg{width:18px;height:12px;}
+.cta-fine{margin-top:22px;font-size:13px;color:rgba(244,235,235,.45);}
+
+.foot{padding:44px 0 60px;text-align:center;font-size:12px;color:rgba(244,235,235,.34);background:var(--burg-900);}
+.badge{position:fixed;left:16px;bottom:16px;z-index:9999;padding:9px 15px;border-radius:100px;font-size:11.5px;
+  letter-spacing:.3px;background:rgba(201,162,74,.14);border:1px solid rgba(201,162,74,.4);color:var(--gold-lt);
+  backdrop-filter:blur(10px);}
+
+@media (max-width:900px){
+  .nums-g{grid-template-columns:repeat(2,1fr);row-gap:38px;}
+  .spec{max-width:150px;} .sp1,.sp3{left:4%;} .sp2,.sp4{right:4%;}
+  .sp1{top:14%}.sp2{top:19%}.sp3{bottom:27%}.sp4{bottom:22%}
+  .rot-video{width:150vw;}
+  .orb-wrap{height:390px;}
+}
+@media (max-width:480px){
+  .spec-n{font-size:26px;} .spec-l{font-size:11px;}
+  .node,.node-d{width:112px;} .node{margin-left:-56px;}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
+  .grain{display:none;} .orb-ring{animation:none;}
+  .ch{opacity:1 !important;transform:none !important;}
+  .spec{opacity:1 !important;}
+  .liq-mask{clip-path:none !important;}
+  .rot{height:auto;} .rot-stage{position:relative;height:auto;padding:80px 0;}
+  .liq{height:auto;} .liq-stage{position:relative;height:70svh;}
+}
+</style>
+</head>
+<body>
+
+<div class="prog" id="prog"></div>
+<div class="glow" id="glow"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="vig" aria-hidden="true"></div>
+<div class="badge">프로토타입 · 실제 페이지 아님</div>
+
+<!-- 1. HERO -->
+<header class="hero">
+  <div class="hero-glowring" aria-hidden="true"></div>
+  <div class="hero-sachet" id="heroSachet" aria-hidden="true">
+    <video src="/assets/video/hero-sachet.mp4" poster="/assets/video/hero-sachet-poster.jpg" autoplay muted loop playsinline></video>
+  </div>
+  <div class="hero-in">
+    <div class="hero-kicker" data-fade>glo GL-01 · Skin Longevity Protocol</div>
+    <h1 data-split>피부는 관리하는 것이 아니라</h1>
+    <h1 data-split><span class="au">설계하는</span> 것입니다</h1>
+    <p class="hero-sub" data-fade>임상으로 검증된 9가지 활성 성분. 하루 한 포, 20g.</p>
+  </div>
+  <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><i></i></div>
+</header>
+
+<!-- 2. 스크롤 회전 -->
+<section class="rot" id="rot">
+  <div class="rot-stage">
+    <div class="rot-title"><h2 data-reveal>모든 각도에서 <em>완결된</em> 설계</h2></div>
+    <video class="rot-video" id="rotVideo" src="/assets/video/canister-rotation.mp4" muted playsinline preload="auto"></video>
+    <div class="rot-plinth" aria-hidden="true"></div>
+
+    <div class="spec sp1" data-spec="0.12">
+      <div class="spec-n au">9</div>
+      <div class="spec-l">임상으로 검증된<br/>활성 성분</div>
+    </div>
+    <div class="spec sp2" data-spec="0.36">
+      <div class="spec-n au">1,186.5<span style="font-size:.42em">mg</span></div>
+      <div class="spec-l">한 포에 담긴<br/>총 활성 배합량</div>
+    </div>
+    <div class="spec sp3" data-spec="0.60">
+      <div class="spec-n au">4</div>
+      <div class="spec-l">동시에 작동하는<br/>기능 복합체</div>
+    </div>
+    <div class="spec sp4" data-spec="0.82">
+      <div class="spec-n au">특허</div>
+      <div class="spec-l">Tightening-PB Complex<br/>KR 10-2911449</div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 액체 리빌 -->
+<section class="liq" id="liq">
+  <div class="liq-stage">
+    <div class="liq-mask" id="liqMask">
+      <video src="/assets/video/glo-liquid.mp4" autoplay muted loop playsinline></video>
+    </div>
+    <div class="liq-copy">
+      <div class="ey" style="justify-content:center" data-reveal>Texture</div>
+      <h2 data-reveal>비리지 않습니다.<br/><em>파인애플</em> 한 모금.</h2>
+      <p class="lead" style="margin-inline:auto" data-reveal>물에 타지 않아도, 씹지 않아도 됩니다. 하루 한 포를 그대로.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4. 3D 성분 오비트 -->
+<section class="orb">
+  <div class="ctr">
+    <div class="orb-head">
+      <div class="ey" style="justify-content:center" data-reveal>The 4×9 Protocol</div>
+      <h2 data-reveal>9가지 성분이 <em>네 방향</em>에서<br/>동시에 작동합니다</h2>
+      <p class="lead" data-reveal>임상에서 효과가 확인된 용량 그대로. 줄이지 않았습니다.</p>
+    </div>
+    <div class="orb-wrap">
+      <div class="orb-core" aria-hidden="true"></div>
+      <div class="orb-ring" id="ring">
+        <div class="node"><div class="node-d"><div class="node-n">N°01</div><div class="node-t">글루타치온</div><div class="node-mg">250mg</div></div></div>
+        <div class="node"><div class="node-d"><div class="node-n">N°02</div><div class="node-t">L-시스틴</div><div class="node-mg">200mg</div></div></div>
+        <div class="node"><div class="node-d"><div class="node-n">N°03</div><div class="node-t">화이트토마토</div><div class="node-mg">200mg</div></div></div>
+        <div class="node"><div class="node-d"><div class="node-n">N°04</div><div class="node-t">나이아신아마이드</div><div class="node-mg">300mg</div></div></div>
+        <div class="node"><div class="node-d"><div class="node-n">N°05</div><div class="node-t">히알루론 복합</div><div class="node-mg">120mg</div></div></div>
+        <div class="node"><div class="node-d"><div class="node-n">N°06</div><div class="node-t">밀크세라마이드</div><div class="node-mg">1.5mg</div></div></div>
+        <div class="node"><div class="node-d"><div class="node-n">N°07</div><div class="node-t">마린 콜라겐</div><div class="node-mg">100mg</div></div></div>
+        <div class="node"><div class="node-d"><div class="node-n">N°08</div><div class="node-t">Tightening-PB</div><div class="node-mg">10mg</div></div></div>
+        <div class="node"><div class="node-d"><div class="node-n">N°09</div><div class="node-t">헤마토코쿠스</div><div class="node-mg">5mg</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. 카운터 -->
+<section class="nums">
+  <div class="ctr">
+    <div class="nums-g">
+      <div><div class="num-v"><span data-count="1186.5" data-dec="1">0</span><span class="num-u">mg</span></div><div class="num-l">총 활성 배합량</div></div>
+      <div><div class="num-v"><span data-count="9">0</span></div><div class="num-l">임상 성분</div></div>
+      <div><div class="num-v"><span data-count="30">0</span><span class="num-u">포</span></div><div class="num-l">한 달 분</div></div>
+      <div><div class="num-v"><span data-count="753">0</span></div><div class="num-l">고객 후기</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. CTA -->
+<section class="cta">
+  <div class="ctr">
+    <div class="ey" style="justify-content:center" data-reveal>Start</div>
+    <h2 data-reveal>오늘 한 포가<br/><em>90일 뒤의 피부</em>입니다</h2>
+    <a href="#" class="btn" id="ctaBtn">
+      구매하기
+      <svg viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M0 6h21M16 1l5 5-5 5"/></svg>
+    </a>
+    <div class="cta-fine">무료배송 · 배송 기간 1~2일 소요</div>
+  </div>
+</section>
+
+<div class="foot">glo GL-01 — 모션 프로토타입 · 메디랩스</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+(function () {
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!window.gsap) return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* 진행 바 */
+  gsap.to('#prog', { scaleX: 1, ease: 'none',
+    scrollTrigger: { trigger: document.body, start: 'top top', end: 'bottom bottom', scrub: .3 } });
+
+  /* 커서 글로우 (포인터 있는 기기만) */
+  if (matchMedia('(pointer:fine)').matches && !reduce) {
+    var glow = document.getElementById('glow');
+    var gx = { x: 0, y: 0 };
+    window.addEventListener('pointermove', function (e) {
+      gx.x = e.clientX; gx.y = e.clientY; glow.style.opacity = 1;
+      gsap.to(glow, { x: gx.x, y: gx.y, duration: .9, ease: 'power3.out', overwrite: true });
+    }, { passive: true });
+  }
+
+  /* 헤드라인 문자 분해 — SplitText는 유료 플러그인이라 직접 구현.
+     <span class="au"> 같은 인라인 래퍼는 보존하면서 그 안의 글자까지 쪼갠다. */
+  function splitNode(node, out) {
+    Array.prototype.slice.call(node.childNodes).forEach(function (n) {
+      if (n.nodeType === 3) {
+        n.nodeValue.split('').forEach(function (c) {
+          var s = document.createElement('span');
+          s.className = 'ch';
+          s.textContent = c === ' ' ? ' ' : c;
+          out.appendChild(s);
+        });
+      } else if (n.nodeType === 1) {
+        var wrap = n.cloneNode(false);   // 래퍼(.au 등)만 복제
+        splitNode(n, wrap);              // 내부 텍스트는 글자 단위로
+        out.appendChild(wrap);
+      }
+    });
+  }
+  document.querySelectorAll('[data-split]').forEach(function (el) {
+    var line = document.createElement('span');
+    line.className = 'ln';
+    splitNode(el, line);
+    el.innerHTML = '';
+    el.appendChild(line);
+  });
+
+  if (!reduce) {
+    var tl = gsap.timeline({ delay: .25 });
+    tl.from('.hero-kicker', { opacity: 0, y: 16, duration: .8, ease: 'power2.out' })
+      .from('.ch', { yPercent: 118, opacity: 0, duration: 1.05, stagger: .022, ease: 'expo.out' }, '-=.45')
+      .from('.hero-sub', { opacity: 0, y: 18, duration: .8, ease: 'power2.out' }, '-=.55')
+      .from('.hero-sachet', { opacity: 0, scale: .9, duration: 1.5, ease: 'expo.out' }, '-=1.2')
+      .from('.scroll-cue', { opacity: 0, duration: .7 }, '-=.5');
+
+    /* 히어로 사쉐 — 마우스 따라 3D 틸트 + 부유 */
+    var sachet = document.getElementById('heroSachet');
+    gsap.to(sachet, { y: '+=18', duration: 3.6, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+    if (matchMedia('(pointer:fine)').matches) {
+      window.addEventListener('pointermove', function (e) {
+        var nx = (e.clientX / innerWidth - .5), ny = (e.clientY / innerHeight - .5);
+        gsap.to(sachet, { rotateY: nx * 22, rotateX: -ny * 16, x: nx * 26,
+          transformPerspective: 900, duration: 1.1, ease: 'power3.out', overwrite: 'auto' });
+      }, { passive: true });
+    }
+    /* 히어로 패럴랙스 아웃 */
+    gsap.to('.hero-in', { yPercent: -18, opacity: 0, ease: 'none',
+      scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: .6 } });
+    gsap.to(sachet, { yPercent: 26, ease: 'none',
+      scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: .6 } });
+  }
+
+  /* ── 핵심: 캐니스터 회전을 스크롤로 스크럽 ───────────── */
+  var v = document.getElementById('rotVideo');
+  var target = 0, cur = 0, ready = false;
+  function seed() { if (!ready && v.duration) { ready = true; v.pause(); } }
+  v.addEventListener('loadedmetadata', seed);
+  if (v.readyState >= 1) seed();
+
+  ScrollTrigger.create({
+    trigger: '#rot', start: 'top top', end: 'bottom bottom', scrub: true,
+    onUpdate: function (self) { target = self.progress; }
+  });
+  /* rAF 보간 — currentTime 직접 대입보다 훨씬 부드럽다 */
+  function tick() {
+    if (ready && v.duration) {
+      cur += (target - cur) * 0.12;
+      var t = cur * (v.duration - 0.05);
+      if (Math.abs(v.currentTime - t) > 0.008) v.currentTime = t;
+    }
+    requestAnimationFrame(tick);
+  }
+  if (!reduce) requestAnimationFrame(tick); else v.currentTime = 0;
+
+  /* 회전 각도별 스펙 라벨 — 해당 구간에서만 등장 */
+  if (!reduce) {
+    document.querySelectorAll('.spec').forEach(function (el) {
+      var at = parseFloat(el.dataset.spec);
+      gsap.set(el, { y: 26 });
+      ScrollTrigger.create({
+        trigger: '#rot', start: 'top top', end: 'bottom bottom', scrub: true,
+        onUpdate: function (self) {
+          var d = Math.abs(self.progress - at);
+          var on = d < 0.1 ? 1 : 0;
+          gsap.to(el, { opacity: on, y: on ? 0 : 26, duration: .5, ease: 'power2.out', overwrite: 'auto' });
+        }
+      });
+    });
+
+    /* ── 액체 원형 마스크 확장 ─────────────────────────── */
+    gsap.fromTo('#liqMask',
+      { clipPath: 'circle(14% at 50% 50%)' },
+      { clipPath: 'circle(78% at 50% 50%)', ease: 'none',
+        scrollTrigger: { trigger: '#liq', start: 'top top', end: 'bottom bottom', scrub: .8 } });
+
+    /* ── 일반 스크롤 리빌 ──────────────────────────────── */
+    gsap.utils.toArray('[data-reveal]').forEach(function (el) {
+      gsap.from(el, { opacity: 0, y: 26, duration: .85, ease: 'expo.out',
+        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' } });
+    });
+    gsap.utils.toArray('[data-fade]').forEach(function (el) {
+      gsap.from(el, { opacity: 0, duration: .8, scrollTrigger: { trigger: el, start: 'top 92%' } });
+    });
+  }
+
+  /* ── 3D 오비트 링 배치 ─────────────────────────────────
+     반지름은 컨테이너 실측폭에서 뽑는다. 폰트/이미지 로드 전이나 탭이
+     숨겨진 상태에서 스크립트가 돌면 innerWidth가 0이라 링이 무너진다. */
+  var ring = document.getElementById('ring');
+  var orbWrap = document.querySelector('.orb-wrap');
+  var nodes = ring.querySelectorAll('.node');
+  function layout() {
+    var w = orbWrap.getBoundingClientRect().width || window.innerWidth || 1024;
+    var R = Math.max(160, Math.min(w * 0.31, 330));
+    nodes.forEach(function (n, i) {
+      var a = (360 / nodes.length) * i;
+      n.style.transform = 'rotateY(' + a + 'deg) translateZ(' + R + 'px)';
+    });
+  }
+  layout();
+  if (window.ResizeObserver) new ResizeObserver(layout).observe(orbWrap);
+  addEventListener('resize', function () { layout(); ScrollTrigger.refresh(); }, { passive: true });
+
+  /* ── 숫자 카운트업 ───────────────────────────────────── */
+  document.querySelectorAll('[data-count]').forEach(function (el) {
+    var end = parseFloat(el.dataset.count), dec = parseInt(el.dataset.dec || '0', 10);
+    if (reduce) { el.textContent = end.toLocaleString('ko-KR', { minimumFractionDigits: dec }); return; }
+    var o = { n: 0 };
+    gsap.to(o, { n: end, duration: 1.9, ease: 'expo.out',
+      scrollTrigger: { trigger: el, start: 'top 90%' },
+      onUpdate: function () {
+        el.textContent = o.n.toLocaleString('ko-KR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+      } });
+  });
+
+  /* ── 마그네틱 CTA ────────────────────────────────────── */
+  var btn = document.getElementById('ctaBtn');
+  if (btn && matchMedia('(pointer:fine)').matches && !reduce) {
+    btn.addEventListener('pointermove', function (e) {
+      var r = btn.getBoundingClientRect();
+      gsap.to(btn, { x: (e.clientX - r.left - r.width / 2) * .32,
+        y: (e.clientY - r.top - r.height / 2) * .42, duration: .5, ease: 'power3.out' });
+    });
+    btn.addEventListener('pointerleave', function () {
+      gsap.to(btn, { x: 0, y: 0, duration: .7, ease: 'elastic.out(1,.4)' });
+    });
+  }
+
+  /* 폰트/영상 로드 후 위치 재계산 */
+  window.addEventListener('load', function () { ScrollTrigger.refresh(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+})();
+</script>
+</body>
+</html>
