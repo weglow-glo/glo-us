@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { formatKRW } from "@/lib/product";
 import { statusLabel, type OrderStatus } from "@/lib/order-status";
+import { carrierName, trackingUrlOf } from "@/lib/carriers";
 import { getPointPolicy } from "@/lib/points";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SignOutButton } from "./sign-out-button";
@@ -13,6 +14,8 @@ type Order = {
   status: OrderStatus;
   amount: number;
   created_at: string;
+  carrier: string | null;
+  tracking_number: string | null;
 };
 
 function formatDate(iso: string): string {
@@ -45,7 +48,7 @@ export default async function AccountPage() {
   // otherwise linger here as "결제 대기" ghosts.
   const { data: orders } = await supabase
     .from("orders")
-    .select("order_id, order_name, status, amount, created_at")
+    .select("order_id, order_name, status, amount, created_at, carrier, tracking_number")
     .neq("status", "pending")
     .order("created_at", { ascending: false })
     .returns<Order[]>();
@@ -161,6 +164,25 @@ export default async function AccountPage() {
                       </span>
                     </div>
                   </Link>
+                  {/* 배송 조회 — 카드가 Link라 중첩 못 하니 밖으로 뺀다 */}
+                  {order.tracking_number ? (
+                    <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-ink-line bg-bg-2 px-5 py-3">
+                      <span className="text-xs text-ink-soft">
+                        {carrierName(order.carrier)}{" "}
+                        <b className="font-mono text-ink">{order.tracking_number}</b>
+                      </span>
+                      {trackingUrlOf(order.carrier, order.tracking_number) ? (
+                        <a
+                          href={trackingUrlOf(order.carrier, order.tracking_number)!}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="shrink-0 rounded-full border border-ink-line px-3.5 py-1.5 text-xs font-semibold text-ink transition hover:border-accent hover:text-accent"
+                        >
+                          배송 조회 →
+                        </a>
+                      ) : null}
+                    </div>
+                  ) : null}
                   {order.status === "delivered" && !reviewByOrder.has(order.order_id) && (
                     <div className="mt-2 flex items-center justify-between rounded-xl border border-burg-50 bg-bg-3 px-5 py-3">
                       <span className="text-xs text-ink-soft">
