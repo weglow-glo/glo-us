@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>glo GL-01 — 프로토타입 (3D 모션)</title>
+<title>glo — 메인 홈 프로토타입 (3D 모션)</title>
 <meta name="robots" content="noindex"/>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
 <meta name="theme-color" content="#1a0f14"/>
@@ -86,7 +86,35 @@ h2 em{font-style:normal;color:var(--gold);}
 .scroll-cue i{display:block;width:1px;height:52px;background:linear-gradient(180deg,var(--gold),transparent);animation:cue 2.2s var(--ease) infinite;}
 @keyframes cue{0%{transform:scaleY(0);transform-origin:0 0}45%{transform:scaleY(1);transform-origin:0 0}46%{transform-origin:0 100%}100%{transform:scaleY(0);transform-origin:0 100%}}
 
-/* ── 2. 스크롤 회전 (핵심) ───────────────────────────────
+/* ── 2. AI 얼굴 스캔 (홈 시그니처) ────────────────────────
+   랜딩의 468포인트 얼굴 메시를 골드 팔레트로 이식. 스캔 밴드가 얼굴을
+   훑고, 부위 태그가 3D 정점에 붙어 다닌다. 문구는 랜딩 fscan 그대로. */
+.scan{position:relative;padding:clamp(90px,13vw,160px) 0;background:var(--burg-900);overflow:hidden;}
+.scan::before{content:"";position:absolute;top:-160px;right:-140px;width:600px;height:600px;
+  background:radial-gradient(circle,rgba(201,162,74,.10),transparent 65%);pointer-events:none;}
+.scan-g{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(40px,6vw,90px);align-items:center;}
+.scan-sub{margin-top:20px;max-width:460px;font-size:clamp(13.5px,2.2vw,15px);line-height:1.78;
+  color:rgba(244,235,235,.62);word-break:keep-all;}
+.scan-metrics{margin-top:34px;display:flex;flex-direction:column;gap:14px;max-width:440px;}
+.scan-metric{display:grid;grid-template-columns:118px 1fr auto;gap:14px;align-items:center;font-size:12.5px;}
+.sm-l{color:rgba(244,235,235,.7);letter-spacing:-.2px;}
+.sm-track{height:2px;background:rgba(201,162,74,.16);border-radius:2px;overflow:hidden;}
+.sm-fill{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold-dp),var(--gold-lt));}
+.sm-v{font-family:var(--en);font-size:13px;color:var(--gold);}
+.scan-stage{position:relative;width:100%;aspect-ratio:1/1.06;max-height:640px;
+  background-image:radial-gradient(rgba(244,235,235,.05) 1px,transparent 1px);background-size:22px 22px;}
+.scan-stage canvas{position:absolute;inset:0;width:100% !important;height:100% !important;}
+.scan-tag{position:absolute;z-index:4;transform:translate(-50%,-130%);white-space:nowrap;opacity:0;
+  padding:6px 12px;border-radius:100px;font-size:11px;letter-spacing:.3px;color:var(--gold-lt);
+  background:rgba(20,10,14,.6);border:1px solid rgba(201,162,74,.38);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:none;}
+.scan-line{position:absolute;left:6%;right:6%;top:50%;height:1px;opacity:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(232,207,154,.85),transparent);
+  box-shadow:0 0 18px rgba(201,162,74,.55);}
+.scan-cap{margin-top:14px;text-align:center;font-family:var(--en);font-size:11.5px;
+  letter-spacing:2.2px;text-transform:uppercase;color:rgba(244,235,235,.38);}
+
+/* ── 3. 스크롤 회전 (제품) ───────────────────────────────
    canister-rotation.mp4 을 스크롤에 물려 360° 돌린다.
    원본 우하단에 Veo 워터마크가 있어 delogo 로 지운 -clean 본을 쓴다. */
 .rot{position:relative;height:420svh;background:var(--burg-900);}
@@ -186,6 +214,8 @@ h2 em{font-style:normal;color:var(--gold);}
 
 @media (max-width:900px){
   .nums-g{grid-template-columns:repeat(2,1fr);row-gap:38px;}
+  .scan-g{grid-template-columns:1fr;gap:34px;}
+  .scan-stage{max-height:440px;}
   /* 모바일: 좁아서 라벨이 제품과 겹친다. 어차피 한 번에 하나만 뜨므로
      제품 아래 중앙 한 자리에 모아 놓는다. */
   .rot-video{width:150vw;}
@@ -229,7 +259,7 @@ h2 em{font-style:normal;color:var(--gold);}
     <img src="/assets/bottle/sachet.png" alt="glo GL-01 사쉐 20g" width="620" height="2363"/>
   </div>
   <div class="hero-in">
-    <div class="hero-kicker" data-fade>glo GL-01 · Skin Longevity Protocol</div>
+    <div class="hero-kicker" data-fade>glo · Skin Longevity Protocol</div>
     <h1 data-split>피부는 관리하는 것이 아니라</h1>
     <h1 data-split><span class="au">설계하는</span> 것입니다</h1>
     <p class="hero-sub" data-fade>임상으로 검증된 9가지 활성 성분. 하루 한 포, 20g.</p>
@@ -237,7 +267,34 @@ h2 em{font-style:normal;color:var(--gold);}
   <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><i></i></div>
 </header>
 
-<!-- 2. 스크롤 회전 -->
+<!-- 2. AI 얼굴 스캔 -->
+<section class="scan" id="scan">
+  <div class="ctr scan-g">
+    <div class="scan-l">
+      <div class="ey" data-reveal>Skin Intelligence</div>
+      <h2 data-reveal>피부 노화를<br/><em>데이터로 읽습니다</em></h2>
+      <p class="scan-sub" data-reveal>glo는 얼굴을 468개의 측정 지점으로 나눠 이해합니다. 부위마다 다르게 진행되는 노화 신호를 네 영역으로 분류하고, 각 영역에 임상으로 검증된 성분을 정확히 매핑했습니다.</p>
+      <div class="scan-metrics" data-reveal>
+        <div class="scan-metric"><span class="sm-l">미백 · 피부 톤</span><span class="sm-track"><span class="sm-fill" data-w="44"></span></span><span class="sm-v">4성분</span></div>
+        <div class="scan-metric"><span class="sm-l">수분 · 피부 장벽</span><span class="sm-track"><span class="sm-fill" data-w="22"></span></span><span class="sm-v">2성분</span></div>
+        <div class="scan-metric"><span class="sm-l">탄력 · 진피층</span><span class="sm-track"><span class="sm-fill" data-w="22"></span></span><span class="sm-v">2성분</span></div>
+        <div class="scan-metric"><span class="sm-l">항산화 · 세포 방어</span><span class="sm-track"><span class="sm-fill" data-w="12"></span></span><span class="sm-v">1성분</span></div>
+      </div>
+    </div>
+    <div class="scan-r">
+      <div class="scan-stage" id="scanStage" aria-hidden="true">
+        <div class="scan-tag" data-anchor="336">이마 · 장벽</div>
+        <div class="scan-tag" data-anchor="4">코 · 모공</div>
+        <div class="scan-tag" data-anchor="50">볼 · 톤</div>
+        <div class="scan-tag" data-anchor="262">턱선 · 탄력</div>
+        <div class="scan-line" id="scanLine"></div>
+      </div>
+      <div class="scan-cap">468-point facial mapping · 4 zones · 9 actives</div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 스크롤 회전 -->
 <section class="rot" id="rot">
   <div class="rot-stage">
     <div class="rot-title"><h2 data-reveal>30일이 <em>하나의</em> 통 안에</h2></div>
@@ -263,7 +320,7 @@ h2 em{font-style:normal;color:var(--gold);}
   </div>
 </section>
 
-<!-- 3. 액체 리빌 -->
+<!-- 4. 액체 리빌 -->
 <section class="liq" id="liq">
   <div class="liq-stage">
     <!-- glo-liquid.mp4 은 Veo 워터마크 + 흰 배경 기름방울이라 폐기.
@@ -279,7 +336,7 @@ h2 em{font-style:normal;color:var(--gold);}
   </div>
 </section>
 
-<!-- 4. 3D 성분 오비트 -->
+<!-- 5. 3D 성분 오비트 -->
 <section class="orb">
   <div class="ctr">
     <div class="orb-head">
@@ -304,7 +361,7 @@ h2 em{font-style:normal;color:var(--gold);}
   </div>
 </section>
 
-<!-- 5. 체험단 8주 스크럽 -->
+<!-- 6. 체험단 8주 스크럽 -->
 <section class="ba" id="ba">
   <div class="ba-stage">
     <div class="ba-head">
@@ -324,19 +381,19 @@ h2 em{font-style:normal;color:var(--gold);}
   </div>
 </section>
 
-<!-- 6. 카운터 -->
+<!-- 7. 카운터 (AI 수치) -->
 <section class="nums">
   <div class="ctr">
     <div class="nums-g">
-      <div><div class="num-v"><span data-count="1186.5" data-dec="1">0</span><span class="num-u">mg</span></div><div class="num-l">총 활성 배합량</div></div>
-      <div><div class="num-v"><span data-count="9">0</span></div><div class="num-l">임상 성분</div></div>
-      <div><div class="num-v"><span data-count="30">0</span><span class="num-u">포</span></div><div class="num-l">한 달 분</div></div>
-      <div><div class="num-v"><span data-count="753">0</span></div><div class="num-l">고객 후기</div></div>
+      <div><div class="num-v"><span data-count="200000">0</span></div><div class="num-l">건의 논문·임상 데이터</div></div>
+      <div><div class="num-v"><span data-count="1000000">0</span></div><div class="num-l">번의 배합 시뮬레이션</div></div>
+      <div><div class="num-v"><span data-count="9">0</span></div><div class="num-l">임상 검증 성분</div></div>
+      <div><div class="num-v"><span data-count="5">0</span></div><div class="num-l">공동 개발 specialist</div></div>
     </div>
   </div>
 </section>
 
-<!-- 6. CTA -->
+<!-- 8. CTA -->
 <section class="cta">
   <div class="ctr">
     <div class="ey" style="justify-content:center" data-reveal>Start</div>
@@ -349,7 +406,7 @@ h2 em{font-style:normal;color:var(--gold);}
   </div>
 </section>
 
-<div class="foot">glo GL-01 — 모션 프로토타입 · 메디랩스</div>
+<div class="foot">glo — 메인 홈 모션 프로토타입 · 메디랩스</div>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
@@ -560,10 +617,160 @@ h2 em{font-style:normal;color:var(--gold);}
     });
   }
 
+  /* 스캔 메트릭 바 — 섹션 도착 시 채움 */
+  if (!reduce) {
+    document.querySelectorAll('.sm-fill').forEach(function (f) {
+      gsap.fromTo(f, { width: '0%' }, { width: (f.dataset.w || 0) + '%',
+        duration: 1.1, ease: 'power2.out',
+        scrollTrigger: { trigger: f, start: 'top 92%', once: true } });
+    });
+  } else {
+    document.querySelectorAll('.sm-fill').forEach(function (f) { f.style.width = (f.dataset.w || 0) + '%'; });
+  }
+
   /* 폰트/영상 로드 후 위치 재계산 */
   window.addEventListener('load', function () { ScrollTrigger.refresh(); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
 })();
+</script>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+<script type="module">
+/* ── AI 얼굴 스캔 — 랜딩 fscan 구현을 골드 팔레트로 이식 ──────
+   468 정점 포인트 클라우드 + 1365 엣지 와이어프레임. 스캔 밴드가
+   세로로 훑으며 지나간 정점이 금빛으로 달아오르고, 부위 태그는
+   3D 정점을 화면에 투영해 따라붙는다. */
+import * as THREE from 'three';
+import { FACE_V, FACE_E } from '/preview/face-mesh.js';
+
+const stage = document.getElementById('scanStage');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (stage) {
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  stage.prepend(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+  cam.position.set(0, 0, 27);
+  const group = new THREE.Group();
+  group.position.y = 0.4;
+  scene.add(group);
+
+  const n = FACE_V.length;
+  const pos = new Float32Array(n * 3);
+  FACE_V.forEach((p, i) => pos.set(p, i * 3));
+  const colors = new Float32Array(n * 3);
+  const pgeo = new THREE.BufferGeometry();
+  pgeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  pgeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  const points = new THREE.Points(pgeo,
+    new THREE.PointsMaterial({ size: 0.17, vertexColors: true, transparent: true, opacity: 0.95 }));
+  group.add(points);
+
+  const epos = new Float32Array(FACE_E.length * 6);
+  FACE_E.forEach(([a, b], i) => { epos.set(FACE_V[a], i * 6); epos.set(FACE_V[b], i * 6 + 3); });
+  const lgeo = new THREE.BufferGeometry();
+  lgeo.setAttribute('position', new THREE.BufferAttribute(epos, 3));
+  group.add(new THREE.LineSegments(lgeo,
+    new THREE.LineBasicMaterial({ color: 0xc9a24a, transparent: true, opacity: 0.14 })));
+
+  function resize() {
+    const r = stage.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    renderer.setSize(r.width, r.height, false);
+    cam.aspect = r.width / r.height;
+    cam.updateProjectionMatrix();
+  }
+  resize();
+  new ResizeObserver(resize).observe(stage);
+
+  let px = 0, py = 0;
+  if (matchMedia('(pointer:fine)').matches) {
+    addEventListener('pointermove', (e) => {
+      px = e.clientX / innerWidth - 0.5;
+      py = e.clientY / innerHeight - 0.5;
+    }, { passive: true });
+  }
+
+  /* 스크롤이 섹션을 지나는 동안 얼굴이 좌→우로 돌아본다 */
+  let scrollRot = 0;
+  if (window.ScrollTrigger) {
+    ScrollTrigger.create({
+      trigger: '#scan', start: 'top bottom', end: 'bottom top', scrub: 0.5,
+      onUpdate: (self) => { scrollRot = (self.progress - 0.5) * 1.15; }
+    });
+  }
+
+  const tags = [...stage.querySelectorAll('.scan-tag')].map((el) => ({
+    el, i: parseInt(el.dataset.anchor || '0', 10)
+  }));
+  const scanEl = document.getElementById('scanLine');
+  const v3 = new THREE.Vector3();
+  const YMAX = 9;
+  const clamp = (x, lo, hi) => Math.min(Math.max(x, lo), hi);
+
+  let raf = 0, running = false;
+  const clock = new THREE.Clock();
+  function render() {
+    raf = requestAnimationFrame(render);
+    const t = clock.getElapsedTime();
+    const ramp = Math.min(t / 1.6, 1);
+    group.rotation.y = Math.sin(t * 0.3) * 0.42 + px * 0.38 + scrollRot;
+    group.rotation.x = Math.sin(t * 0.19) * 0.07 + py * 0.2;
+
+    /* 스캔 밴드 — 지나간 정점이 금빛으로 */
+    const scanY = Math.sin(t * 0.45) * (YMAX * 0.72);
+    for (let i = 0; i < n; i++) {
+      const k = Math.max(0, 1 - Math.abs(FACE_V[i][1] - scanY) / 1.5);
+      colors[i * 3]     = 0.72 + k * 0.26;   // R
+      colors[i * 3 + 1] = 0.58 + k * 0.26;   // G — 골드
+      colors[i * 3 + 2] = 0.36 + k * 0.18;   // B 낮게
+    }
+    pgeo.attributes.color.needsUpdate = true;
+    if (scanEl) {
+      scanEl.style.top = (50 - (scanY / YMAX) * 36) + '%';
+      scanEl.style.opacity = String(0.75 * ramp);
+    }
+
+    renderer.render(scene, cam);
+
+    /* HUD 태그를 정점에 투영 — 뒤돌면 흐려지고, 스테이지 안에 클램프 */
+    for (const { el, i } of tags) {
+      const p = FACE_V[i];
+      v3.set(p[0], p[1], p[2]);
+      group.localToWorld(v3);
+      const facing = clamp((v3.z + 2) / 4, 0, 1);
+      v3.project(cam);
+      el.style.left = clamp((v3.x * 0.5 + 0.5) * 100, 8, 92) + '%';
+      el.style.top = clamp((-v3.y * 0.5 + 0.5) * 100, 6, 92) + '%';
+      el.style.opacity = String(facing * ramp);
+    }
+  }
+  function setRunning(on) {
+    if (on === running) return;
+    running = on;
+    if (on) { clock.start(); render(); } else cancelAnimationFrame(raf);
+  }
+
+  if (reduce) {
+    /* 정지 프레임 한 장만 그린다 */
+    for (let i = 0; i < n; i++) { colors[i*3]=0.78; colors[i*3+1]=0.64; colors[i*3+2]=0.4; }
+    pgeo.attributes.color.needsUpdate = true;
+    renderer.render(scene, cam);
+    tags.forEach(({el}) => { el.style.opacity = '0'; });
+  } else if (window.ScrollTrigger) {
+    const visST = ScrollTrigger.create({
+      trigger: '#scan', start: 'top 98%', end: 'bottom top',
+      onToggle: (self) => setRunning(self.isActive)
+    });
+    if (visST.isActive) setRunning(true);
+  } else {
+    setRunning(true);
+  }
+}
 </script>
 
 
