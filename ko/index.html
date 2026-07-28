@@ -156,6 +156,9 @@ html[lang="ko"] p, html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lan
 @media (max-width:1100px){.ctr{padding:0 32px;}}
 @media (max-width:640px){.ctr{padding:0 20px;}}
 
+/* 언어 토글 — KR 단독 런칭이라 원래 숨김 (크롬 추출 누락분 복구) */
+.lang-toggle{display:none !important;}
+
 /* ===== 홈 전용 네비 — 맨 위에선 숨기고, 마스트헤드가 물러나면 등장.
    html.glo-home-nav 는 홈 마운트 시에만 JS 가 붙였다 떼므로 타 페이지 무영향 ===== */
 html.glo-home-nav nav{opacity:0;transform:translateY(-14px);pointer-events:none;
@@ -167,6 +170,13 @@ html.glo-home-nav .nav-l,html.glo-home-nav .nav-r{
 html.glo-home-nav .logo{color:#f4ebeb;}
 html.glo-home-nav .nav-links a{color:rgba(244,235,235,.75);}
 html.glo-home-nav .nav-links a:hover{color:#d4b5b5;}
+/* 모바일 드롭다운은 밝은 패널 — 잉크색으로 되돌린다 */
+html.glo-home-nav .nav-links.is-open a{color:#2a1218;}
+html.glo-home-nav .nav-links.is-open a:hover{color:#8a4a52;}
+html.glo-home-nav .nav-links.is-open a[aria-current="page"]{color:#8a4a52;}
+/* 로그인 유저 메뉴 트리거도 크림으로 */
+html.glo-home-nav .glo-um-trigger{color:#f4ebeb;}
+html.glo-home-nav .glo-um-name{color:#f4ebeb;}
 html.glo-home-nav .nav-r a{color:rgba(244,235,235,.78);}
 html.glo-home-nav .nav-r{color:rgba(244,235,235,.78);}
 html.glo-home-nav .nav-r button{color:inherit;}
@@ -226,8 +236,8 @@ html.glo-home-nav .nav-burger:active{background:rgba(244,235,235,.12);}
 .glohome .hero-sub{margin:34px auto 0;max-width:34ch;color:rgba(244,235,235,.6);font-size:clamp(14px,1.6vw,18px);line-height:1.8;}
 .glohome .ln{display:block;overflow:hidden;padding-bottom:.08em;}
 .glohome .ch{display:inline-block;will-change:transform,opacity;}
-.glohome .hero-sachet{position:absolute;z-index:2;top:50%;left:50%;width:min(30vw,124px);
-  transform:translate(-50%,-48%);filter:drop-shadow(0 42px 56px rgba(0,0,0,.66)) drop-shadow(0 0 34px rgba(184,135,135,.16));}
+.glohome .hero-sachet{position:absolute;z-index:2;top:50%;left:0;right:0;margin-inline:auto;width:min(30vw,124px);
+  transform:translateY(-48%);filter:drop-shadow(0 42px 56px rgba(0,0,0,.66)) drop-shadow(0 0 34px rgba(184,135,135,.16));}
 .glohome .hero-sachet img{width:100%;height:auto;}
 .glohome .scroll-cue{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:4;
   font-family:var(--en);font-size:10.5px;letter-spacing:3px;text-transform:uppercase;color:rgba(244,235,235,.42);

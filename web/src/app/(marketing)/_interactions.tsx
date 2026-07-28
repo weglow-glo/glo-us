@@ -732,7 +732,8 @@ export function LandingInteractions() {
               (n.nodeValue ?? "").split("").forEach((c) => {
                 const s = document.createElement("span");
                 s.className = "ch";
-                s.textContent = c;
+                // inline-block 스팬 안의 일반 공백은 폭이 0으로 붕괴 → nbsp
+                s.textContent = c === " " ? " " : c;
                 out.appendChild(s);
               });
             } else if (n.nodeType === 1) {
@@ -775,6 +776,7 @@ export function LandingInteractions() {
           // 사쉐 부유
           const sachet = $("#heroSachet");
           if (sachet) {
+            gsap.set(sachet, { yPercent: -48 }); // CSS translateY 를 GSAP 소유로 정규화
             gsap.to(sachet, { y: "+=18", duration: 3.6, ease: "sine.inOut", yoyo: true, repeat: -1 });
           }
 
