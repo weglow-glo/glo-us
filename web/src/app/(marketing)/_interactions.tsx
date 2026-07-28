@@ -1101,18 +1101,9 @@ export function LandingInteractions() {
           let hoverPause = false;
           let dragDist = 0;
           const RING_AUTO = 0.18;
-          const onDown = (e: PointerEvent) => {
-            dragging = true;
-            lastX = e.clientX;
-            dragVel = 0;
-            dragDist = 0;
-            orbWrap.classList.add("dragging");
-            try {
-              orbWrap.setPointerCapture(e.pointerId);
-            } catch {
-              /* older browsers */
-            }
-          };
+          /* 주의: setPointerCapture 를 쓰면 click 이 래퍼에서 합성되어
+             카드 <a> 가 클릭을 못 받는다 (탭해도 이동 안 되는 버그의 원인).
+             캡처 없이 window 레벨로 드래그를 추적한다. */
           const onMove = (e: PointerEvent) => {
             if (!dragging) return;
             const dx = e.clientX - lastX;
@@ -1124,6 +1115,19 @@ export function LandingInteractions() {
           const endDrag = () => {
             dragging = false;
             orbWrap.classList.remove("dragging");
+            window.removeEventListener("pointermove", onMove);
+            window.removeEventListener("pointerup", endDrag);
+            window.removeEventListener("pointercancel", endDrag);
+          };
+          const onDown = (e: PointerEvent) => {
+            dragging = true;
+            lastX = e.clientX;
+            dragVel = 0;
+            dragDist = 0;
+            orbWrap.classList.add("dragging");
+            window.addEventListener("pointermove", onMove, { passive: true });
+            window.addEventListener("pointerup", endDrag);
+            window.addEventListener("pointercancel", endDrag);
           };
           const onClick = (e: MouseEvent) => {
             // 끌고 난 뒤의 click 은 링크 이동으로 치지 않는다
@@ -1133,16 +1137,11 @@ export function LandingInteractions() {
             }
           };
           orbWrap.addEventListener("pointerdown", onDown);
-          orbWrap.addEventListener("pointermove", onMove);
-          orbWrap.addEventListener("pointerup", endDrag);
-          orbWrap.addEventListener("pointercancel", endDrag);
           orbWrap.addEventListener("click", onClick, true);
           cleanups.push(() => {
             orbWrap.removeEventListener("pointerdown", onDown);
-            orbWrap.removeEventListener("pointermove", onMove);
-            orbWrap.removeEventListener("pointerup", endDrag);
-            orbWrap.removeEventListener("pointercancel", endDrag);
             orbWrap.removeEventListener("click", onClick, true);
+            endDrag();
           });
           if (window.matchMedia("(pointer:fine)").matches) {
             const enter = () => {
