@@ -151,6 +151,11 @@ html[lang="ko"] p, html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lan
 }
 .logo .dot{font-family:'Times New Roman',Times,'Wanted Sans Variable','Wanted Sans',serif;}
 
+/* 푸터/크롬 컨테이너 — .ctr 는 크롬 추출에서 빠져 있었다 */
+.ctr{max-width:1360px;margin:0 auto;padding:0 64px;}
+@media (max-width:1100px){.ctr{padding:0 32px;}}
+@media (max-width:640px){.ctr{padding:0 20px;}}
+
 /* ===== 홈 전용 네비 — 맨 위에선 숨기고, 마스트헤드가 물러나면 등장.
    html.glo-home-nav 는 홈 마운트 시에만 JS 가 붙였다 떼므로 타 페이지 무영향 ===== */
 html.glo-home-nav nav{opacity:0;transform:translateY(-14px);pointer-events:none;
@@ -163,6 +168,10 @@ html.glo-home-nav .logo{color:#f4ebeb;}
 html.glo-home-nav .nav-links a{color:rgba(244,235,235,.75);}
 html.glo-home-nav .nav-links a:hover{color:#d4b5b5;}
 html.glo-home-nav .nav-r a{color:rgba(244,235,235,.78);}
+html.glo-home-nav .nav-r{color:rgba(244,235,235,.78);}
+html.glo-home-nav .nav-r button{color:inherit;}
+html.glo-home-nav .nav-burger span{background:#f4ebeb;}
+html.glo-home-nav .nav-burger:active{background:rgba(244,235,235,.12);}
 @media (prefers-reduced-motion:reduce){
   html.glo-home-nav nav{opacity:1;transform:none;pointer-events:auto;transition:none;}
 }
@@ -175,7 +184,7 @@ html.glo-home-nav .nav-r a{color:rgba(244,235,235,.78);}
   --gold:#d4b5b5; --gold-lt:#e8d5d5; --gold-dp:#8a4a52;
   --kr:'Wanted Sans Variable','Wanted Sans','Pretendard Variable','Pretendard',-apple-system,system-ui,sans-serif;
   --en:'Fraunces',Georgia,serif;
-  --ease:cubic-bezier(.22,1,.36,1);background:var(--burg-900);color:var(--cream);font-family:var(--kr);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative;}
+  --ease:cubic-bezier(.22,1,.36,1);background:var(--burg-900);color:var(--cream);font-family:var(--kr);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;position:relative;}
 .glohome video{display:block;max-width:100%;}
 .glohome .grain{position:fixed;inset:-150%;z-index:9998;pointer-events:none;opacity:.16;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
