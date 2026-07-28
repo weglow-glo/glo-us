@@ -660,6 +660,12 @@ export function LandingInteractions() {
     const $ = <T extends HTMLElement = HTMLElement>(sel: string) =>
       document.querySelector<T>(sel);
 
+    // 홈 전용 네비 상태 — 맨 위에선 숨기고, 마스트헤드가 물러나면 등장
+    const htmlEl = document.documentElement;
+    htmlEl.classList.add("glo-home-nav");
+    if (reduce) htmlEl.classList.add("glo-nav-on");
+    cleanups.push(() => htmlEl.classList.remove("glo-home-nav", "glo-nav-on"));
+
     // ── reduced-motion: 정적 상태 세팅 (CSS 폴백 + 값 채움) ─────────
     if (reduce) {
       const rotV = $<HTMLVideoElement>("#rotVideo");
@@ -797,6 +803,13 @@ export function LandingInteractions() {
               scrollTrigger: { trigger: ".hero", start: "top top", end: "55% top", scrub: 0.8 },
             },
           );
+          // 마스트헤드가 물러나는 지점부터 상단 바 등장 (역스크롤 시 다시 숨김)
+          ScrollTrigger.create({
+            trigger: ".hero",
+            start: "38% top",
+            end: "max",
+            onToggle: (self) => htmlEl.classList.toggle("glo-nav-on", self.isActive),
+          });
 
           // ── 회전 섹션: 스크럽 타깃 + 후반부 스펙 시트 페이즈 ──────
           const v = $<HTMLVideoElement>("#rotVideo");
@@ -874,7 +887,7 @@ export function LandingInteractions() {
           if ($("#liqMask")) {
             gsap.fromTo(
               "#liqMask",
-              { clipPath: "circle(14% at 50% 50%)" },
+              { clipPath: "circle(30% at 50% 50%)" },
               {
                 clipPath: "circle(78% at 50% 50%)",
                 ease: "none",
