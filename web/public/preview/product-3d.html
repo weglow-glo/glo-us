@@ -136,6 +136,25 @@ h2 em{font-style:normal;color:var(--gold);}
 .rli i::before{content:"";width:9px;height:5px;margin-top:-2px;
   border-left:1.6px solid var(--gold-lt);border-bottom:1.6px solid var(--gold-lt);transform:rotate(-45deg);}
 .rli span{font-size:14.5px;color:rgba(244,235,235,.82);letter-spacing:-.2px;line-height:1.5;}
+/* 후반부 스펙 시트 */
+.rot-spec{position:absolute;z-index:6;right:clamp(20px,7vw,110px);top:50%;
+  transform:translateY(-50%) translateX(48px);opacity:0;width:min(86vw,390px);}
+.rs-ey{font-family:var(--en);font-size:10.5px;letter-spacing:2.4px;text-transform:uppercase;color:var(--gold);}
+.rs-t{margin-top:10px;font-family:var(--en);font-weight:300;font-size:clamp(28px,3.2vw,42px);
+  line-height:1.08;letter-spacing:-1.2px;color:var(--cream);}
+.rs-t em{font-style:italic;color:var(--gold);}
+.rs-rows{margin-top:22px;border-top:1px solid rgba(201,162,74,.22);}
+.rs-row{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:baseline;
+  padding:10px 0;border-bottom:1px solid rgba(201,162,74,.13);
+  opacity:0;transform:translateY(10px);transition:opacity .45s var(--ease),transform .45s var(--ease);}
+.rs-row.on{opacity:1;transform:none;}
+.rs-row span{font-family:var(--en);font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:rgba(232,207,154,.55);}
+.rs-row b{font-size:12.5px;font-weight:500;line-height:1.55;color:rgba(244,235,235,.82);letter-spacing:-.2px;}
+.rs-price{margin-top:18px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+.rs-price b{font-family:var(--en);font-weight:300;font-size:clamp(34px,4vw,50px);letter-spacing:-1.5px;}
+.rs-won{font-size:15px;color:rgba(244,235,235,.7);}
+.rs-price s{font-size:13px;color:rgba(244,235,235,.38);}
+.rs-price em{font-style:normal;font-size:13px;color:var(--gold);}
 .rot-title{position:absolute;z-index:6;top:7%;left:50%;transform:translateX(-50%);text-align:center;width:100%;padding:0 20px;}
 .rot-title h2{font-size:clamp(26px,3.6vw,50px);}
 .rot-quote{margin-top:14px;font-size:clamp(12.5px,1.5vw,15px);font-style:italic;color:rgba(244,235,235,.55);}
@@ -294,6 +313,12 @@ h2 em{font-style:normal;color:var(--gold);}
   .rot-video{width:150vw;}
   /* 모바일: 체크리스트도 좌측 중앙에 (통은 우측이라 좌중앙이 빈다) */
   .rot-list{left:18px;top:52%;transform:translateY(-50%);gap:12px;max-width:56vw;}
+  .rot-spec{right:auto;left:50%;top:auto;bottom:6%;width:min(90vw,390px);
+    transform:translateX(-50%) translateY(24px);}
+  .rs-t{font-size:24px;}
+  .rs-row{padding:7px 0;grid-template-columns:82px 1fr;}
+  .rs-row b{font-size:11.5px;}
+  .rs-price b{font-size:32px;}
   .rli i{width:20px;height:20px;}
   .rli i::before{width:7px;height:4px;}
   .rli span{font-size:12px;}
@@ -307,6 +332,8 @@ h2 em{font-style:normal;color:var(--gold);}
   .grain{display:none;} .orb-ring{animation:none;}
   .ch{opacity:1 !important;transform:none !important;}
   .rli{opacity:1 !important;transform:none !important;}
+  .rot-spec{position:static;opacity:1 !important;transform:none !important;margin:48px auto 0;}
+  .rs-row{opacity:1;transform:none;}
   .liq-mask{clip-path:none !important;}
   .rot{height:auto;} .rot-stage{position:relative;height:auto;padding:80px 0;}
   .liq{height:auto;} .liq-stage{position:relative;height:70svh;}
@@ -380,11 +407,26 @@ h2 em{font-style:normal;color:var(--gold);}
     <video class="rot-video" id="rotVideo" src="/assets/video/canister-rotation-clean.mp4" muted playsinline preload="auto" aria-label="glo GL-01 캐니스터 360° 회전"></video>
     <div class="rot-plinth" aria-hidden="true"></div>
 
+    <!-- 후반부: 통이 좌측으로 물러나면 우측에서 명세서가 들어온다 -->
+    <div class="rot-spec" id="rotSpec" aria-hidden="true">
+      <div class="rs-ey">GL-01 · Skin Rejuvenation</div>
+      <h3 class="rs-t">Nine actives.<br/><em>One</em> daily shot.</h3>
+      <div class="rs-rows" id="rsRows">
+        <div class="rs-row"><span>Format</span><b>1포 · 20g · 30포 구성 (1개월)</b></div>
+        <div class="rs-row"><span>Flavor</span><b>파인애플 맛 · 무가당</b></div>
+        <div class="rs-row"><span>Serving</span><b>1포 · 오전 or 저녁</b></div>
+        <div class="rs-row"><span>특허 복합물</span><b>Tightening-PB Complex® · <span class="gw">glo</span> 특허 제10-2911449</b></div>
+        <div class="rs-row"><span>Tested</span><b>Heavy metals · microbiology · potency · 3rd-party</b></div>
+        <div class="rs-row"><span>Notice by</span><b>4 wk hydration · 8 wk tone · 12 wk firmness</b></div>
+      </div>
+      <div class="rs-price"><b class="au" id="rsPrice">0</b><span class="rs-won">원</span><s>119,000원</s><em>30% 할인</em></div>
+    </div>
+
     <div class="rot-list">
-      <div class="rli" data-at="0.14"><i></i><span>임상으로 입증된 9가지 성분</span></div>
-      <div class="rli" data-at="0.38"><i></i><span>전문의 3인·의학박사 2인 공동 설계</span></div>
-      <div class="rli" data-at="0.60"><i></i><span><span class="gw">glo</span> 특허 Tightening-PB Complex®</span></div>
-      <div class="rli" data-at="0.82"><i></i><span>공인 시험기관 검증 완료</span></div>
+      <div class="rli" data-at="0.10"><i></i><span>임상으로 입증된 9가지 성분</span></div>
+      <div class="rli" data-at="0.24"><i></i><span>전문의 3인·의학박사 2인 공동 설계</span></div>
+      <div class="rli" data-at="0.36"><i></i><span><span class="gw">glo</span> 특허 Tightening-PB Complex®</span></div>
+      <div class="rli" data-at="0.48"><i></i><span>공인 시험기관 검증 완료</span></div>
     </div>
   </div>
 </section>
@@ -622,9 +664,40 @@ h2 em{font-style:normal;color:var(--gold);}
   baV.addEventListener('loadedmetadata', baSeed);
   if (baV.readyState >= 1) baSeed();
 
+  /* 회전 후반부(0.55~0.72): 통이 좌측으로 물러나며 스펙 시트 슬라이드 인.
+     0.70 부터 행이 한 줄씩, 0.90 에서 가격 카운트업. */
+  var rotSpec = document.getElementById('rotSpec');
+  var rsRows = document.querySelectorAll('#rsRows .rs-row');
+  var rsPrice = document.getElementById('rsPrice');
+  var rotListEl = document.querySelector('.rot-list');
+  var plinthEl = document.querySelector('.rot-plinth');
+  var pricePlayed = false;
+  var cl = function (x, lo, hi) { return Math.min(Math.max(x, lo), hi); };
+
   ScrollTrigger.create({
     trigger: '#rot', start: 'top top', end: 'bottom bottom', scrub: true,
-    onUpdate: function (self) { target = self.progress; }
+    onUpdate: function (self) {
+      var pr = self.progress;
+      target = pr;
+      if (reduce) return;
+      var k = cl((pr - 0.55) / 0.17, 0, 1);            // 전환 페이즈
+      var ke = k * k * (3 - 2 * k);                      // smoothstep
+      v.style.transform = 'translateX(' + (-ke * 20) + 'vw) scale(' + (1 - ke * 0.16) + ')';
+      plinthEl.style.transform = 'translateX(calc(-50% - ' + (ke * 20) + 'vw)) scale(' + (1 - ke * 0.16) + ')';
+      rotListEl.style.opacity = String(1 - ke);          // 체크리스트는 물러난다
+      rotSpec.style.opacity = String(ke);
+      rotSpec.style.transform = innerWidth <= 900
+        ? 'translateX(-50%) translateY(' + ((1 - ke) * 24) + 'px)'
+        : 'translateY(-50%) translateX(' + ((1 - ke) * 48) + 'px)';
+      rsRows.forEach(function (r, i) { r.classList.toggle('on', pr > 0.70 + i * 0.033); });
+      if (pr >= 0.90 && !pricePlayed) {
+        pricePlayed = true;
+        var po = { n: 0 };
+        gsap.to(po, { n: 83300, duration: 1.1, ease: 'power2.out',
+          onUpdate: function () { rsPrice.textContent = Math.round(po.n).toLocaleString('ko-KR'); } });
+      }
+      if (pr < 0.80) pricePlayed = false;
+    }
   });
   function scrub(el, curV, tgt) {
     var nc = curV + (tgt - curV) * 0.12;
