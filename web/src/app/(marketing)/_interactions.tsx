@@ -1057,6 +1057,32 @@ export function LandingInteractions() {
           if (Math.abs(el.currentTime - t) > 0.008) el.currentTime = t;
           return nc;
         };
+        /* 본 영상은 해당 섹션이 2뷰포트 안으로 오면 그때 전체 로드 —
+           첫 진입 대역폭을 포스터+메타데이터 수준으로 줄인다 */
+        const lazyFull = (vid: HTMLVideoElement | null, trigSel: string) => {
+          if (!vid) return;
+          const sec = document.querySelector(trigSel);
+          if (!sec || !("IntersectionObserver" in window)) {
+            vid.preload = "auto";
+            return;
+          }
+          const io = new IntersectionObserver(
+            (es) => {
+              if (es.some((x) => x.isIntersecting)) {
+                vid.preload = "auto";
+                vid.load();
+                io.disconnect();
+              }
+            },
+            { rootMargin: "200% 0px" },
+          );
+          io.observe(sec);
+          cleanups.push(() => io.disconnect());
+        };
+        lazyFull(v, "#rot");
+        lazyFull(baV, "#ba");
+        lazyFull($<HTMLVideoElement>("#liqVideo"), "#liq");
+
         let scrubRaf = 0;
         const scrubTick = () => {
           if (v && rotReady && v.duration) rotCur = scrubTo(v, rotCur, rotTarget);
