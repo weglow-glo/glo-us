@@ -706,6 +706,9 @@ export function LandingInteractions() {
         ]);
         if (disposed) return;
         gsap.registerPlugin(ScrollTrigger);
+        // 모바일에서 주소창이 나타나고 사라질 때의 높이만 바뀌는 리사이즈는
+        // 무시 — 이걸 안 하면 위로 스크롤할 때마다 스크럽 요소가 팍 튄다
+        ScrollTrigger.config({ ignoreMobileResize: true });
         let rotTarget = 0;
         let baTarget = 0;
 
@@ -1073,6 +1076,16 @@ export function LandingInteractions() {
           const ro = new ResizeObserver(() => layout());
           ro.observe(orbWrap);
           cleanups.push(() => ro.disconnect());
+          // 주소창 개폐(높이만 변화)는 무시 — 가로폭이 바뀔 때만 전체 재계산
+          let lastW = window.innerWidth;
+          const onWinResize = () => {
+            if (Math.abs(window.innerWidth - lastW) < 1) return;
+            lastW = window.innerWidth;
+            layout();
+            ScrollTrigger.refresh();
+          };
+          window.addEventListener("resize", onWinResize, { passive: true });
+          cleanups.push(() => window.removeEventListener("resize", onWinResize));
 
           let ringRot = 0;
           let dragVel = 0;
