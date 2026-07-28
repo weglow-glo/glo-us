@@ -259,7 +259,7 @@ h2 em{font-style:normal;color:var(--gold);}
     <img src="/assets/bottle/sachet.png" alt="glo GL-01 사쉐 20g" width="620" height="2363"/>
   </div>
   <div class="hero-in">
-    <div class="hero-kicker" data-fade>glo · Skin Longevity Protocol</div>
+    <div class="hero-kicker" data-fade>glo GL-01 · Skin Longevity Protocol</div>
     <h1 data-split>피부는 관리하는 것이 아니라</h1>
     <h1 data-split><span class="au">설계하는</span> 것입니다</h1>
     <p class="hero-sub" data-fade>임상으로 검증된 9가지 활성 성분. 하루 한 포, 20g.</p>
@@ -297,7 +297,7 @@ h2 em{font-style:normal;color:var(--gold);}
 <!-- 3. 스크롤 회전 -->
 <section class="rot" id="rot">
   <div class="rot-stage">
-    <div class="rot-title"><h2 data-reveal>30일이 <em>하나의</em> 통 안에</h2></div>
+    <div class="rot-title"><h2 data-reveal>한 통에 담긴 <em>피부 과학</em></h2></div>
     <video class="rot-video" id="rotVideo" src="/assets/video/canister-rotation-clean.mp4" muted playsinline preload="auto" aria-label="glo GL-01 캐니스터 360° 회전"></video>
     <div class="rot-plinth" aria-hidden="true"></div>
 
@@ -442,8 +442,11 @@ h2 em{font-style:normal;color:var(--gold);}
           out.appendChild(s);
         });
       } else if (n.nodeType === 1) {
-        var wrap = n.cloneNode(false);   // 래퍼(.au 등)만 복제
-        splitNode(n, wrap);              // 내부 텍스트는 글자 단위로
+        /* .au(background-clip:text) 안의 글자를 개별 transform 하면
+           브라우저가 배경을 자식 레이어에 못 그려 글자가 투명해진다.
+           인라인 래퍼는 통째로 하나의 .ch 로 움직인다. */
+        var wrap = n.cloneNode(true);
+        wrap.classList.add('ch');
         out.appendChild(wrap);
       }
     });
