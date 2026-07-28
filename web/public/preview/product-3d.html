@@ -155,9 +155,10 @@ h2 em{font-style:normal;color:var(--gold);}
 .orb-head{text-align:center;margin-bottom:clamp(40px,6vw,72px);}
 .orb-head .lead{margin-inline:auto;}
 .orb-wrap{position:relative;height:min(72vw,500px);perspective:1500px;}
-.orb-ring{position:absolute;inset:0;transform-style:preserve-3d;animation:spin 34s linear infinite;}
-@keyframes spin{to{transform:rotateY(360deg)}}
-.orb-wrap:hover .orb-ring{animation-play-state:paused;}
+.orb-ring{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform;}
+/* 드래그로 직접 돌린다 — 세로 스크롤은 통과(pan-y) */
+.orb-wrap{cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;}
+.orb-wrap.dragging{cursor:grabbing;}
 .node{position:absolute;top:50%;left:50%;width:132px;margin:-58px 0 0 -66px;text-align:center;
   transform-style:preserve-3d;backface-visibility:hidden;}
 .node-d{width:132px;height:116px;display:grid;place-content:center;border-radius:14px;
@@ -187,14 +188,14 @@ h2 em{font-style:normal;color:var(--gold);}
 .ba-stage{position:sticky;top:0;height:100svh;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:clamp(18px,3vh,30px);padding:0 20px;overflow:hidden;}
 .ba-head{text-align:center;}
-.ba-frame{position:relative;width:min(58vw,290px);aspect-ratio:720/1288;border-radius:18px;overflow:hidden;
+.ba-frame{position:relative;width:min(36vw,340px);aspect-ratio:720/1288;border-radius:18px;overflow:hidden;
   border:1px solid rgba(201,162,74,.28);box-shadow:0 30px 80px rgba(0,0,0,.5);}
 .ba-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 .ba-wkbadge{position:absolute;left:14px;bottom:12px;z-index:3;padding:7px 14px;border-radius:100px;
   font-family:var(--en);font-size:13px;letter-spacing:.6px;color:var(--gold-lt);
   background:rgba(20,10,14,.55);border:1px solid rgba(201,162,74,.4);
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
-.ba-rail{position:relative;display:flex;justify-content:space-between;width:min(58vw,290px);
+.ba-rail{position:relative;display:flex;justify-content:space-between;width:min(36vw,340px);
   padding-top:14px;font-size:11.5px;letter-spacing:.4px;color:rgba(244,235,235,.45);}
 .ba-rail::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:rgba(201,162,74,.2);}
 .ba-rail i{position:absolute;top:0;left:0;right:0;height:1px;transform-origin:0 50%;transform:scaleX(0);
@@ -280,9 +281,9 @@ h2 em{font-style:normal;color:var(--gold);}
   .nums-g{grid-template-columns:repeat(2,1fr);row-gap:38px;}
   .orb-stats{grid-template-columns:repeat(2,1fr);row-gap:22px;}
   .ba-main{grid-template-columns:1fr;gap:16px;justify-items:center;}
-  .ba-frame{width:min(34vw,160px);}
-  .ba-rail{width:min(58vw,240px);font-size:10px;}
-  .ba-copy{min-height:290px;width:min(88vw,400px);}
+  .ba-frame{width:min(48vw,210px);}
+  .ba-rail{width:min(48vw,210px);font-size:10px;}
+  .ba-copy{min-height:270px;width:min(88vw,400px);}
   .bstage{justify-content:flex-start;}
   .node.n4{width:204px;margin:-130px 0 0 -102px;}
   .node.n4 .node-d{width:204px;height:264px;padding:16px 14px 10px;}
@@ -515,13 +516,14 @@ h2 em{font-style:normal;color:var(--gold);}
 <!-- 8. CTA -->
 <section class="cta">
   <div class="ctr">
-    <div class="ey" style="justify-content:center" data-reveal>Start</div>
-    <h2 data-reveal>오늘 한 포가<br/><em>90일 뒤의 피부</em>입니다</h2>
+    <div class="ey" style="justify-content:center" data-reveal>공식 런칭 이벤트</div>
+    <h2 data-reveal>지금 <em>최대 50% 할인가</em>로<br/>시작하세요.</h2>
+    <p class="lead" style="margin-inline:auto;text-align:center;" data-reveal>공식 런칭 기념 할인으로, 구매 수량에 따라 최대 50%까지 적용됩니다. 결제 후 순차 배송해 드립니다.</p>
     <a href="/product#buy" class="btn" id="ctaBtn">
-      구매하기
+      GL-01 구매하기
       <svg viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M0 6h21M16 1l5 5-5 5"/></svg>
     </a>
-    <div class="cta-fine">첫 공식 런칭 이벤트 최대 50% 할인 · 무료배송 · 배송 1~2일</div>
+    <div class="cta-fine">결제 시 이용약관과 개인정보처리방침에 동의하는 것으로 간주됩니다.</div>
   </div>
 </section>
 
@@ -722,6 +724,37 @@ h2 em{font-style:normal;color:var(--gold);}
   if (window.ResizeObserver) new ResizeObserver(layout).observe(orbWrap);
   addEventListener('resize', function () { layout(); ScrollTrigger.refresh(); }, { passive: true });
 
+  /* ── 링 회전: 자동 + 드래그(마우스/터치) + 관성 ──────────
+     hover 시 자동 회전은 멈추고(읽기), 드래그는 언제나 우선. */
+  var ringRot = 0, dragVel = 0, dragging = false, lastX = 0, hoverPause = false;
+  var RING_AUTO = 0.18;   // deg/frame
+  orbWrap.addEventListener('pointerdown', function (e) {
+    dragging = true; lastX = e.clientX; dragVel = 0;
+    orbWrap.classList.add('dragging');
+    try { orbWrap.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  orbWrap.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    var dx = e.clientX - lastX; lastX = e.clientX;
+    ringRot += dx * 0.4; dragVel = dx * 0.4;
+    if (reduce) ring.style.transform = 'rotateY(' + ringRot + 'deg)';
+  });
+  function ringEndDrag() { dragging = false; orbWrap.classList.remove('dragging'); }
+  orbWrap.addEventListener('pointerup', ringEndDrag);
+  orbWrap.addEventListener('pointercancel', ringEndDrag);
+  if (matchMedia('(pointer:fine)').matches) {
+    orbWrap.addEventListener('pointerenter', function () { hoverPause = true; });
+    orbWrap.addEventListener('pointerleave', function () { hoverPause = false; });
+  }
+  if (!reduce) (function ringLoop() {
+    if (!dragging) {
+      if (Math.abs(dragVel) > 0.06) { ringRot += dragVel; dragVel *= 0.94; }  // 관성
+      else if (!hoverPause) ringRot += RING_AUTO;                              // 자동
+    }
+    ring.style.transform = 'rotateY(' + ringRot + 'deg)';
+    requestAnimationFrame(ringLoop);
+  })();
+
   /* 오비트 진입 리빌 — 카드가 순서대로 떠오른다.
      .node 는 인라인 transform(rotateY/translateZ)을 쓰므로 건드리면 링이
      무너진다. 안쪽 .node-d 만 애니메이션한다. */
@@ -737,8 +770,10 @@ h2 em{font-style:normal;color:var(--gold);}
     var end = parseFloat(el.dataset.count), dec = parseInt(el.dataset.dec || '0', 10);
     if (reduce) { el.textContent = end.toLocaleString('ko-KR', { minimumFractionDigits: dec }); return; }
     var o = { n: 0 };
-    gsap.to(o, { n: end, duration: 1.9, ease: 'expo.out',
-      scrollTrigger: { trigger: el, start: 'top 90%' },
+    gsap.to(o, { n: end, duration: 2.2, ease: 'expo.out',
+      /* 위 핀 섹션들 때문에 로드 직후 위치 계산이 밀려 미리 재생되던
+         버그 → 뷰포트에 들어올 때마다 다시 재생 */
+      scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'restart none none reset' },
       onUpdate: function () {
         el.textContent = o.n.toLocaleString('ko-KR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
       } });
