@@ -127,14 +127,19 @@ h2 em{font-style:normal;color:var(--gold);}
 .rot-video{width:min(150vh,120vw);max-width:none;}
 .rot-plinth{position:absolute;bottom:14%;left:50%;transform:translateX(-50%);width:min(46vw,420px);height:70px;
   background:radial-gradient(ellipse,rgba(201,162,74,.20),transparent 68%);filter:blur(20px);}
-/* 회전 각도별로 뜨는 스펙 라벨 */
-.spec{position:absolute;z-index:5;max-width:270px;opacity:0;}
-.spec-n{font-family:var(--en);font-size:clamp(38px,5.4vw,66px);font-weight:300;line-height:1;letter-spacing:-2px;}
-.spec-l{margin-top:10px;font-size:13px;letter-spacing:.4px;color:rgba(244,235,235,.66);line-height:1.6;}
-.sp1{top:18%;left:6%;} .sp2{top:24%;right:6%;text-align:right;}
-.sp3{bottom:24%;left:8%;} .sp4{bottom:20%;right:7%;text-align:right;}
-.rot-title{position:absolute;z-index:6;top:8%;left:50%;transform:translateX(-50%);text-align:center;width:100%;padding:0 20px;}
+/* 회전과 함께 좌측에 쌓이는 신뢰 체크리스트 */
+.rot-list{position:absolute;z-index:5;left:clamp(20px,6vw,96px);top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:20px;max-width:300px;}
+.rli{display:flex;align-items:center;gap:14px;opacity:0;transform:translateX(-16px);}
+.rli i{width:26px;height:26px;flex:none;border-radius:50%;display:grid;place-items:center;
+  border:1px solid rgba(201,162,74,.5);background:rgba(201,162,74,.08);}
+.rli i::before{content:"";width:9px;height:5px;margin-top:-2px;
+  border-left:1.6px solid var(--gold-lt);border-bottom:1.6px solid var(--gold-lt);transform:rotate(-45deg);}
+.rli span{font-size:14.5px;color:rgba(244,235,235,.82);letter-spacing:-.2px;line-height:1.5;}
+.rot-title{position:absolute;z-index:6;top:7%;left:50%;transform:translateX(-50%);text-align:center;width:100%;padding:0 20px;}
 .rot-title h2{font-size:clamp(26px,3.6vw,50px);}
+.rot-quote{margin-top:14px;font-size:clamp(12.5px,1.5vw,15px);font-style:italic;color:rgba(244,235,235,.55);}
+.rot-attrib{margin-top:6px;font-size:clamp(10px,1.2vw,12px);letter-spacing:.2px;color:rgba(232,207,154,.5);}
 
 /* ── 3. 액체 리빌 ────────────────────────────────────────── */
 .liq{position:relative;height:200svh;background:var(--burg-900);}
@@ -187,6 +192,54 @@ h2 em{font-style:normal;color:var(--gold);}
   background:linear-gradient(90deg,var(--gold-dp),var(--gold-lt));}
 .ba-note{font-size:11px;color:rgba(244,235,235,.32);}
 
+/* glo 워드마크는 어디서든 Fraunces */
+.gw{font-family:var(--en);}
+
+/* ── 5-2. 4단계 역노화 루틴 ──────────────────────────────── */
+.routes{padding:clamp(90px,13vw,160px) 0;background:var(--burg-900);}
+.routes-head{text-align:center;margin-bottom:clamp(40px,6vw,64px);}
+.routes-g{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.rcard{position:relative;overflow:hidden;border-radius:16px;padding:26px 22px 18px;min-height:360px;
+  display:flex;flex-direction:column;border:1px solid rgba(201,162,74,.18);
+  transition:transform .35s var(--ease),border-color .3s,box-shadow .35s;}
+.rcard:hover{transform:translateY(-6px);border-color:rgba(201,162,74,.5);box-shadow:0 18px 50px rgba(0,0,0,.45);}
+.r1{background:linear-gradient(165deg,#3d222a,#241218);}
+.r2{background:linear-gradient(165deg,#341a21,#1f0d13);}
+.r3{background:linear-gradient(165deg,#2b1218,#190a0e);}
+.r4{background:linear-gradient(165deg,#230d12,#120609);}
+.rc-ey{font-family:var(--en);font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);}
+.rc-t{margin-top:14px;font-size:clamp(26px,2.6vw,34px);font-weight:500;letter-spacing:-1px;color:var(--gold-lt);}
+.rcard p{margin-top:12px;font-size:13px;line-height:1.7;color:rgba(244,235,235,.66);flex:1;}
+.rc-a{font-family:var(--en);font-size:11.5px;line-height:1.6;letter-spacing:.2px;color:rgba(232,207,154,.55);}
+.rc-n{position:absolute;right:8px;bottom:30px;font-family:var(--en);font-weight:300;font-size:112px;line-height:1;
+  color:rgba(201,162,74,.07);pointer-events:none;}
+.rc-f{margin-top:18px;padding-top:12px;border-top:1px solid rgba(201,162,74,.16);
+  display:flex;justify-content:space-between;font-size:11.5px;color:rgba(244,235,235,.5);}
+
+/* 오비트 아래 스탯 스트립 */
+.orb-stats{margin:clamp(36px,5vw,60px) auto 0;max-width:760px;display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid rgba(201,162,74,.16);padding-top:26px;text-align:center;}
+.orb-stats b{display:block;font-family:var(--en);font-weight:300;font-size:clamp(30px,4vw,46px);color:var(--gold);}
+.orb-stats span{display:block;margin-top:6px;font-size:12px;color:rgba(244,235,235,.55);}
+
+/* ── 6-2. 주차별 기대 변화 ───────────────────────────────── */
+.tl{padding:clamp(80px,11vw,140px) 0;background:linear-gradient(180deg,var(--burg-900),var(--burg-800) 55%,var(--burg-900));}
+.tl-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.tcard{border-radius:16px;padding:28px 24px;border:1px solid rgba(201,162,74,.18);
+  background:linear-gradient(160deg,rgba(244,235,235,.05),rgba(244,235,235,.015));
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  transition:transform .35s var(--ease),border-color .3s;}
+.tcard:hover{transform:translateY(-5px);border-color:rgba(201,162,74,.45);}
+.tc-day{font-family:var(--en);font-weight:300;font-size:clamp(28px,3vw,38px);letter-spacing:-1px;}
+.tc-ey{margin-top:10px;font-size:11px;letter-spacing:1.2px;color:rgba(232,207,154,.6);}
+.tcard h3{margin-top:12px;font-size:clamp(15.5px,1.6vw,18px);font-weight:600;line-height:1.5;letter-spacing:-.4px;color:var(--cream);}
+.tcard p{margin-top:10px;font-size:13px;line-height:1.7;color:rgba(244,235,235,.6);}
+.tc-m{margin-top:16px;padding-top:14px;border-top:1px solid rgba(201,162,74,.14);
+  font-size:11.5px;line-height:1.7;color:rgba(244,235,235,.45);}
+.tc-m b{display:block;font-family:var(--en);font-weight:400;font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.tl-foot{margin-top:26px;text-align:center;font-size:12.5px;color:rgba(244,235,235,.4);}
+
 /* ── 6. 카운터 ───────────────────────────────────────────── */
 .nums{padding:clamp(70px,10vw,130px) 0;border-top:1px solid rgba(201,162,74,.15);border-bottom:1px solid rgba(201,162,74,.15);
   background:var(--burg-800);}
@@ -215,26 +268,29 @@ h2 em{font-style:normal;color:var(--gold);}
 
 @media (max-width:900px){
   .nums-g{grid-template-columns:repeat(2,1fr);row-gap:38px;}
+  .routes-g{grid-template-columns:repeat(2,1fr);}
+  .rcard{min-height:0;}
+  .tl-cards{grid-template-columns:1fr;}
+  .orb-stats{grid-template-columns:repeat(2,1fr);row-gap:22px;}
   .scan-g{grid-template-columns:1fr;gap:34px;}
   .scan-stage{max-height:440px;}
-  /* 모바일: 좁아서 라벨이 제품과 겹친다. 어차피 한 번에 하나만 뜨므로
-     제품 아래 중앙 한 자리에 모아 놓는다. */
   .rot-video{width:150vw;}
-  .spec,.sp1,.sp2,.sp3,.sp4{
-    top:auto;bottom:5%;left:50%;right:auto;transform:translateX(-50%);
-    width:min(88vw,340px);max-width:none;text-align:center;}
-  .spec-l{margin-top:6px;}
+  /* 모바일: 체크리스트는 좌하단에 작게 */
+  .rot-list{left:18px;top:auto;bottom:6%;transform:none;gap:12px;max-width:70vw;}
+  .rli i{width:20px;height:20px;}
+  .rli i::before{width:7px;height:4px;}
+  .rli span{font-size:12px;}
   .orb-wrap{height:390px;}
 }
 @media (max-width:480px){
-  .spec-n{font-size:26px;} .spec-l{font-size:11px;}
+  .routes-g{grid-template-columns:1fr;}
   .node,.node-d{width:112px;} .node{margin-left:-56px;}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
   .grain{display:none;} .orb-ring{animation:none;}
   .ch{opacity:1 !important;transform:none !important;}
-  .spec{opacity:1 !important;}
+  .rli{opacity:1 !important;transform:none !important;}
   .liq-mask{clip-path:none !important;}
   .rot{height:auto;} .rot-stage{position:relative;height:auto;padding:80px 0;}
   .liq{height:auto;} .liq-stage{position:relative;height:70svh;}
@@ -298,25 +354,19 @@ h2 em{font-style:normal;color:var(--gold);}
 <!-- 3. 스크롤 회전 -->
 <section class="rot" id="rot">
   <div class="rot-stage">
-    <div class="rot-title"><h2 data-reveal>한 통에 담긴 <em>피부 과학</em></h2></div>
+    <div class="rot-title">
+      <h2 data-reveal>한 통에 담긴 <em>피부 과학</em></h2>
+      <p class="rot-quote" data-reveal>"노화는 질병이며, 치료 가능한 질병이다." — David Sinclair</p>
+      <p class="rot-attrib" data-reveal>James Mercer, PhD in Nutritional Science · GL-01 공동 개발 리드 · 한의사 1인 + MDs 2인 + PhD 1인과 공동 개발</p>
+    </div>
     <video class="rot-video" id="rotVideo" src="/assets/video/canister-rotation-clean.mp4" muted playsinline preload="auto" aria-label="glo GL-01 캐니스터 360° 회전"></video>
     <div class="rot-plinth" aria-hidden="true"></div>
 
-    <div class="spec sp1" data-spec="0.12">
-      <div class="spec-n au">9</div>
-      <div class="spec-l">임상으로 검증된<br/>활성 성분</div>
-    </div>
-    <div class="spec sp2" data-spec="0.36">
-      <div class="spec-n au">1,186.5<span style="font-size:.42em">mg</span></div>
-      <div class="spec-l">한 포에 담긴<br/>총 활성 배합량</div>
-    </div>
-    <div class="spec sp3" data-spec="0.60">
-      <div class="spec-n au">4</div>
-      <div class="spec-l">동시에 작동하는<br/>기능 복합체</div>
-    </div>
-    <div class="spec sp4" data-spec="0.82">
-      <div class="spec-n au">특허</div>
-      <div class="spec-l">Tightening-PB Complex<br/>KR 10-2911449</div>
+    <div class="rot-list">
+      <div class="rli" data-at="0.14"><i></i><span>임상으로 입증된 9가지 성분</span></div>
+      <div class="rli" data-at="0.38"><i></i><span>전문의 3인·의학박사 2인 공동 설계</span></div>
+      <div class="rli" data-at="0.60"><i></i><span><span class="gw">glo</span> 특허 Tightening-PB Complex®</span></div>
+      <div class="rli" data-at="0.82"><i></i><span>공인 시험기관 검증 완료</span></div>
     </div>
   </div>
 </section>
@@ -341,9 +391,9 @@ h2 em{font-style:normal;color:var(--gold);}
 <section class="orb">
   <div class="ctr">
     <div class="orb-head">
-      <div class="ey" style="justify-content:center" data-reveal>The 4×9 Protocol</div>
-      <h2 data-reveal>9가지 성분이 <em>네 방향</em>에서<br/>동시에 작동합니다</h2>
-      <p class="lead" data-reveal>임상에서 효과가 확인된 용량 그대로. 줄이지 않았습니다.</p>
+      <div class="ey" style="justify-content:center" data-reveal>4 × 9 프로토콜이란?</div>
+      <h2 data-reveal>노화의 <em>4가지 경로</em>에,<br/>임상 성분 <em>9가지</em>를 정밀하게 설계했습니다</h2>
+      <p class="lead" data-reveal>대부분의 이너뷰티는 한 가지 성분에만 집중합니다. 콜라겐이거나, 글루타치온이거나, 히알루론산이거나. 하지만 피부는 톤 · 장벽 · 구조 · 방어 — 4가지를 동시에 잃어갑니다. GL-01은 임상으로 검증된 8가지 성분과 <span class="gw">glo</span> 특허 Tightening-PB Complex®까지 총 9가지 성분을 4가지 작용 경로에 대응시킨 이너뷰티입니다.</p>
     </div>
     <div class="orb-wrap">
       <div class="orb-core" aria-hidden="true"></div>
@@ -357,6 +407,52 @@ h2 em{font-style:normal;color:var(--gold);}
         <div class="node"><div class="node-d"><div class="node-n">N°07</div><div class="node-t">마린 콜라겐</div><div class="node-mg">100mg</div></div></div>
         <div class="node"><div class="node-d"><div class="node-n">N°08</div><div class="node-t">Tightening-PB</div><div class="node-mg">10mg</div></div></div>
         <div class="node"><div class="node-d"><div class="node-n">N°09</div><div class="node-t">헤마토코쿠스</div><div class="node-mg">5mg</div></div></div>
+      </div>
+    </div>
+    <div class="orb-stats" data-reveal>
+      <div><b>4</b><span>메커니즘</span></div>
+      <div><b>9</b><span>활성 성분</span></div>
+      <div><b>1</b><span><span class="gw">glo</span> 특허 복합물</span></div>
+      <div><b>10</b><span>임상 근거</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5-2. 4단계 역노화 루틴 -->
+<section class="routes">
+  <div class="ctr">
+    <div class="routes-head">
+      <div class="ey" style="justify-content:center" data-reveal>Reverse-aging Routine</div>
+      <h2 data-reveal>4가지의 단계를 통한,<br/>피부 <em>역노화</em> 루틴</h2>
+    </div>
+    <div class="routes-g">
+      <div class="rcard r1" data-reveal>
+        <div class="rc-ey">N°01 · Tone</div><div class="rc-t">결.</div>
+        <p>멜라닌 생성 효소 활동을 억제하고, 색소 전달을 감소시킵니다. 색소 침착이나, 자외선 공격으로부터 피부 결 불균형을 잡아줍니다.</p>
+        <div class="rc-a">Glutathione · L-Cystine · White tomato · Niacinamide</div>
+        <div class="rc-n" aria-hidden="true">01</div>
+        <div class="rc-f"><span>1주 차</span><span>→</span></div>
+      </div>
+      <div class="rcard r2" data-reveal>
+        <div class="rc-ey">N°02 · Barrier</div><div class="rc-t">수분.</div>
+        <p>세라마이드를 보충하고, 다분자 HA로 피부 장벽을 채워줍니다. 건조한 피부를 수분 장벽으로 보호합니다.</p>
+        <div class="rc-a">HA complex · SEPRECAM® milk ceramide</div>
+        <div class="rc-n" aria-hidden="true">02</div>
+        <div class="rc-f"><span>1개월 차</span><span>→</span></div>
+      </div>
+      <div class="rcard r3" data-reveal>
+        <div class="rc-ey">N°03 · Structure</div><div class="rc-t">탄력.</div>
+        <p>진피 섬유아세포의 collagen 합성을 자극하고 collagen 분해 효소를 억제하여 시간이 지나면서 피부 탄성이 달라집니다.</p>
+        <div class="rc-a">Collagen peptide (300 Da) · Tightening-PB Complex®</div>
+        <div class="rc-n" aria-hidden="true">03</div>
+        <div class="rc-f"><span>3개월 차</span><span>→</span></div>
+      </div>
+      <div class="rcard r4" data-reveal>
+        <div class="rc-ey">N°04 · Defense</div><div class="rc-t">산화방지.</div>
+        <p>세포막과 DNA 수준에서 산화를 방지합니다. 대부분의 이너뷰티가 놓치는, 길게 보면 가장 중요한 영역입니다.</p>
+        <div class="rc-a">Haematococcus extract · Glutathione</div>
+        <div class="rc-n" aria-hidden="true">04</div>
+        <div class="rc-f"><span>지속</span><span>→</span></div>
       </div>
     </div>
   </div>
@@ -375,6 +471,36 @@ h2 em{font-style:normal;color:var(--gold);}
     </div>
     <div class="ba-rail"><i id="baFill"></i><span>복용 전</span><span>2주</span><span>4주</span><span>8주</span></div>
     <p class="ba-note">개인에 따라 차이가 있을 수 있습니다.</p>
+  </div>
+</section>
+
+<!-- 6-2. 주차별 기대 변화 -->
+<section class="tl">
+  <div class="ctr">
+    <div class="tl-cards">
+      <div class="tcard" data-reveal>
+        <div class="tc-day au">Day 5–7</div>
+        <div class="tc-ey">수분이 차오르는 느낌이 드는 시기</div>
+        <h3>피부 결이 한결 촉촉하게 느껴집니다.</h3>
+        <p>겉면부터 촉촉함이 도는 듯한 변화를 먼저 느끼는 시기입니다.</p>
+        <div class="tc-m"><b>Mechanism</b>HA가 피부 표면 수분을 먼저 채웁니다. Glutathione이 피부를 손상시키는 활성산소를 줄이면서 피부 표면이 고르게 정돈됩니다. 피부 표면 변화의 시작일 뿐, 속부터 바뀌는 건 이제부터입니다.</div>
+      </div>
+      <div class="tcard" data-reveal>
+        <div class="tc-day au">Week 4–8</div>
+        <div class="tc-ey">피부 톤이 한결 정돈된 느낌</div>
+        <h3>칙칙해 보이던 부분이 조금씩 환하게 느껴지고, 하루 종일 수분감이 이어지는 듯한 시기예요.</h3>
+        <p>"뭔가 좋아 보인다"는 말을 들을 수 있는 즈음입니다.</p>
+        <div class="tc-m"><b>Mechanism</b>Glutathione · White Tomato · Niacinamide가 동시에 작용하면서, 멜라닌이 새로 만들어지는 것과 피부 표면으로 이동하는 것을 함께 억제합니다. 피부 수분 손실도 눈에 띄게 줄어드는 구간.</div>
+      </div>
+      <div class="tcard" data-reveal>
+        <div class="tc-day au">Week 12+</div>
+        <div class="tc-ey">탄탄한 느낌을 기대해볼 수 있는 시기</div>
+        <h3>속부터 채워진 듯 탄력 있어 보이는 느낌을 기대할 수 있어요.</h3>
+        <p>꾸준히 이어온 관리가 자리잡아가는 시점입니다.</p>
+        <div class="tc-m"><b>Mechanism</b>Collagen 펩타이드가 피부 속 세포를 자극해 새 collagen이 만들어집니다. 아스타잔틴이 세포 자체가 산화되는 것을 막아주고, Niacinamide가 피부 세포의 재생 에너지를 공급해요.</div>
+      </div>
+    </div>
+    <p class="tl-foot" data-reveal>초기 변화는 1~2주 안에, 본격적인 역노화는 3개월에 걸쳐 쌓입니다.</p>
   </div>
 </section>
 
@@ -522,20 +648,19 @@ h2 em{font-style:normal;color:var(--gold);}
     if (baV.duration) baV.currentTime = baV.duration - 0.05;
   }
 
-  /* 회전 각도별 스펙 라벨 — 해당 구간에서만 등장.
+  /* 회전 진행도에 따라 좌측 체크리스트가 하나씩 쌓인다.
      상태가 바뀌는 순간에만 트윈을 만든다 (매 스크롤마다 to() 호출 금지). */
   if (!reduce) {
-    document.querySelectorAll('.spec').forEach(function (el) {
-      var at = parseFloat(el.dataset.spec);
+    document.querySelectorAll('.rli').forEach(function (el) {
+      var at = parseFloat(el.dataset.at);
       var shown = false;
-      gsap.set(el, { y: 26 });
       ScrollTrigger.create({
         trigger: '#rot', start: 'top top', end: 'bottom bottom', scrub: true,
         onUpdate: function (self) {
-          var want = Math.abs(self.progress - at) < 0.1;
+          var want = self.progress >= at;
           if (want === shown) return;
           shown = want;
-          gsap.to(el, { opacity: want ? 1 : 0, y: want ? 0 : 26, duration: .5, ease: 'power2.out', overwrite: 'auto' });
+          gsap.to(el, { opacity: want ? 1 : 0, x: want ? 0 : -16, duration: .55, ease: 'power2.out', overwrite: 'auto' });
         }
       });
     });
