@@ -706,6 +706,9 @@ export function LandingInteractions() {
         ]);
         if (disposed) return;
         gsap.registerPlugin(ScrollTrigger);
+        // 모바일에서 주소창이 나타나고 사라질 때의 높이만 바뀌는 리사이즈는
+        // 무시 — 이걸 안 하면 위로 스크롤할 때마다 스크럽 요소가 팍 튄다
+        ScrollTrigger.config({ ignoreMobileResize: true });
         let rotTarget = 0;
         let baTarget = 0;
 
@@ -732,7 +735,8 @@ export function LandingInteractions() {
               (n.nodeValue ?? "").split("").forEach((c) => {
                 const s = document.createElement("span");
                 s.className = "ch";
-                s.textContent = c;
+                // inline-block 스팬 안의 일반 공백은 폭이 0으로 붕괴 → nbsp
+                s.textContent = c === " " ? " " : c;
                 out.appendChild(s);
               });
             } else if (n.nodeType === 1) {
@@ -769,13 +773,17 @@ export function LandingInteractions() {
             .from(".hero-kicker", { opacity: 0, y: 16, duration: 0.8, ease: "power2.out" }, "-=.55")
             .from(".ch", { yPercent: 118, opacity: 0, duration: 1.05, stagger: 0.022, ease: "expo.out" }, "-=.45")
             .from(".hero-sub", { opacity: 0, y: 18, duration: 0.8, ease: "power2.out" }, "-=.55")
-            .from(".hero-sachet", { opacity: 0, scale: 0.9, duration: 1.5, ease: "expo.out" }, "-=1.2")
+            .from(".hs-float", { opacity: 0, scale: 0.9, duration: 1.5, ease: "expo.out" }, "-=1.2")
             .from(".scroll-cue", { opacity: 0, duration: 0.7 }, "-=.5");
 
           // 사쉐 부유
+          /* 애니메이션 3겹 분리 — 요소당 트윈 하나씩이라 어떤 refresh 도
+             서로의 기준값을 오염시킬 수 없다.
+             #heroSachet: 센터링(CSS) + 패럴랙스 / #hsFloat: 부유 / #hsImg: 틸트 */
           const sachet = $("#heroSachet");
-          if (sachet) {
-            gsap.to(sachet, { y: "+=18", duration: 3.6, ease: "sine.inOut", yoyo: true, repeat: -1 });
+          const hsFloat = $("#hsFloat");
+          if (hsFloat) {
+            gsap.to(hsFloat, { y: "+=18", duration: 3.6, ease: "sine.inOut", yoyo: true, repeat: -1 });
           }
 
           // 히어로 패럴랙스 아웃 + 마스트헤드 스크럽 (fromTo — 시작값 명시)
@@ -786,11 +794,14 @@ export function LandingInteractions() {
             scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 0.6 },
           });
           if (sachet) {
-            gsap.to(sachet, {
-              yPercent: 26,
-              ease: "none",
-              scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 0.6 },
-            });
+            gsap.fromTo(sachet,
+              { yPercent: 0 },
+              {
+                yPercent: 26,
+                ease: "none",
+                immediateRender: false,
+                scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 0.6 },
+              });
           }
           gsap.fromTo(
             ".hero-brand",
@@ -994,10 +1005,11 @@ export function LandingInteractions() {
               glow.style.opacity = "1";
               gsap.to(glow, { x: e.clientX, y: e.clientY, duration: 0.9, ease: "power3.out", overwrite: true });
             }
-            if (sachet) {
+            const hsImg = document.getElementById("hsImg");
+            if (hsImg) {
               const nx = e.clientX / window.innerWidth - 0.5;
               const ny = e.clientY / window.innerHeight - 0.5;
-              gsap.to(sachet, {
+              gsap.to(hsImg, {
                 rotateY: nx * 22,
                 rotateX: -ny * 16,
                 x: nx * 26,
@@ -1071,6 +1083,16 @@ export function LandingInteractions() {
           const ro = new ResizeObserver(() => layout());
           ro.observe(orbWrap);
           cleanups.push(() => ro.disconnect());
+          // 주소창 개폐(높이만 변화)는 무시 — 가로폭이 바뀔 때만 전체 재계산
+          let lastW = window.innerWidth;
+          const onWinResize = () => {
+            if (Math.abs(window.innerWidth - lastW) < 1) return;
+            lastW = window.innerWidth;
+            layout();
+            ScrollTrigger.refresh();
+          };
+          window.addEventListener("resize", onWinResize, { passive: true });
+          cleanups.push(() => window.removeEventListener("resize", onWinResize));
 
           let ringRot = 0;
           let dragVel = 0;
@@ -1153,12 +1175,23 @@ export function LandingInteractions() {
           cleanups.push(() => cancelAnimationFrame(ringRaf));
         }
 
-        // 폰트 로드 후 핀 위치 재계산
+        // 폰트·이미지·비디오 로드 후 핀/트리거 위치 재계산 — 이게 없으면
+        // 위 핀 스페이서들이 자산 로드로 밀리면서 모든 리빌 위치가 어긋난다
         if (document.fonts?.ready) {
           document.fonts.ready.then(() => {
             if (!disposed) ScrollTrigger.refresh();
           });
         }
+        const onLoad = () => {
+          if (!disposed) ScrollTrigger.refresh();
+        };
+        if (document.readyState === "complete") onLoad();
+        else {
+          window.addEventListener("load", onLoad);
+          cleanups.push(() => window.removeEventListener("load", onLoad));
+        }
+        const lateRefresh = window.setTimeout(onLoad, 2500); // 안전망
+        cleanups.push(() => window.clearTimeout(lateRefresh));
       }
 
       // ── AI 얼굴 스캔 (three) — reduce 는 정적 1프레임 ────────────
