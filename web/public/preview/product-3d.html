@@ -93,7 +93,7 @@ h2 em{font-style:normal;color:var(--gold);}
 .rot-stage{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center;}
 .rot-stage::after{content:"";position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(ellipse 60% 55% at 50% 50%,transparent 30%,rgba(20,10,14,.82) 100%);}
-.rot-video{width:min(150vh,120vw);max-width:none;opacity:.98;}
+.rot-video{width:min(150vh,120vw);max-width:none;}
 .rot-plinth{position:absolute;bottom:14%;left:50%;transform:translateX(-50%);width:min(46vw,420px);height:70px;
   background:radial-gradient(ellipse,rgba(201,162,74,.20),transparent 68%);filter:blur(20px);}
 /* 회전 각도별로 뜨는 스펙 라벨 */
@@ -135,7 +135,30 @@ h2 em{font-style:normal;color:var(--gold);}
 .orb-core{position:absolute;top:50%;left:50%;width:190px;height:190px;margin:-95px 0 0 -95px;border-radius:50%;
   background:radial-gradient(circle,rgba(201,162,74,.20),transparent 66%);filter:blur(14px);}
 
-/* ── 5. 카운터 ───────────────────────────────────────────── */
+/* ── 5. 체험단 8주 스크럽 ─────────────────────────────────
+   스크롤 진행도에 따라 같은 얼굴이 복용 전 → 2주 → 4주 → 8주로
+   크로스페이드. 문구·사진은 기존 상세페이지의 체험단 기록 그대로. */
+.ba{position:relative;height:320svh;background:var(--burg-900);}
+.ba-stage{position:sticky;top:0;height:100svh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:clamp(18px,3vh,30px);padding:0 20px;overflow:hidden;}
+.ba-head{text-align:center;}
+.ba-cap{margin-top:12px;font-size:13px;color:rgba(244,235,235,.5);letter-spacing:.2px;}
+.ba-frame{position:relative;width:min(70vw,340px);aspect-ratio:3/4;border-radius:18px;overflow:hidden;
+  border:1px solid rgba(201,162,74,.28);box-shadow:0 30px 80px rgba(0,0,0,.5);}
+.ba-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;}
+.ba-ph:first-of-type{opacity:1;}
+.ba-wkbadge{position:absolute;left:14px;bottom:12px;z-index:3;padding:7px 14px;border-radius:100px;
+  font-family:var(--en);font-size:13px;letter-spacing:.6px;color:var(--gold-lt);
+  background:rgba(20,10,14,.55);border:1px solid rgba(201,162,74,.4);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.ba-rail{position:relative;display:flex;justify-content:space-between;width:min(70vw,340px);
+  padding-top:14px;font-size:11.5px;letter-spacing:.4px;color:rgba(244,235,235,.45);}
+.ba-rail::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:rgba(201,162,74,.2);}
+.ba-rail i{position:absolute;top:0;left:0;right:0;height:1px;transform-origin:0 50%;transform:scaleX(0);
+  background:linear-gradient(90deg,var(--gold-dp),var(--gold-lt));}
+.ba-note{font-size:11px;color:rgba(244,235,235,.32);}
+
+/* ── 6. 카운터 ───────────────────────────────────────────── */
 .nums{padding:clamp(70px,10vw,130px) 0;border-top:1px solid rgba(201,162,74,.15);border-bottom:1px solid rgba(201,162,74,.15);
   background:var(--burg-800);}
 .nums-g{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,4vw,48px);text-align:center;}
@@ -184,6 +207,10 @@ h2 em{font-style:normal;color:var(--gold);}
   .liq-mask{clip-path:none !important;}
   .rot{height:auto;} .rot-stage{position:relative;height:auto;padding:80px 0;}
   .liq{height:auto;} .liq-stage{position:relative;height:70svh;}
+  /* BA: 스크럽 없이 마지막(8주) 사진을 정지 상태로 */
+  .ba{height:auto;} .ba-stage{position:relative;height:auto;padding:80px 20px;}
+  .ba-ph{opacity:0 !important;} .ba-ph:last-of-type{opacity:1 !important;}
+  .ba-rail i{transform:scaleX(1);}
 }
 </style>
 </head>
@@ -277,7 +304,27 @@ h2 em{font-style:normal;color:var(--gold);}
   </div>
 </section>
 
-<!-- 5. 카운터 -->
+<!-- 5. 체험단 8주 스크럽 -->
+<section class="ba" id="ba">
+  <div class="ba-stage">
+    <div class="ba-head">
+      <div class="ey" style="justify-content:center" data-reveal>Real records</div>
+      <h2 data-reveal>같은 얼굴의 <em>8주</em> 기록</h2>
+      <p class="ba-cap" data-reveal>김OO님 · 서울 40대 · 체험단 복용 기록</p>
+    </div>
+    <div class="ba-frame">
+      <img class="ba-ph" src="/assets/images/ba-0-before.jpg" alt="복용 전" loading="lazy"/>
+      <img class="ba-ph" src="/assets/images/ba-2w.jpg" alt="2주차" loading="lazy"/>
+      <img class="ba-ph" src="/assets/images/ba-4w.jpg" alt="4주차" loading="lazy"/>
+      <img class="ba-ph" src="/assets/images/ba-8w.jpg" alt="8주차" loading="lazy"/>
+      <div class="ba-wkbadge" id="baWk">복용 전</div>
+    </div>
+    <div class="ba-rail"><i id="baFill"></i><span>복용 전</span><span>2주</span><span>4주</span><span>8주</span></div>
+    <p class="ba-note">개인에 따라 차이가 있을 수 있습니다.</p>
+  </div>
+</section>
+
+<!-- 6. 카운터 -->
 <section class="nums">
   <div class="ctr">
     <div class="nums-g">
@@ -294,11 +341,11 @@ h2 em{font-style:normal;color:var(--gold);}
   <div class="ctr">
     <div class="ey" style="justify-content:center" data-reveal>Start</div>
     <h2 data-reveal>오늘 한 포가<br/><em>90일 뒤의 피부</em>입니다</h2>
-    <a href="#" class="btn" id="ctaBtn">
+    <a href="/product#buy" class="btn" id="ctaBtn">
       구매하기
       <svg viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M0 6h21M16 1l5 5-5 5"/></svg>
     </a>
-    <div class="cta-fine">무료배송 · 배송 기간 1~2일 소요</div>
+    <div class="cta-fine">첫 공식 런칭 이벤트 최대 50% 할인 · 무료배송 · 배송 1~2일</div>
   </div>
 </section>
 
@@ -403,19 +450,41 @@ h2 em{font-style:normal;color:var(--gold);}
   }
   if (!reduce) requestAnimationFrame(tick); else v.currentTime = 0;
 
-  /* 회전 각도별 스펙 라벨 — 해당 구간에서만 등장 */
+  /* 회전 각도별 스펙 라벨 — 해당 구간에서만 등장.
+     상태가 바뀌는 순간에만 트윈을 만든다 (매 스크롤마다 to() 호출 금지). */
   if (!reduce) {
     document.querySelectorAll('.spec').forEach(function (el) {
       var at = parseFloat(el.dataset.spec);
+      var shown = false;
       gsap.set(el, { y: 26 });
       ScrollTrigger.create({
         trigger: '#rot', start: 'top top', end: 'bottom bottom', scrub: true,
         onUpdate: function (self) {
-          var d = Math.abs(self.progress - at);
-          var on = d < 0.1 ? 1 : 0;
-          gsap.to(el, { opacity: on, y: on ? 0 : 26, duration: .5, ease: 'power2.out', overwrite: 'auto' });
+          var want = Math.abs(self.progress - at) < 0.1;
+          if (want === shown) return;
+          shown = want;
+          gsap.to(el, { opacity: want ? 1 : 0, y: want ? 0 : 26, duration: .5, ease: 'power2.out', overwrite: 'auto' });
         }
       });
+    });
+
+    /* ── 체험단 8주 크로스페이드 ───────────────────────── */
+    var baImgs = document.querySelectorAll('.ba-ph');
+    var baWkEl = document.getElementById('baWk');
+    var baFill = document.getElementById('baFill');
+    var BA_WEEKS = ['복용 전', '2주차', '4주차', '8주차'];
+    var baIdx = 0;
+    ScrollTrigger.create({
+      trigger: '#ba', start: 'top top', end: 'bottom bottom', scrub: true,
+      onUpdate: function (self) {
+        var p = self.progress * (baImgs.length - 1);   // 0..3
+        baImgs.forEach(function (im, i) {
+          im.style.opacity = String(Math.max(0, 1 - Math.abs(p - i)));
+        });
+        baFill.style.transform = 'scaleX(' + self.progress + ')';
+        var idx = Math.min(baImgs.length - 1, Math.round(p));
+        if (idx !== baIdx) { baIdx = idx; baWkEl.textContent = BA_WEEKS[idx]; }
+      }
     });
 
     /* ── 액체 원형 마스크 확장 ─────────────────────────── */
@@ -432,6 +501,10 @@ h2 em{font-style:normal;color:var(--gold);}
     gsap.utils.toArray('[data-fade]').forEach(function (el) {
       gsap.from(el, { opacity: 0, duration: .8, scrollTrigger: { trigger: el, start: 'top 92%' } });
     });
+  } else {
+    /* reduced-motion: BA 는 8주 사진이 정지 노출되므로 배지도 맞춘다 */
+    var baWkStatic = document.getElementById('baWk');
+    if (baWkStatic) baWkStatic.textContent = '8주차';
   }
 
   /* ── 3D 오비트 링 배치 ─────────────────────────────────
@@ -451,6 +524,16 @@ h2 em{font-style:normal;color:var(--gold);}
   layout();
   if (window.ResizeObserver) new ResizeObserver(layout).observe(orbWrap);
   addEventListener('resize', function () { layout(); ScrollTrigger.refresh(); }, { passive: true });
+
+  /* 오비트 진입 리빌 — 카드가 순서대로 떠오른다.
+     .node 는 인라인 transform(rotateY/translateZ)을 쓰므로 건드리면 링이
+     무너진다. 안쪽 .node-d 만 애니메이션한다. */
+  if (!reduce) {
+    gsap.from('#ring .node-d', {
+      opacity: 0, scale: .55, duration: .8, stagger: .07, ease: 'expo.out',
+      scrollTrigger: { trigger: '.orb-wrap', start: 'top 82%' }
+    });
+  }
 
   /* ── 숫자 카운트업 ───────────────────────────────────── */
   document.querySelectorAll('[data-count]').forEach(function (el) {
