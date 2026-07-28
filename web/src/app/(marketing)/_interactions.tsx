@@ -654,142 +654,502 @@ export function ScienceInteractions() {
  */
 export function LandingInteractions() {
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let disposed = false;
     const cleanups: Array<() => void> = [];
+    const $ = <T extends HTMLElement = HTMLElement>(sel: string) =>
+      document.querySelector<T>(sel);
+
+    // ── reduced-motion: 정적 상태 세팅 (CSS 폴백 + 값 채움) ─────────
+    if (reduce) {
+      const rotV = $<HTMLVideoElement>("#rotVideo");
+      if (rotV) rotV.currentTime = 0;
+      const baV = $<HTMLVideoElement>("#baVideo");
+      if (baV) {
+        const toEnd = () => {
+          baV.currentTime = Math.max(0, (baV.duration || 0) - 0.05);
+        };
+        if (baV.duration) toEnd();
+        else baV.addEventListener("loadedmetadata", toEnd, { once: true });
+      }
+      const baWk = $("#baWk");
+      if (baWk) baWk.textContent = "Week 12+";
+      const stages = document.querySelectorAll(".bstage");
+      stages.forEach((b, j) => b.classList.toggle("on", j === stages.length - 1));
+      document.querySelectorAll<HTMLElement>(".sm-fill").forEach((f) => {
+        f.style.width = `${f.dataset.w ?? 0}%`;
+      });
+      document.querySelectorAll<HTMLElement>("[data-count]").forEach((el) => {
+        const end = parseFloat(el.dataset.count ?? "0");
+        const dec = parseInt(el.dataset.dec ?? "0", 10);
+        el.textContent = end.toLocaleString("ko-KR", {
+          minimumFractionDigits: dec,
+          maximumFractionDigits: dec,
+        });
+      });
+      const price = $("#rsPrice");
+      if (price) price.textContent = "83,300";
+    }
 
     (async () => {
-      const [{ gsap }, { ScrollTrigger }] = await Promise.all([
-        import("gsap"),
-        import("gsap/ScrollTrigger"),
-      ]);
-      if (disposed) return;
-      gsap.registerPlugin(ScrollTrigger);
-
-      // If the tab is hidden (opened in background), rAF doesn't run — defer
-      // init until first visible so nothing sits at its hidden "from" state
-      // and the hero choreography plays when the page is actually seen.
-      if (document.hidden) {
-        await new Promise<void>((resolve) => {
-          const onVis = () => {
-            if (!document.hidden) {
-              document.removeEventListener("visibilitychange", onVis);
-              resolve();
-            }
-          };
-          document.addEventListener("visibilitychange", onVis);
-          cleanups.push(() => document.removeEventListener("visibilitychange", onVis));
-        });
+      // ── GSAP 파트 (reduce 면 통째로 생략 — CSS 폴백이 담당) ──────
+      if (!reduce) {
+        const [{ gsap }, { ScrollTrigger }] = await Promise.all([
+          import("gsap"),
+          import("gsap/ScrollTrigger"),
+        ]);
         if (disposed) return;
-      }
+        gsap.registerPlugin(ScrollTrigger);
+        let rotTarget = 0;
+        let baTarget = 0;
 
-      const ctx = gsap.context(() => {
-        // ── 1) Hero entrance choreography ─────────────────────────────
-        const heroBits = [
-          ".hero .ey",
-          ".hero h1",
-          ".hero .hero-sub",
-          ".hero .hero-cta",
-          ".hero .hero-attrib",
-        ].filter((s) => document.querySelector(s));
-        if (heroBits.length) {
-          const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-          tl.fromTo(
-            heroBits,
-            { y: 26, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.85, stagger: 0.11 },
-          );
-          const vid = document.querySelector(".hero .hero-video");
-          if (vid) {
-            tl.fromTo(
-              vid,
-              { scale: 1.045, opacity: 0 },
-              { scale: 1, opacity: 1, duration: 1.15, ease: "power2.out" },
-              0.25,
-            );
-          }
+        // 백그라운드 탭에서 열리면 rAF 가 멈춰 있으므로 보일 때까지 대기
+        if (document.hidden) {
+          await new Promise<void>((resolve) => {
+            const onVis = () => {
+              if (!document.hidden) {
+                document.removeEventListener("visibilitychange", onVis);
+                resolve();
+              }
+            };
+            document.addEventListener("visibilitychange", onVis);
+            cleanups.push(() => document.removeEventListener("visibilitychange", onVis));
+          });
+          if (disposed) return;
         }
 
-        // ── 2) Scroll reveals — every section after the hero ──────────
-        document
-          .querySelectorAll<HTMLElement>(
-            "section.fscan, section.thesis, section.out, section.timeline, section.ai-sec, section.prod, section.sci-tease, section.test, section.advisors, section.wait, section.final",
-          )
-          .forEach((sec) => {
-            gsap.fromTo(
-              sec,
-              { y: 44, opacity: 0 },
-              {
-                y: 0,
-                opacity: 1,
-                duration: 0.9,
-                ease: "power3.out",
-                scrollTrigger: { trigger: sec, start: "top 86%", once: true },
-              },
-            );
+        // 헤드라인 문자 분해 — .au(background-clip:text) 래퍼는 통째로
+        // 하나의 .ch 로 (글자 단위로 쪼개면 배경이 자식 레이어에 안 그려짐)
+        const splitNode = (node: Node, out: HTMLElement) => {
+          Array.from(node.childNodes).forEach((n) => {
+            if (n.nodeType === 3) {
+              (n.nodeValue ?? "").split("").forEach((c) => {
+                const s = document.createElement("span");
+                s.className = "ch";
+                s.textContent = c;
+                out.appendChild(s);
+              });
+            } else if (n.nodeType === 1) {
+              const wrap = (n as HTMLElement).cloneNode(true) as HTMLElement;
+              wrap.classList.add("ch");
+              out.appendChild(wrap);
+            }
           });
-
-        // Card grids stagger in a touch after their section.
-        [".thesis-stat", ".ai-stat", ".doc", ".tl-cell"].forEach((sel) => {
-          const items = gsap.utils.toArray<HTMLElement>(sel);
-          if (items.length < 2) return;
-          gsap.fromTo(
-            items,
-            { y: 26, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.7,
-              ease: "power2.out",
-              stagger: 0.09,
-              scrollTrigger: { trigger: items[0], start: "top 88%", once: true },
-            },
-          );
+        };
+        document.querySelectorAll("[data-split]").forEach((el) => {
+          const line = document.createElement("span");
+          line.className = "ln";
+          splitNode(el, line);
+          el.innerHTML = "";
+          el.appendChild(line);
         });
 
-        // ── 3) Stat count-ups (leading number, suffix preserved) ──────
-        document
-          .querySelectorAll<HTMLElement>(".thesis-stat b, .ai-stat-n em")
-          .forEach((el) => {
-            const raw = el.textContent ?? "";
-            const m = raw.match(/^([0-9,.]+)(.*)$/);
-            if (!m) return;
-            const target = parseFloat(m[1].replace(/,/g, ""));
-            if (!isFinite(target) || target <= 0) return;
-            const suffix = m[2] ?? "";
-            const state = { n: 0 };
-            gsap.to(state, {
-              n: target,
-              duration: 1.4,
-              ease: "power2.out",
-              scrollTrigger: { trigger: el, start: "top 90%", once: true },
-              onUpdate: () => {
-                el.textContent = `${Math.round(state.n).toLocaleString("ko-KR")}${suffix}`;
+        const ctx = gsap.context(() => {
+          // 진행 바
+          gsap.to("#prog", {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: document.body,
+              start: "top top",
+              end: "bottom bottom",
+              scrub: 0.3,
+            },
+          });
+
+          // 히어로 진입 안무
+          const tl = gsap.timeline({ delay: 0.25 });
+          tl.from(".hero-brand", { opacity: 0, y: -16, duration: 1.0, ease: "power2.out" })
+            .from(".hero-kicker", { opacity: 0, y: 16, duration: 0.8, ease: "power2.out" }, "-=.55")
+            .from(".ch", { yPercent: 118, opacity: 0, duration: 1.05, stagger: 0.022, ease: "expo.out" }, "-=.45")
+            .from(".hero-sub", { opacity: 0, y: 18, duration: 0.8, ease: "power2.out" }, "-=.55")
+            .from(".hero-sachet", { opacity: 0, scale: 0.9, duration: 1.5, ease: "expo.out" }, "-=1.2")
+            .from(".scroll-cue", { opacity: 0, duration: 0.7 }, "-=.5");
+
+          // 사쉐 부유
+          const sachet = $("#heroSachet");
+          if (sachet) {
+            gsap.to(sachet, { y: "+=18", duration: 3.6, ease: "sine.inOut", yoyo: true, repeat: -1 });
+          }
+
+          // 히어로 패럴랙스 아웃 + 마스트헤드 스크럽 (fromTo — 시작값 명시)
+          gsap.to(".hero-in", {
+            yPercent: -18,
+            opacity: 0,
+            ease: "none",
+            scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 0.6 },
+          });
+          if (sachet) {
+            gsap.to(sachet, {
+              yPercent: 26,
+              ease: "none",
+              scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 0.6 },
+            });
+          }
+          gsap.fromTo(
+            ".hero-brand",
+            { yPercent: 0, opacity: 1 },
+            {
+              yPercent: -70,
+              opacity: 0,
+              ease: "none",
+              immediateRender: false,
+              scrollTrigger: { trigger: ".hero", start: "top top", end: "55% top", scrub: 0.8 },
+            },
+          );
+
+          // ── 회전 섹션: 스크럽 타깃 + 후반부 스펙 시트 페이즈 ──────
+          const v = $<HTMLVideoElement>("#rotVideo");
+          const rotSpec = $("#rotSpec");
+          const rsRows = document.querySelectorAll("#rsRows .rs-row");
+          const rsPrice = $("#rsPrice");
+          const rotListEl = $(".rot-list");
+          const plinthEl = $(".rot-plinth");
+          let pricePlayed = false;
+          const cl = (x: number, lo: number, hi: number) => Math.min(Math.max(x, lo), hi);
+
+          if (v) {
+            ScrollTrigger.create({
+              trigger: "#rot",
+              start: "top top",
+              end: "bottom bottom",
+              scrub: true,
+              onUpdate: (self) => {
+                const pr = self.progress;
+                rotTarget = pr;
+                if (!rotSpec || !rotListEl || !plinthEl) return;
+                const k = cl((pr - 0.55) / 0.17, 0, 1);
+                const ke = k * k * (3 - 2 * k); // smoothstep
+                v.style.transform = `translateX(${-ke * 20}vw) scale(${1 - ke * 0.16})`;
+                plinthEl.style.transform = `translateX(calc(-50% - ${ke * 20}vw)) scale(${1 - ke * 0.16})`;
+                rotListEl.style.opacity = String(1 - ke);
+                rotSpec.style.opacity = String(ke);
+                rotSpec.style.transform =
+                  window.innerWidth <= 900
+                    ? `translateX(-50%) translateY(${(1 - ke) * 24}px)`
+                    : `translateY(-50%) translateX(${(1 - ke) * 48}px)`;
+                rsRows.forEach((r, i) => r.classList.toggle("on", pr > 0.7 + i * 0.033));
+                if (pr >= 0.9 && !pricePlayed && rsPrice) {
+                  pricePlayed = true;
+                  const po = { n: 0 };
+                  gsap.to(po, {
+                    n: 83300,
+                    duration: 1.1,
+                    ease: "power2.out",
+                    onUpdate: () => {
+                      rsPrice.textContent = Math.round(po.n).toLocaleString("ko-KR");
+                    },
+                  });
+                }
+                if (pr < 0.8) pricePlayed = false;
+              },
+            });
+          }
+
+          // 좌측 신뢰 체크리스트 — 진행도에 따라 하나씩 쌓인다
+          document.querySelectorAll<HTMLElement>(".rli").forEach((el) => {
+            const at = parseFloat(el.dataset.at ?? "0");
+            let shown = false;
+            ScrollTrigger.create({
+              trigger: "#rot",
+              start: "top top",
+              end: "bottom bottom",
+              scrub: true,
+              onUpdate: (self) => {
+                const want = self.progress >= at;
+                if (want === shown) return;
+                shown = want;
+                gsap.to(el, {
+                  opacity: want ? 1 : 0,
+                  x: want ? 0 : -16,
+                  duration: 0.55,
+                  ease: "power2.out",
+                  overwrite: "auto",
+                });
               },
             });
           });
 
-        // ── 4) Subtle hero parallax (scrub) ───────────────────────────
-        const heroR = document.querySelector(".hero .hero-r");
-        if (heroR) {
-          gsap.to(heroR, {
-            y: -34,
-            ease: "none",
-            scrollTrigger: {
-              trigger: ".hero",
+          // 액체 원형 마스크 확장
+          if ($("#liqMask")) {
+            gsap.fromTo(
+              "#liqMask",
+              { clipPath: "circle(14% at 50% 50%)" },
+              {
+                clipPath: "circle(78% at 50% 50%)",
+                ease: "none",
+                scrollTrigger: { trigger: "#liq", start: "top top", end: "bottom bottom", scrub: 0.8 },
+              },
+            );
+          }
+
+          // 일반 스크롤 리빌
+          gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
+            gsap.from(el, {
+              opacity: 0,
+              y: 26,
+              duration: 0.85,
+              ease: "expo.out",
+              scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none reverse" },
+            });
+          });
+          gsap.utils.toArray<HTMLElement>("[data-fade]").forEach((el) => {
+            gsap.from(el, {
+              opacity: 0,
+              duration: 0.8,
+              scrollTrigger: { trigger: el, start: "top 92%" },
+            });
+          });
+
+          // ── 피부 변화 스크럽: 배지·레일·우측 카피 동기화 ─────────
+          const baWkEl = $("#baWk");
+          const baFill = $("#baFill");
+          const bstages = document.querySelectorAll(".bstage");
+          const BA_WEEKS = ["복용 전", "Day 5–7", "Week 4–8", "Week 12+"];
+          let baIdx = 0;
+          if (baWkEl && baFill) {
+            ScrollTrigger.create({
+              trigger: "#ba",
               start: "top top",
-              end: "bottom top",
-              scrub: 0.6,
-            },
+              end: "bottom bottom",
+              scrub: true,
+              onUpdate: (self) => {
+                baTarget = self.progress;
+                baFill.style.transform = `scaleX(${self.progress})`;
+                const idx = Math.min(3, Math.round(self.progress * 3));
+                if (idx !== baIdx) {
+                  baIdx = idx;
+                  baWkEl.textContent = BA_WEEKS[idx];
+                  bstages.forEach((b, j) => b.classList.toggle("on", j === idx));
+                }
+              },
+            });
+          }
+
+          // 오비트 진입 리빌 (.node 는 인라인 transform → 안쪽만)
+          gsap.from("#ring .node-d", {
+            opacity: 0,
+            scale: 0.55,
+            duration: 0.8,
+            stagger: 0.07,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".orb-wrap", start: "top 82%" },
+          });
+
+          // 숫자 카운트업 — 핀 스페이서 때문에 로드시 미리 재생되는 것
+          // 방지: 뷰포트에 들어올 때마다 재생
+          document.querySelectorAll<HTMLElement>("[data-count]").forEach((el) => {
+            const end = parseFloat(el.dataset.count ?? "0");
+            const dec = parseInt(el.dataset.dec ?? "0", 10);
+            const o = { n: 0 };
+            gsap.to(o, {
+              n: end,
+              duration: 2.2,
+              ease: "expo.out",
+              scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "restart none none reset" },
+              onUpdate: () => {
+                el.textContent = o.n.toLocaleString("ko-KR", {
+                  minimumFractionDigits: dec,
+                  maximumFractionDigits: dec,
+                });
+              },
+            });
+          });
+
+          // 스캔 메트릭 바
+          document.querySelectorAll<HTMLElement>(".sm-fill").forEach((f) => {
+            gsap.fromTo(
+              f,
+              { width: "0%" },
+              {
+                width: `${f.dataset.w ?? 0}%`,
+                duration: 1.1,
+                ease: "power2.out",
+                scrollTrigger: { trigger: f, start: "top 92%", once: true },
+              },
+            );
+          });
+        });
+        cleanups.push(() => ctx.revert());
+
+        // ── 커서 글로우 + 사쉐 틸트 (포인터 기기) ────────────────
+        if (window.matchMedia("(pointer:fine)").matches) {
+          const glow = $("#glow");
+          const sachet = $("#heroSachet");
+          const onMove = (e: PointerEvent) => {
+            if (glow) {
+              glow.style.opacity = "1";
+              gsap.to(glow, { x: e.clientX, y: e.clientY, duration: 0.9, ease: "power3.out", overwrite: true });
+            }
+            if (sachet) {
+              const nx = e.clientX / window.innerWidth - 0.5;
+              const ny = e.clientY / window.innerHeight - 0.5;
+              gsap.to(sachet, {
+                rotateY: nx * 22,
+                rotateX: -ny * 16,
+                x: nx * 26,
+                transformPerspective: 900,
+                duration: 1.1,
+                ease: "power3.out",
+                overwrite: "auto",
+              });
+            }
+          };
+          window.addEventListener("pointermove", onMove, { passive: true });
+          cleanups.push(() => window.removeEventListener("pointermove", onMove));
+        }
+
+        // ── 영상 스크럽 (캐니스터 + 피부 변화 공용 rAF) ──────────
+        const v = $<HTMLVideoElement>("#rotVideo");
+        const baV = $<HTMLVideoElement>("#baVideo");
+        let rotCur = 0;
+        let baCur = 0;
+        let rotReady = false;
+        let baReady = false;
+        if (v) {
+          const seed = () => {
+            if (!rotReady && v.duration) {
+              rotReady = true;
+              v.pause();
+            }
+          };
+          v.addEventListener("loadedmetadata", seed);
+          if (v.readyState >= 1) seed();
+        }
+        if (baV) {
+          const seed = () => {
+            if (!baReady && baV.duration) {
+              baReady = true;
+              baV.pause();
+            }
+          };
+          baV.addEventListener("loadedmetadata", seed);
+          if (baV.readyState >= 1) seed();
+        }
+        const scrubTo = (el: HTMLVideoElement, cur: number, tgt: number) => {
+          const nc = cur + (tgt - cur) * 0.12;
+          const t = nc * (el.duration - 0.05);
+          if (Math.abs(el.currentTime - t) > 0.008) el.currentTime = t;
+          return nc;
+        };
+        let scrubRaf = 0;
+        const scrubTick = () => {
+          if (v && rotReady && v.duration) rotCur = scrubTo(v, rotCur, rotTarget);
+          if (baV && baReady && baV.duration) baCur = scrubTo(baV, baCur, baTarget);
+          scrubRaf = requestAnimationFrame(scrubTick);
+        };
+        scrubRaf = requestAnimationFrame(scrubTick);
+        cleanups.push(() => cancelAnimationFrame(scrubRaf));
+
+        // ── 4단계 링: 배치 + 자동/드래그 회전 + 관성 ─────────────
+        const ring = $("#ring");
+        const orbWrap = $(".orb-wrap");
+        if (ring && orbWrap) {
+          const nodes = ring.querySelectorAll<HTMLElement>(".node");
+          const layout = () => {
+            const w = orbWrap.getBoundingClientRect().width || window.innerWidth || 1024;
+            const R = Math.max(175, Math.min(w * 0.34, 350));
+            nodes.forEach((n, i) => {
+              const a = (360 / nodes.length) * i;
+              n.style.transform = `rotateY(${a}deg) translateZ(${R}px)`;
+            });
+          };
+          layout();
+          const ro = new ResizeObserver(() => layout());
+          ro.observe(orbWrap);
+          cleanups.push(() => ro.disconnect());
+
+          let ringRot = 0;
+          let dragVel = 0;
+          let dragging = false;
+          let lastX = 0;
+          let hoverPause = false;
+          let dragDist = 0;
+          const RING_AUTO = 0.18;
+          const onDown = (e: PointerEvent) => {
+            dragging = true;
+            lastX = e.clientX;
+            dragVel = 0;
+            dragDist = 0;
+            orbWrap.classList.add("dragging");
+            try {
+              orbWrap.setPointerCapture(e.pointerId);
+            } catch {
+              /* older browsers */
+            }
+          };
+          const onMove = (e: PointerEvent) => {
+            if (!dragging) return;
+            const dx = e.clientX - lastX;
+            lastX = e.clientX;
+            dragDist += Math.abs(dx);
+            ringRot += dx * 0.4;
+            dragVel = dx * 0.4;
+          };
+          const endDrag = () => {
+            dragging = false;
+            orbWrap.classList.remove("dragging");
+          };
+          const onClick = (e: MouseEvent) => {
+            // 끌고 난 뒤의 click 은 링크 이동으로 치지 않는다
+            if (dragDist > 6) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+          };
+          orbWrap.addEventListener("pointerdown", onDown);
+          orbWrap.addEventListener("pointermove", onMove);
+          orbWrap.addEventListener("pointerup", endDrag);
+          orbWrap.addEventListener("pointercancel", endDrag);
+          orbWrap.addEventListener("click", onClick, true);
+          cleanups.push(() => {
+            orbWrap.removeEventListener("pointerdown", onDown);
+            orbWrap.removeEventListener("pointermove", onMove);
+            orbWrap.removeEventListener("pointerup", endDrag);
+            orbWrap.removeEventListener("pointercancel", endDrag);
+            orbWrap.removeEventListener("click", onClick, true);
+          });
+          if (window.matchMedia("(pointer:fine)").matches) {
+            const enter = () => {
+              hoverPause = true;
+            };
+            const leave = () => {
+              hoverPause = false;
+            };
+            orbWrap.addEventListener("pointerenter", enter);
+            orbWrap.addEventListener("pointerleave", leave);
+            cleanups.push(() => {
+              orbWrap.removeEventListener("pointerenter", enter);
+              orbWrap.removeEventListener("pointerleave", leave);
+            });
+          }
+          let ringRaf = 0;
+          const ringLoop = () => {
+            if (!dragging) {
+              if (Math.abs(dragVel) > 0.06) {
+                ringRot += dragVel;
+                dragVel *= 0.94;
+              } else if (!hoverPause) {
+                ringRot += RING_AUTO;
+              }
+            }
+            ring.style.transform = `rotateY(${ringRot}deg)`;
+            ringRaf = requestAnimationFrame(ringLoop);
+          };
+          ringRaf = requestAnimationFrame(ringLoop);
+          cleanups.push(() => cancelAnimationFrame(ringRaf));
+        }
+
+        // 폰트 로드 후 핀 위치 재계산
+        if (document.fonts?.ready) {
+          document.fonts.ready.then(() => {
+            if (!disposed) ScrollTrigger.refresh();
           });
         }
-      });
+      }
 
-      cleanups.push(() => ctx.revert());
-
-      // ── 5) 3D face scan (Three.js + MediaPipe canonical mesh) ───────
-      const stage = document.getElementById("fscan-stage");
+      // ── AI 얼굴 스캔 (three) — reduce 는 정적 1프레임 ────────────
+      const stage = document.getElementById("scanStage");
       if (stage) {
         const [THREE, { FACE_V, FACE_E }] = await Promise.all([
           import("three"),
@@ -812,7 +1172,6 @@ export function LandingInteractions() {
         group.position.y = 0.4;
         scene.add(group);
 
-        // Points (vertex-colored so the scan band can sweep through them).
         const n = FACE_V.length;
         const pos = new Float32Array(n * 3);
         FACE_V.forEach((p, i) => pos.set(p, i * 3));
@@ -826,7 +1185,6 @@ export function LandingInteractions() {
         );
         group.add(points);
 
-        // Wireframe edges — quiet rose, low opacity.
         const epos = new Float32Array(FACE_E.length * 6);
         FACE_E.forEach(([a, b], i) => {
           epos.set(FACE_V[a], i * 6);
@@ -851,7 +1209,6 @@ export function LandingInteractions() {
         const ro = new ResizeObserver(resize);
         ro.observe(stage);
 
-        // Pointer tilt (desktop) — small, so it reads as depth not gimmick.
         let px = 0;
         let py = 0;
         const onMove = (e: PointerEvent) => {
@@ -860,10 +1217,43 @@ export function LandingInteractions() {
         };
         window.addEventListener("pointermove", onMove, { passive: true });
 
-        // Scroll adds yaw across the section (the "왔다갔다").
+        const tags = [...stage.querySelectorAll<HTMLElement>(".scan-tag")].map((el) => ({
+          el,
+          i: parseInt(el.dataset.anchor ?? "0", 10),
+        }));
+        const scanEl = document.getElementById("scanLine");
+        const v3 = new THREE.Vector3();
+        const YMAX = 9;
+        const clamp = (x: number, lo: number, hi: number) => Math.min(Math.max(x, lo), hi);
+
+        if (reduce) {
+          for (let i = 0; i < n; i++) {
+            colors[i * 3] = 0.78;
+            colors[i * 3 + 1] = 0.66;
+            colors[i * 3 + 2] = 0.66;
+          }
+          (pgeo.attributes.color as InstanceType<typeof THREE.BufferAttribute>).needsUpdate = true;
+          renderer.render(scene, cam);
+          tags.forEach(({ el }) => {
+            el.style.opacity = "0";
+          });
+          cleanups.push(() => {
+            ro.disconnect();
+            window.removeEventListener("pointermove", onMove);
+            pgeo.dispose();
+            lgeo.dispose();
+            (points.material as InstanceType<typeof THREE.PointsMaterial>).dispose();
+            (lines.material as InstanceType<typeof THREE.LineBasicMaterial>).dispose();
+            renderer.dispose();
+            renderer.domElement.remove();
+          });
+          return;
+        }
+
+        const { ScrollTrigger } = await import("gsap/ScrollTrigger");
         let scrollRot = 0;
         const rotST = ScrollTrigger.create({
-          trigger: ".fscan",
+          trigger: "#scan",
           start: "top bottom",
           end: "bottom top",
           scrub: 0.5,
@@ -872,40 +1262,16 @@ export function LandingInteractions() {
           },
         });
 
-        // Metric bars fill when the section arrives.
-        document.querySelectorAll<HTMLElement>(".fm-fill").forEach((f) => {
-          gsap.fromTo(
-            f,
-            { width: "0%" },
-            {
-              width: `${f.dataset.w ?? 0}%`,
-              duration: 1.1,
-              ease: "power2.out",
-              scrollTrigger: { trigger: f, start: "top 92%", once: true },
-            },
-          );
-        });
-
-        const tags = [...stage.querySelectorAll<HTMLElement>(".fscan-tag")].map((el) => ({
-          el,
-          i: parseInt(el.dataset.anchor ?? "0", 10),
-        }));
-        const scanEl = stage.querySelector<HTMLElement>(".fscan-scanline");
-        const v3 = new THREE.Vector3();
-        const YMAX = 9;
-
-        // Render only while the section is near the viewport.
         let raf = 0;
         let running = false;
         const clock = new THREE.Clock();
         const render = () => {
           raf = requestAnimationFrame(render);
           const t = clock.getElapsedTime();
-          const ramp = Math.min(t / 1.6, 1); // global ease-in after first frame
+          const ramp = Math.min(t / 1.6, 1);
           group.rotation.y = Math.sin(t * 0.3) * 0.42 + px * 0.38 + scrollRot;
           group.rotation.x = Math.sin(t * 0.19) * 0.07 + py * 0.2;
 
-          // Scan band sweeps vertically through the point colors.
           const scanY = Math.sin(t * 0.45) * (YMAX * 0.72);
           for (let i = 0; i < n; i++) {
             const k = Math.max(0, 1 - Math.abs(FACE_V[i][1] - scanY) / 1.5);
@@ -921,10 +1287,6 @@ export function LandingInteractions() {
 
           renderer.render(scene, cam);
 
-          // Project HUD tags onto their anchor vertices; fade when facing away.
-          // Clamped inside the stage so labels never spill over neighboring UI.
-          const clamp = (x: number, lo: number, hi: number) =>
-            Math.min(Math.max(x, lo), hi);
           for (const { el, i } of tags) {
             const p = FACE_V[i];
             v3.set(p[0], p[1], p[2]);
@@ -947,7 +1309,7 @@ export function LandingInteractions() {
           }
         };
         const visST = ScrollTrigger.create({
-          trigger: ".fscan",
+          trigger: "#scan",
           start: "top 98%",
           end: "bottom top",
           onToggle: (self) => setRunning(self.isActive),
