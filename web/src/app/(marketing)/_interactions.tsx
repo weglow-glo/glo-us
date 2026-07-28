@@ -773,14 +773,17 @@ export function LandingInteractions() {
             .from(".hero-kicker", { opacity: 0, y: 16, duration: 0.8, ease: "power2.out" }, "-=.55")
             .from(".ch", { yPercent: 118, opacity: 0, duration: 1.05, stagger: 0.022, ease: "expo.out" }, "-=.45")
             .from(".hero-sub", { opacity: 0, y: 18, duration: 0.8, ease: "power2.out" }, "-=.55")
-            .from(".hero-sachet", { opacity: 0, scale: 0.9, duration: 1.5, ease: "expo.out" }, "-=1.2")
+            .from(".hs-float", { opacity: 0, scale: 0.9, duration: 1.5, ease: "expo.out" }, "-=1.2")
             .from(".scroll-cue", { opacity: 0, duration: 0.7 }, "-=.5");
 
           // 사쉐 부유
+          /* 애니메이션 3겹 분리 — 요소당 트윈 하나씩이라 어떤 refresh 도
+             서로의 기준값을 오염시킬 수 없다.
+             #heroSachet: 센터링(CSS) + 패럴랙스 / #hsFloat: 부유 / #hsImg: 틸트 */
           const sachet = $("#heroSachet");
-          if (sachet) {
-            gsap.set(sachet, { yPercent: -48 }); // CSS translateY 를 GSAP 소유로 정규화
-            gsap.to(sachet, { y: "+=18", duration: 3.6, ease: "sine.inOut", yoyo: true, repeat: -1 });
+          const hsFloat = $("#hsFloat");
+          if (hsFloat) {
+            gsap.to(hsFloat, { y: "+=18", duration: 3.6, ease: "sine.inOut", yoyo: true, repeat: -1 });
           }
 
           // 히어로 패럴랙스 아웃 + 마스트헤드 스크럽 (fromTo — 시작값 명시)
@@ -791,11 +794,14 @@ export function LandingInteractions() {
             scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 0.6 },
           });
           if (sachet) {
-            gsap.to(sachet, {
-              yPercent: 26,
-              ease: "none",
-              scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 0.6 },
-            });
+            gsap.fromTo(sachet,
+              { yPercent: 0 },
+              {
+                yPercent: 26,
+                ease: "none",
+                immediateRender: false,
+                scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 0.6 },
+              });
           }
           gsap.fromTo(
             ".hero-brand",
@@ -999,10 +1005,11 @@ export function LandingInteractions() {
               glow.style.opacity = "1";
               gsap.to(glow, { x: e.clientX, y: e.clientY, duration: 0.9, ease: "power3.out", overwrite: true });
             }
-            if (sachet) {
+            const hsImg = document.getElementById("hsImg");
+            if (hsImg) {
               const nx = e.clientX / window.innerWidth - 0.5;
               const ny = e.clientY / window.innerHeight - 0.5;
-              gsap.to(sachet, {
+              gsap.to(hsImg, {
                 rotateY: nx * 22,
                 rotateX: -ny * 16,
                 x: nx * 26,
