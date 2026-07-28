@@ -69,8 +69,13 @@ h2 em{font-style:normal;color:var(--gold);}
   border-radius:50%;background:radial-gradient(circle,rgba(201,162,74,.16),transparent 60%);filter:blur(46px);}
 .hero-in{position:relative;z-index:3;text-align:center;padding:120px 20px 140px;}
 .hero-kicker{font-family:var(--en);font-size:12.5px;letter-spacing:4.6px;text-transform:uppercase;color:rgba(232,207,154,.72);margin-bottom:30px;display:flex;align-items:center;justify-content:center;gap:12px;}
-/* 워드마크는 로고 그대로 — 소문자 Fraunces + 이탤릭 골드 dot (uppercase 변환 제외) */
-.klogo{font-family:var(--en);text-transform:none;letter-spacing:-1px;font-weight:300;font-size:2em;line-height:1;color:var(--cream);}
+/* 히어로 마스트헤드 로고 — 화면 상단 중앙 */
+.hero-brand{position:absolute;z-index:4;top:clamp(30px,6.5vh,68px);left:50%;transform:translateX(-50%);
+  font-family:var(--en);font-weight:300;font-size:clamp(44px,6.4vw,68px);letter-spacing:-2.4px;line-height:1;
+  color:var(--cream);text-shadow:0 0 44px rgba(201,162,74,.35);}
+.hero-brand::after{content:"";position:absolute;left:50%;top:50%;width:220%;height:220%;z-index:-1;
+  transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,rgba(201,162,74,.14),transparent 62%);filter:blur(18px);}
 .kdot{font-style:italic;color:var(--gold);}
 .hero h1{font-family:var(--kr);font-weight:200;font-size:clamp(44px,8.4vw,116px);line-height:1.02;letter-spacing:-4px;}
 .hero h1 .wm{font-family:var(--en);font-weight:300;font-style:italic;}
@@ -291,7 +296,26 @@ h2 em{font-style:normal;color:var(--gold);}
 .btn svg{width:18px;height:12px;}
 .cta-fine{margin-top:22px;font-size:13px;color:rgba(244,235,235,.45);}
 
-.foot{padding:44px 0 60px;text-align:center;font-size:12px;color:rgba(244,235,235,.34);background:var(--burg-900);}
+/* ── 푸터 ─────────────────────────────────────────────────── */
+.ft{background:#0e0609;border-top:1px solid rgba(201,162,74,.15);padding:64px 0 44px;}
+.ft-g{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:32px;padding-bottom:40px;
+  border-bottom:1px solid rgba(244,235,235,.07);}
+.ft-logo{font-family:var(--en);font-weight:300;font-size:46px;letter-spacing:-2px;line-height:.9;color:var(--cream);}
+.ft-logo .dot{color:var(--gold);font-style:italic;}
+.ft-tag{margin-top:12px;font-family:var(--en);font-style:italic;font-size:13.5px;color:rgba(244,235,235,.45);}
+.ft-col h4{font-family:var(--en);font-size:10px;font-weight:400;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:14px;}
+.ft-col ul{list-style:none;display:flex;flex-direction:column;gap:8px;font-size:13px;}
+.ft-col a{color:rgba(244,235,235,.6);transition:color .2s;}
+.ft-col a:hover{color:var(--gold-lt);}
+.ft-biz{padding-top:24px;font-size:11.5px;line-height:1.75;color:rgba(244,235,235,.45);}
+.ft-biz b{color:rgba(244,235,235,.72);font-weight:600;}
+.ft-biz a{color:inherit;}
+.ft-bot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:16px;
+  font-size:11px;color:rgba(244,235,235,.32);}
+.ft-links{display:flex;gap:14px;}
+.ft-links a:hover{color:var(--gold-lt);}
+.ft-legal{margin-top:18px;font-size:10.5px;line-height:1.7;color:rgba(244,235,235,.28);max-width:860px;}
 .badge{position:fixed;left:16px;bottom:16px;z-index:9999;padding:9px 15px;border-radius:100px;font-size:11.5px;
   letter-spacing:.3px;background:rgba(201,162,74,.14);border:1px solid rgba(201,162,74,.4);color:var(--gold-lt);
   backdrop-filter:blur(10px);}
@@ -299,6 +323,7 @@ h2 em{font-style:normal;color:var(--gold);}
 @media (max-width:900px){
   .nums-g{grid-template-columns:repeat(2,1fr);row-gap:38px;}
   .orb-stats{grid-template-columns:repeat(2,1fr);row-gap:22px;}
+  .ft-g{grid-template-columns:1fr 1fr;row-gap:36px;}
   .ba-main{grid-template-columns:1fr;gap:16px;justify-items:center;}
   .ba-frame{width:min(48vw,210px);}
   .ba-rail{width:min(48vw,210px);font-size:10px;}
@@ -359,8 +384,9 @@ h2 em{font-style:normal;color:var(--gold);}
   <div class="hero-sachet" id="heroSachet">
     <img src="/assets/bottle/sachet.png" alt="glo GL-01 사쉐 20g" width="620" height="2363"/>
   </div>
+  <div class="hero-brand" aria-label="glo">glo<span class="kdot">.</span></div>
   <div class="hero-in">
-    <div class="hero-kicker" data-fade><span class="klogo">glo<span class="kdot">.</span></span> GL-01 · Skin Longevity Protocol</div>
+    <div class="hero-kicker" data-fade>GL-01 · Skin Longevity Protocol</div>
     <h1 data-split>피부는 관리하는 것이</h1>
     <h1 data-split>아니라</h1>
     <h1 data-split><span class="au">설계하는</span> 것 입니다.</h1>
@@ -453,7 +479,7 @@ h2 em{font-style:normal;color:var(--gold);}
     <div class="orb-head">
       <div class="ey" style="justify-content:center" data-reveal>4 × 9 프로토콜이란?</div>
       <h2 data-reveal>노화의 <em>4가지 경로</em>에,<br/>임상 성분 <em>9가지</em>를 정밀하게 설계했습니다</h2>
-      <p class="lead" data-reveal>대부분의 이너뷰티는 한 가지 성분에만 집중합니다. 콜라겐이거나, 글루타치온이거나, 히알루론산이거나. 하지만 피부는 톤 · 장벽 · 구조 · 방어 — 4가지를 동시에 잃어갑니다. GL-01은 임상으로 검증된 8가지 성분과 <span class="gw">glo</span> 특허 Tightening-PB Complex®까지 총 9가지 성분을 4가지 작용 경로에 대응시킨 이너뷰티입니다.</p>
+      <p class="lead" data-reveal>GL-01은 임상으로 검증된 8가지 성분과 <span class="gw">glo</span> 특허 Tightening-PB Complex®까지 총 9가지 성분을 4가지 작용 경로에 대응시킨 이너뷰티입니다.</p>
     </div>
     <div class="orb-wrap">
       <div class="orb-core" aria-hidden="true"></div>
@@ -516,22 +542,16 @@ h2 em{font-style:normal;color:var(--gold);}
           <p class="bs-hint">스크롤을 내리면 시간이 흐릅니다.</p>
         </div>
         <div class="bstage">
-          <div class="bs-day au">Day 5–7</div>
-          <div class="bs-ey">수분이 차오르는 느낌이 드는 시기</div>
           <h3>피부 결이 한결 촉촉하게 느껴집니다.</h3>
           <p>겉면부터 촉촉함이 도는 듯한 변화를 먼저 느끼는 시기입니다.</p>
           <div class="bs-m"><b>Mechanism</b>HA가 피부 표면 수분을 먼저 채웁니다. Glutathione이 피부를 손상시키는 활성산소를 줄이면서 피부 표면이 고르게 정돈됩니다. 피부 표면 변화의 시작일 뿐, 속부터 바뀌는 건 이제부터입니다.</div>
         </div>
         <div class="bstage">
-          <div class="bs-day au">Week 4–8</div>
-          <div class="bs-ey">피부 톤이 한결 정돈된 느낌</div>
           <h3>칙칙해 보이던 부분이 조금씩 환하게 느껴지고, 하루 종일 수분감이 이어지는 듯한 시기예요.</h3>
           <p>"뭔가 좋아 보인다"는 말을 들을 수 있는 즈음입니다.</p>
           <div class="bs-m"><b>Mechanism</b>Glutathione · White Tomato · Niacinamide가 동시에 작용하면서, 멜라닌이 새로 만들어지는 것과 피부 표면으로 이동하는 것을 함께 억제합니다. 피부 수분 손실도 눈에 띄게 줄어드는 구간.</div>
         </div>
         <div class="bstage">
-          <div class="bs-day au">Week 12+</div>
-          <div class="bs-ey">탄탄한 느낌을 기대해볼 수 있는 시기</div>
           <h3>속부터 채워진 듯 탄력 있어 보이는 느낌을 기대할 수 있어요.</h3>
           <p>꾸준히 이어온 관리가 자리잡아가는 시점입니다.</p>
           <div class="bs-m"><b>Mechanism</b>Collagen 펩타이드가 피부 속 세포를 자극해 새 collagen이 만들어집니다. 아스타잔틴이 세포 자체가 산화되는 것을 막아주고, Niacinamide가 피부 세포의 재생 에너지를 공급해요.</div>
@@ -569,7 +589,22 @@ h2 em{font-style:normal;color:var(--gold);}
   </div>
 </section>
 
-<div class="foot">glo — 메인 홈 모션 프로토타입 · 메디랩스</div>
+<footer class="ft">
+  <div class="ctr">
+    <div class="ft-g">
+      <div>
+        <div class="ft-logo">glo<span class="dot">.</span></div>
+        <div class="ft-tag">A quieter kind of glow.</div>
+      </div>
+      <div class="ft-col"><h4>Product</h4><ul><li><a href="/product">GL-01</a></li><li><a href="/product#ingredients">Ingredients</a></li><li><a href="/product#specs">Dose table</a></li></ul></div>
+      <div class="ft-col"><h4>Science</h4><ul><li><a href="/science">Approach</a></li><li><a href="/science#pathway">Pathways</a></li><li><a href="/science#sources">References</a></li></ul></div>
+      <div class="ft-col"><h4>Help</h4><ul><li><a href="/product#faq">FAQ</a></li><li><a href="mailto:official@weglow.biz">Contact</a></li></ul></div>
+    </div>
+    <div class="ft-biz"><b>메디랩스</b> · 대표 강신욱 · 사업자등록번호 576-02-02004 · 통신판매업신고 제2023-서울강남-01613호<br/>서울시 성동구 왕십리로 38, 3층 · 고객센터 <a href="tel:02-467-1024">02-467-1024</a> · 개인정보보호책임자 이준호</div>
+    <div class="ft-bot"><span>© 2026 메디랩스</span><span class="ft-links"><a href="/privacy">개인정보처리방침</a><a href="/terms">이용약관</a></span></div>
+    <div class="ft-legal"><span class="gw">glo</span>는 매일 섭취하는 일반 식품입니다. 위 진술은 식약처의 평가를 받지 않았으며, 본 제품은 질병의 예방·진단·치료·완화를 목적으로 하지 않습니다. SEPRECAM®은 Triple Treasure Health Foods Ltd.의 등록상표이며, Tightening-PB Complex®는 메디랩스의 특허 처방으로 한국 특허번호 10-2911449에 등록되어 있습니다.</div>
+  </div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
@@ -624,7 +659,8 @@ h2 em{font-style:normal;color:var(--gold);}
 
   if (!reduce) {
     var tl = gsap.timeline({ delay: .25 });
-    tl.from('.hero-kicker', { opacity: 0, y: 16, duration: .8, ease: 'power2.out' })
+    tl.from('.hero-brand', { opacity: 0, y: -16, duration: 1.0, ease: 'power2.out' })
+      .from('.hero-kicker', { opacity: 0, y: 16, duration: .8, ease: 'power2.out' }, '-=.55')
       .from('.ch', { yPercent: 118, opacity: 0, duration: 1.05, stagger: .022, ease: 'expo.out' }, '-=.45')
       .from('.hero-sub', { opacity: 0, y: 18, duration: .8, ease: 'power2.out' }, '-=.55')
       .from('.hero-sachet', { opacity: 0, scale: .9, duration: 1.5, ease: 'expo.out' }, '-=1.2')
@@ -643,6 +679,8 @@ h2 em{font-style:normal;color:var(--gold);}
     /* 히어로 패럴랙스 아웃 */
     gsap.to('.hero-in', { yPercent: -18, opacity: 0, ease: 'none',
       scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: .6 } });
+    gsap.to('.hero-brand', { yPercent: -60, opacity: 0, ease: 'none',
+      scrollTrigger: { trigger: '.hero', start: 'top top', end: '40% top', scrub: .6 } });
     gsap.to(sachet, { yPercent: 26, ease: 'none',
       scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: .6 } });
   }
