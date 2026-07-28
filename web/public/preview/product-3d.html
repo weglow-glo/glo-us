@@ -68,7 +68,10 @@ h2 em{font-style:normal;color:var(--gold);}
 .hero-glowring{position:absolute;top:50%;left:50%;width:min(88vw,780px);aspect-ratio:1;transform:translate(-50%,-50%);
   border-radius:50%;background:radial-gradient(circle,rgba(201,162,74,.16),transparent 60%);filter:blur(46px);}
 .hero-in{position:relative;z-index:3;text-align:center;padding:120px 20px 140px;}
-.hero-kicker{font-family:var(--en);font-size:12.5px;letter-spacing:4.6px;text-transform:uppercase;color:rgba(232,207,154,.72);margin-bottom:30px;}
+.hero-kicker{font-family:var(--en);font-size:12.5px;letter-spacing:4.6px;text-transform:uppercase;color:rgba(232,207,154,.72);margin-bottom:30px;display:flex;align-items:center;justify-content:center;gap:12px;}
+/* 워드마크는 로고 그대로 — 소문자 Fraunces + 이탤릭 골드 dot (uppercase 변환 제외) */
+.klogo{font-family:var(--en);text-transform:none;letter-spacing:-1px;font-weight:300;font-size:2em;line-height:1;color:var(--cream);}
+.kdot{font-style:italic;color:var(--gold);}
 .hero h1{font-family:var(--kr);font-weight:200;font-size:clamp(44px,8.4vw,116px);line-height:1.02;letter-spacing:-4px;}
 .hero h1 .wm{font-family:var(--en);font-weight:300;font-style:italic;}
 .hero-sub{margin:34px auto 0;max-width:34ch;color:rgba(244,235,235,.6);font-size:clamp(14px,1.6vw,18px);line-height:1.8;}
@@ -170,16 +173,14 @@ h2 em{font-style:normal;color:var(--gold);}
 .ba-stage{position:sticky;top:0;height:100svh;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:clamp(18px,3vh,30px);padding:0 20px;overflow:hidden;}
 .ba-head{text-align:center;}
-.ba-cap{margin-top:12px;font-size:13px;color:rgba(244,235,235,.5);letter-spacing:.2px;}
-.ba-frame{position:relative;width:min(70vw,340px);aspect-ratio:3/4;border-radius:18px;overflow:hidden;
+.ba-frame{position:relative;width:min(58vw,290px);aspect-ratio:720/1288;border-radius:18px;overflow:hidden;
   border:1px solid rgba(201,162,74,.28);box-shadow:0 30px 80px rgba(0,0,0,.5);}
-.ba-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;}
-.ba-ph:first-of-type{opacity:1;}
+.ba-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 .ba-wkbadge{position:absolute;left:14px;bottom:12px;z-index:3;padding:7px 14px;border-radius:100px;
   font-family:var(--en);font-size:13px;letter-spacing:.6px;color:var(--gold-lt);
   background:rgba(20,10,14,.55);border:1px solid rgba(201,162,74,.4);
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
-.ba-rail{position:relative;display:flex;justify-content:space-between;width:min(70vw,340px);
+.ba-rail{position:relative;display:flex;justify-content:space-between;width:min(58vw,290px);
   padding-top:14px;font-size:11.5px;letter-spacing:.4px;color:rgba(244,235,235,.45);}
 .ba-rail::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:rgba(201,162,74,.2);}
 .ba-rail i{position:absolute;top:0;left:0;right:0;height:1px;transform-origin:0 50%;transform:scaleX(0);
@@ -237,9 +238,8 @@ h2 em{font-style:normal;color:var(--gold);}
   .liq-mask{clip-path:none !important;}
   .rot{height:auto;} .rot-stage{position:relative;height:auto;padding:80px 0;}
   .liq{height:auto;} .liq-stage{position:relative;height:70svh;}
-  /* BA: 스크럽 없이 마지막(8주) 사진을 정지 상태로 */
+  /* BA: 스크럽 없이 마지막 프레임(8주) 정지 컷 */
   .ba{height:auto;} .ba-stage{position:relative;height:auto;padding:80px 20px;}
-  .ba-ph{opacity:0 !important;} .ba-ph:last-of-type{opacity:1 !important;}
   .ba-rail i{transform:scaleX(1);}
 }
 </style>
@@ -259,9 +259,10 @@ h2 em{font-style:normal;color:var(--gold);}
     <img src="/assets/bottle/sachet.png" alt="glo GL-01 사쉐 20g" width="620" height="2363"/>
   </div>
   <div class="hero-in">
-    <div class="hero-kicker" data-fade>glo GL-01 · Skin Longevity Protocol</div>
-    <h1 data-split>피부는 관리하는 것이 아니라</h1>
-    <h1 data-split><span class="au">설계하는</span> 것입니다</h1>
+    <div class="hero-kicker" data-fade><span class="klogo">glo<span class="kdot">.</span></span> GL-01 · Skin Longevity Protocol</div>
+    <h1 data-split>피부는 관리하는 것이</h1>
+    <h1 data-split>아니라</h1>
+    <h1 data-split><span class="au">설계하는</span> 것 입니다.</h1>
     <p class="hero-sub" data-fade>임상으로 검증된 9가지 활성 성분. 하루 한 포, 20g.</p>
   </div>
   <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><i></i></div>
@@ -365,15 +366,11 @@ h2 em{font-style:normal;color:var(--gold);}
 <section class="ba" id="ba">
   <div class="ba-stage">
     <div class="ba-head">
-      <div class="ey" style="justify-content:center" data-reveal>Real records</div>
-      <h2 data-reveal>같은 얼굴의 <em>8주</em> 기록</h2>
-      <p class="ba-cap" data-reveal>김OO님 · 서울 40대 · 체험단 복용 기록</p>
+      <div class="ey" style="justify-content:center" data-reveal>The change</div>
+      <h2 data-reveal>직접 느껴보세요.<br/><em>나의 피부 변화</em>를요.</h2>
     </div>
     <div class="ba-frame">
-      <img class="ba-ph" src="/assets/images/ba-0-before.jpg" alt="복용 전" loading="lazy"/>
-      <img class="ba-ph" src="/assets/images/ba-2w.jpg" alt="2주차" loading="lazy"/>
-      <img class="ba-ph" src="/assets/images/ba-4w.jpg" alt="4주차" loading="lazy"/>
-      <img class="ba-ph" src="/assets/images/ba-8w.jpg" alt="8주차" loading="lazy"/>
+      <video class="ba-vid" id="baVideo" src="/assets/video/skin-transform-scrub.mp4" muted playsinline preload="auto" aria-label="8주간의 피부 변화"></video>
       <div class="ba-wkbadge" id="baWk">복용 전</div>
     </div>
     <div class="ba-rail"><i id="baFill"></i><span>복용 전</span><span>2주</span><span>4주</span><span>8주</span></div>
@@ -488,27 +485,42 @@ h2 em{font-style:normal;color:var(--gold);}
      평면 사진이라 rotateY 를 크게 돌리면 종잇장처럼 보인다. 각도는 원통이
      그럴듯하게 읽히는 범위(±26°)로 묶고, 대신 스페큘러 하이라이트를 회전에
      맞춰 훑고 지나가게 해서 입체감을 만든다. */
-  /* 스크롤 진행도 → 영상 재생 위치. 스크롤한 만큼 캐니스터가 돈다. */
+  /* 스크롤 진행도 → 영상 재생 위치 (캐니스터 + 피부 변화 공용).
+     rAF 보간 — currentTime 을 바로 대입하면 뚝뚝 끊긴다. */
   var v = document.getElementById('rotVideo');
+  var baV = document.getElementById('baVideo');
   var target = 0, cur = 0, ready = false;
+  var baTarget = 0, baCur = 0, baReady = false;
   function seed() { if (!ready && v.duration) { ready = true; v.pause(); } }
   v.addEventListener('loadedmetadata', seed);
   if (v.readyState >= 1) seed();
+  function baSeed() { if (!baReady && baV.duration) { baReady = true; baV.pause(); } }
+  baV.addEventListener('loadedmetadata', baSeed);
+  if (baV.readyState >= 1) baSeed();
 
   ScrollTrigger.create({
     trigger: '#rot', start: 'top top', end: 'bottom bottom', scrub: true,
     onUpdate: function (self) { target = self.progress; }
   });
-  /* rAF 보간 — currentTime 을 바로 대입하면 뚝뚝 끊긴다 */
+  function scrub(el, curV, tgt) {
+    var nc = curV + (tgt - curV) * 0.12;
+    var t = nc * (el.duration - 0.05);
+    if (Math.abs(el.currentTime - t) > 0.008) el.currentTime = t;
+    return nc;
+  }
   function tick() {
-    if (ready && v.duration) {
-      cur += (target - cur) * 0.12;
-      var t = cur * (v.duration - 0.05);
-      if (Math.abs(v.currentTime - t) > 0.008) v.currentTime = t;
-    }
+    if (ready && v.duration) cur = scrub(v, cur, target);
+    if (baReady && baV.duration) baCur = scrub(baV, baCur, baTarget);
     requestAnimationFrame(tick);
   }
-  if (!reduce) requestAnimationFrame(tick); else v.currentTime = 0;
+  if (!reduce) {
+    requestAnimationFrame(tick);
+  } else {
+    v.currentTime = 0;
+    /* reduce: 변화 영상은 마지막 프레임(8주) 정지 컷 */
+    baV.addEventListener('loadedmetadata', function () { baV.currentTime = baV.duration - 0.05; });
+    if (baV.duration) baV.currentTime = baV.duration - 0.05;
+  }
 
   /* 회전 각도별 스펙 라벨 — 해당 구간에서만 등장.
      상태가 바뀌는 순간에만 트윈을 만든다 (매 스크롤마다 to() 호출 금지). */
@@ -528,8 +540,8 @@ h2 em{font-style:normal;color:var(--gold);}
       });
     });
 
-    /* ── 체험단 8주 크로스페이드 ───────────────────────── */
-    var baImgs = document.querySelectorAll('.ba-ph');
+    /* ── 피부 변화 영상 스크럽 ─────────────────────────────
+       스크롤 = 시간. 스크럽 전용(-g 1) 재인코딩본이라 프레임 탐색이 즉각적. */
     var baWkEl = document.getElementById('baWk');
     var baFill = document.getElementById('baFill');
     var BA_WEEKS = ['복용 전', '2주차', '4주차', '8주차'];
@@ -537,12 +549,9 @@ h2 em{font-style:normal;color:var(--gold);}
     ScrollTrigger.create({
       trigger: '#ba', start: 'top top', end: 'bottom bottom', scrub: true,
       onUpdate: function (self) {
-        var p = self.progress * (baImgs.length - 1);   // 0..3
-        baImgs.forEach(function (im, i) {
-          im.style.opacity = String(Math.max(0, 1 - Math.abs(p - i)));
-        });
+        baTarget = self.progress;
         baFill.style.transform = 'scaleX(' + self.progress + ')';
-        var idx = Math.min(baImgs.length - 1, Math.round(p));
+        var idx = Math.min(3, Math.round(self.progress * 3));
         if (idx !== baIdx) { baIdx = idx; baWkEl.textContent = BA_WEEKS[idx]; }
       }
     });
