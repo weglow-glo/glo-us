@@ -145,53 +145,61 @@ html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lang="ko"] .card-body{
 }
 .logo .dot{font-family:'Times New Roman',Times,'Wanted Sans Variable','Wanted Sans',serif;}
 
+/* ===== 홈 전용 네비 — 맨 위에선 숨기고, 마스트헤드가 물러나면 등장.
+   html.glo-home-nav 는 홈 마운트 시에만 JS 가 붙였다 떼므로 타 페이지 무영향 ===== */
+html.glo-home-nav nav{opacity:0;transform:translateY(-14px);pointer-events:none;
+  transition:opacity .45s ease,transform .45s ease;}
+html.glo-home-nav.glo-nav-on nav{opacity:1;transform:none;pointer-events:auto;}
+html.glo-home-nav .nav-l,html.glo-home-nav .nav-r{
+  background:rgba(31,13,19,.72);border-color:rgba(184,135,135,.28);
+  box-shadow:0 8px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);}
+html.glo-home-nav .logo{color:#f4ebeb;}
+html.glo-home-nav .nav-links a{color:rgba(244,235,235,.75);}
+html.glo-home-nav .nav-links a:hover{color:#d4b5b5;}
+html.glo-home-nav .nav-r a{color:rgba(244,235,235,.78);}
+@media (prefers-reduced-motion:reduce){
+  html.glo-home-nav nav{opacity:1;transform:none;pointer-events:auto;transition:none;}
+}
+
 /* ===== 홈 리뉴얼 — .glohome 스코프 (전역 누수 방지) ===== */
 .glohome{--burg-900:#140a0e; --burg-800:#1f0d13; --burg-700:#2a1218; --burg-600:#3a1a22;
   --burg-400:#5a2229; --burg-200:#8a4a52; --burg-50:#d4b5b5;
   --cream:#f4ebeb; --paper:#faf7f7;
-  /* 액센트 — 본 사이트 다크 섹션 팔레트 (burg-50/100/200 더스티 로즈).
-     패키지 금박 골드로 가려면 이 세 값만 #c9a24a/#e8cf9a/#8c6b23 으로. */
+  
   --gold:#d4b5b5; --gold-lt:#e8d5d5; --gold-dp:#8a4a52;
   --kr:'Wanted Sans Variable','Wanted Sans','Pretendard Variable','Pretendard',-apple-system,system-ui,sans-serif;
   --en:'Fraunces',Georgia,serif;
   --ease:cubic-bezier(.22,1,.36,1);background:var(--burg-900);color:var(--cream);font-family:var(--kr);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative;}
 .glohome video{display:block;max-width:100%;}
-.glohome /* ── 필름 그레인 + 비네트 (고급감의 8할) ─────────────────── */
-.grain{position:fixed;inset:-150%;z-index:9998;pointer-events:none;opacity:.16;mix-blend-mode:overlay;
+.glohome .grain{position:fixed;inset:-150%;z-index:9998;pointer-events:none;opacity:.16;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation:glhGrain 700ms steps(3) infinite;}
 @keyframes glhGrain{0%{transform:translate(0,0)}33%{transform:translate(-2%,1%)}66%{transform:translate(1%,-2%)}100%{transform:translate(0,0)}}
 .glohome .vig{position:fixed;inset:0;z-index:9997;pointer-events:none;
   background:radial-gradient(ellipse at 50% 45%,transparent 45%,rgba(10,5,8,.55) 100%);}
-.glohome /* 커서 따라다니는 골드 글로우 */
-.glow{position:fixed;width:520px;height:520px;left:0;top:0;z-index:1;pointer-events:none;border-radius:50%;
+.glohome .glow{position:fixed;width:520px;height:520px;left:0;top:0;z-index:1;pointer-events:none;border-radius:50%;
   background:radial-gradient(circle,rgba(184,135,135,.13),transparent 62%);
   transform:translate3d(-50%,-50%,0);opacity:0;transition:opacity .6s;}
-.glohome /* ── 상단 진행 바 ────────────────────────────────────────── */
-.prog{position:fixed;top:0;left:0;height:2px;width:100%;transform-origin:0 50%;transform:scaleX(0);z-index:9999;
+.glohome .prog{position:fixed;top:0;left:0;height:2px;width:100%;transform-origin:0 50%;transform:scaleX(0);z-index:9999;
   background:linear-gradient(90deg,var(--gold-dp),var(--gold-lt),var(--gold));}
-.glohome /* ── 공통 ────────────────────────────────────────────────── */
-.ctr{max-width:1280px;margin:0 auto;padding:0 clamp(20px,5vw,64px);}
+.glohome .ctr{max-width:1280px;margin:0 auto;padding:0 clamp(20px,5vw,64px);}
 .glohome .ey{font-family:var(--en);font-size:12px;letter-spacing:3.4px;text-transform:uppercase;
   color:var(--gold);display:flex;align-items:center;gap:12px;margin-bottom:22px;}
 .glohome .ey::before{content:"";width:28px;height:1px;background:linear-gradient(90deg,var(--gold),transparent);}
 .glohome h2{font-family:var(--kr);font-weight:300;font-size:clamp(30px,4.6vw,60px);line-height:1.16;letter-spacing:-2px;}
 .glohome h2 em{font-style:normal;color:var(--gold);}
 .glohome .lead{color:rgba(244,235,235,.62);font-size:clamp(15px,1.5vw,18px);line-height:1.8;max-width:56ch;margin-top:22px;}
-.glohome /* 골드 그라데이션 텍스트 */
-.au{background:linear-gradient(100deg,var(--gold-dp) 0%,var(--gold-lt) 42%,var(--gold) 60%,var(--gold-dp) 100%);
+.glohome .au{background:linear-gradient(100deg,var(--gold-dp) 0%,var(--gold-lt) 42%,var(--gold) 60%,var(--gold-dp) 100%);
   background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
   animation:glhSheen 6s var(--ease) infinite;}
 @keyframes glhSheen{0%,100%{background-position:200% 0}50%{background-position:0 0}}
-.glohome /* ── 1. 히어로 ───────────────────────────────────────────── */
-.hero{position:relative;min-height:100svh;display:grid;place-items:center;overflow:hidden;
+.glohome .hero{position:relative;min-height:100svh;display:grid;place-items:center;overflow:hidden;
   background:radial-gradient(ellipse 120% 80% at 50% 12%,#4a1f28 0%,var(--burg-800) 45%,var(--burg-900) 100%);}
 .glohome .hero-glowring{position:absolute;top:50%;left:50%;width:min(88vw,780px);aspect-ratio:1;transform:translate(-50%,-50%);
   border-radius:50%;background:radial-gradient(circle,rgba(184,135,135,.16),transparent 60%);filter:blur(46px);}
 .glohome .hero-in{position:relative;z-index:3;text-align:center;padding:120px 20px 140px;}
 .glohome .hero-kicker{font-family:var(--en);font-size:12.5px;letter-spacing:4.6px;text-transform:uppercase;color:rgba(212,181,181,.72);margin-bottom:30px;display:flex;align-items:center;justify-content:center;gap:12px;}
-.glohome /* 히어로 마스트헤드 로고 — 화면 상단 중앙 */
-.hero-brand{position:absolute;z-index:4;top:clamp(30px,6.5vh,68px);left:50%;transform:translateX(-50%);
+.glohome .hero-brand{position:absolute;z-index:4;top:clamp(30px,6.5vh,68px);left:50%;transform:translateX(-50%);
   font-family:var(--en);font-weight:300;font-size:clamp(44px,6.4vw,68px);letter-spacing:-2.4px;line-height:1;
   color:var(--cream);text-shadow:0 0 44px rgba(184,135,135,.35);}
 .glohome .hero-brand::after{content:"";position:absolute;left:50%;top:50%;width:220%;height:220%;z-index:-1;
@@ -201,12 +209,9 @@ html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lang="ko"] .card-body{
 .glohome .hero h1{font-family:var(--kr);font-weight:200;font-size:clamp(44px,8.4vw,116px);line-height:1.02;letter-spacing:-4px;}
 .glohome .hero h1 .wm{font-family:var(--en);font-weight:300;font-style:italic;}
 .glohome .hero-sub{margin:34px auto 0;max-width:34ch;color:rgba(244,235,235,.6);font-size:clamp(14px,1.6vw,18px);line-height:1.8;}
-.glohome /* 문자 단위 마스크 리빌 */
-.ln{display:block;overflow:hidden;padding-bottom:.08em;}
+.glohome .ln{display:block;overflow:hidden;padding-bottom:.08em;}
 .glohome .ch{display:inline-block;will-change:transform,opacity;}
-.glohome /* 떠 있는 사쉐 — sachet.png 는 실제 rgba 투명본이라 블렌드모드 없이 그대로 얹는다.
-   (hero-sachet.mp4/.webm 는 알파가 없어 연분홍 배경이 구워져 있음 → 어두운 배경에서 번진다) */
-.hero-sachet{position:absolute;z-index:2;top:50%;left:50%;width:min(30vw,124px);
+.glohome .hero-sachet{position:absolute;z-index:2;top:50%;left:50%;width:min(30vw,124px);
   transform:translate(-50%,-48%);filter:drop-shadow(0 42px 56px rgba(0,0,0,.66)) drop-shadow(0 0 34px rgba(184,135,135,.16));}
 .glohome .hero-sachet img{width:100%;height:auto;}
 .glohome .scroll-cue{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:4;
@@ -214,10 +219,7 @@ html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lang="ko"] .card-body{
   display:flex;flex-direction:column;align-items:center;gap:12px;}
 .glohome .scroll-cue i{display:block;width:1px;height:52px;background:linear-gradient(180deg,var(--gold),transparent);animation:glhCue 2.2s var(--ease) infinite;}
 @keyframes glhCue{0%{transform:scaleY(0);transform-origin:0 0}45%{transform:scaleY(1);transform-origin:0 0}46%{transform-origin:0 100%}100%{transform:scaleY(0);transform-origin:0 100%}}
-.glohome /* ── 2. AI 얼굴 스캔 (홈 시그니처) ────────────────────────
-   랜딩의 468포인트 얼굴 메시를 골드 팔레트로 이식. 스캔 밴드가 얼굴을
-   훑고, .glohome 부위 태그가 3D 정점에 붙어 다닌다. 문구는 랜딩 fscan 그대로. */
-.scan{position:relative;padding:clamp(90px,13vw,160px) 0;background:var(--burg-900);overflow:hidden;}
+.glohome .scan{position:relative;padding:clamp(90px,13vw,160px) 0;background:var(--burg-900);overflow:hidden;}
 .glohome .scan::before{content:"";position:absolute;top:-160px;right:-140px;width:600px;height:600px;
   background:radial-gradient(circle,rgba(184,135,135,.10),transparent 65%);pointer-events:none;}
 .glohome .scan-g{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(40px,6vw,90px);align-items:center;}
@@ -241,18 +243,14 @@ html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lang="ko"] .card-body{
   box-shadow:0 0 18px rgba(184,135,135,.55);}
 .glohome .scan-cap{margin-top:14px;text-align:center;font-family:var(--en);font-size:11.5px;
   letter-spacing:2.2px;text-transform:uppercase;color:rgba(244,235,235,.38);}
-.glohome /* ── 3. 스크롤 회전 (제품) ───────────────────────────────
-   canister-rotation.mp4 을 스크롤에 물려 360° 돌린다.
-   원본 우하단에 Veo 워터마크가 있어 delogo 로 지운 -clean 본을 쓴다. */
-.rot{position:relative;height:420svh;background:var(--burg-900);}
+.glohome .rot{position:relative;height:420svh;background:var(--burg-900);}
 .glohome .rot-stage{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center;}
 .glohome .rot-stage::after{content:"";position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(ellipse 60% 55% at 50% 50%,transparent 30%,rgba(20,10,14,.82) 100%);}
 .glohome .rot-video{width:min(150vh,120vw);max-width:none;}
 .glohome .rot-plinth{position:absolute;bottom:14%;left:50%;transform:translateX(-50%);width:min(46vw,420px);height:70px;
   background:radial-gradient(ellipse,rgba(184,135,135,.20),transparent 68%);filter:blur(20px);}
-.glohome /* 회전과 함께 좌측에 쌓이는 신뢰 체크리스트 */
-.rot-list{position:absolute;z-index:5;left:clamp(20px,6vw,96px);top:50%;transform:translateY(-50%);
+.glohome .rot-list{position:absolute;z-index:5;left:clamp(20px,6vw,96px);top:50%;transform:translateY(-50%);
   display:flex;flex-direction:column;gap:20px;max-width:300px;}
 .glohome .rli{display:flex;align-items:center;gap:14px;opacity:0;transform:translateX(-16px);}
 .glohome .rli i{width:26px;height:26px;flex:none;border-radius:50%;display:grid;place-items:center;
@@ -260,8 +258,7 @@ html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lang="ko"] .card-body{
 .glohome .rli i::before{content:"";width:9px;height:5px;margin-top:-2px;
   border-left:1.6px solid var(--gold-lt);border-bottom:1.6px solid var(--gold-lt);transform:rotate(-45deg);}
 .glohome .rli span{font-size:14.5px;color:rgba(244,235,235,.82);letter-spacing:-.2px;line-height:1.5;}
-.glohome /* 후반부 스펙 시트 */
-.rot-spec{position:absolute;z-index:6;right:clamp(20px,7vw,110px);top:50%;
+.glohome .rot-spec{position:absolute;z-index:6;right:clamp(20px,7vw,110px);top:50%;
   transform:translateY(-50%) translateX(48px);opacity:0;width:min(86vw,390px);}
 .glohome .rs-ey{font-family:var(--en);font-size:10.5px;letter-spacing:2.4px;text-transform:uppercase;color:var(--gold);}
 .glohome .rs-t{margin-top:10px;font-family:var(--en);font-weight:300;font-size:clamp(28px,3.2vw,42px);
@@ -283,22 +280,19 @@ html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lang="ko"] .card-body{
 .glohome .rot-title h2{font-size:clamp(26px,3.6vw,50px);}
 .glohome .rot-quote{margin-top:14px;font-size:clamp(12.5px,1.5vw,15px);font-style:italic;color:rgba(244,235,235,.55);}
 .glohome .rot-attrib{margin-top:6px;font-size:clamp(10px,1.2vw,12px);letter-spacing:.2px;color:rgba(212,181,181,.5);}
-.glohome /* ── 3. 액체 리빌 ────────────────────────────────────────── */
-.liq{position:relative;height:200svh;background:var(--burg-900);}
+.glohome .liq{position:relative;height:150svh;background:var(--burg-900);}
 .glohome .liq-stage{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center;}
 .glohome .liq-mask{position:absolute;inset:0;overflow:hidden;clip-path:circle(16% at 50% 50%);}
 .glohome .liq-mask video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 .glohome .liq-mask::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,10,14,.30),rgba(20,10,14,.62));}
 .glohome .liq-copy{position:relative;z-index:4;text-align:center;padding:0 24px;}
 .glohome .liq-copy h2{text-shadow:0 4px 40px rgba(0,0,0,.6);}
-.glohome /* ── 4. 3D 성분 오비트 ───────────────────────────────────── */
-.orb{padding:clamp(90px,13vw,170px) 0;background:linear-gradient(180deg,var(--burg-900),var(--burg-800) 45%,var(--burg-900));}
+.glohome .orb{padding:clamp(90px,13vw,170px) 0;background:linear-gradient(180deg,var(--burg-900),var(--burg-800) 45%,var(--burg-900));}
 .glohome .orb-head{text-align:center;margin-bottom:clamp(40px,6vw,72px);}
 .glohome .orb-head .lead{margin-inline:auto;}
 .glohome .orb-wrap{position:relative;height:min(72vw,500px);perspective:1500px;}
 .glohome .orb-ring{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform;}
-.glohome /* 드래그로 직접 돌린다 — 세로 스크롤은 통과(pan-y) */
-.orb-wrap{cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;}
+.glohome .orb-wrap{cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;}
 .glohome .orb-wrap.dragging{cursor:grabbing;}
 .glohome .node{position:absolute;top:50%;left:50%;width:132px;margin:-58px 0 0 -66px;text-align:center;
   transform-style:preserve-3d;backface-visibility:hidden;}
@@ -310,8 +304,7 @@ html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lang="ko"] .card-body{
 .glohome .node-n{font-family:var(--en);font-style:italic;font-size:13px;color:var(--gold);letter-spacing:.6px;}
 .glohome .node-t{font-size:12.5px;font-weight:600;margin-top:7px;letter-spacing:-.2px;line-height:1.35;}
 .glohome .node-mg{font-family:var(--en);font-size:15px;color:rgba(244,235,235,.58);margin-top:5px;}
-.glohome /* 4단계 루트 카드 (링 안에서 회전) */
-.node.n4{width:256px;margin:-160px 0 0 -128px;color:inherit;cursor:pointer;}
+.glohome .node.n4{width:256px;margin:-160px 0 0 -128px;color:inherit;cursor:pointer;}
 .glohome .node.n4 .node-d{width:256px;height:320px;padding:22px 20px 14px;place-content:normal;
   display:flex;flex-direction:column;text-align:left;
   background:linear-gradient(165deg,rgba(56,30,40,.94),rgba(24,12,17,.94));}
@@ -321,10 +314,7 @@ html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lang="ko"] .card-body{
 .glohome .node.n4 .rc-f{margin-top:10px;padding-top:9px;font-size:10.5px;}
 .glohome .orb-core{position:absolute;top:50%;left:50%;width:190px;height:190px;margin:-95px 0 0 -95px;border-radius:50%;
   background:radial-gradient(circle,rgba(184,135,135,.20),transparent 66%);filter:blur(14px);}
-.glohome /* ── 5. 체험단 8주 스크럽 ─────────────────────────────────
-   스크롤 진행도에 따라 같은 얼굴이 복용 전 → 2주 → 4주 → 8주로
-   크로스페이드. 문구·사진은 기존 상세페이지의 체험단 기록 그대로. */
-.ba{position:relative;height:320svh;background:var(--burg-900);}
+.glohome .ba{position:relative;height:320svh;background:var(--burg-900);}
 .glohome .ba-stage{position:sticky;top:0;height:100svh;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:clamp(18px,3vh,30px);padding:0 20px;overflow:hidden;}
 .glohome .ba-head{text-align:center;}
@@ -341,10 +331,8 @@ html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lang="ko"] .card-body{
 .glohome .ba-rail i{position:absolute;top:0;left:0;right:0;height:1px;transform-origin:0 50%;transform:scaleX(0);
   background:linear-gradient(90deg,var(--gold-dp),var(--gold-lt));}
 .glohome .ba-note{font-size:11px;color:rgba(244,235,235,.32);}
-.glohome /* glo 워드마크는 어디서든 Fraunces */
-.gw{font-family:var(--en);}
-.glohome /* ── 5-2. 4단계 역노화 루틴 ──────────────────────────────── */
-.routes{padding:clamp(90px,13vw,160px) 0;background:var(--burg-900);}
+.glohome .gw{font-family:var(--en);}
+.glohome .routes{padding:clamp(90px,13vw,160px) 0;background:var(--burg-900);}
 .glohome .routes-head{text-align:center;margin-bottom:clamp(40px,6vw,64px);}
 .glohome .routes-g{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
 .glohome .rcard{position:relative;overflow:hidden;border-radius:16px;padding:26px 22px 18px;min-height:360px;
@@ -363,13 +351,11 @@ html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lang="ko"] .card-body{
   color:rgba(184,135,135,.07);pointer-events:none;}
 .glohome .rc-f{margin-top:18px;padding-top:12px;border-top:1px solid rgba(184,135,135,.16);
   display:flex;justify-content:space-between;font-size:11.5px;color:rgba(244,235,235,.5);}
-.glohome /* 오비트 아래 스탯 스트립 */
-.orb-stats{margin:clamp(36px,5vw,60px) auto 0;max-width:760px;display:grid;grid-template-columns:repeat(4,1fr);
+.glohome .orb-stats{margin:clamp(36px,5vw,60px) auto 0;max-width:760px;display:grid;grid-template-columns:repeat(4,1fr);
   border-top:1px solid rgba(184,135,135,.16);padding-top:26px;text-align:center;}
 .glohome .orb-stats b{display:block;font-family:var(--en);font-weight:300;font-size:clamp(30px,4vw,46px);color:var(--gold);}
 .glohome .orb-stats span{display:block;margin-top:6px;font-size:12px;color:rgba(244,235,235,.55);}
-.glohome /* ── BA 우측 주차 카피 (스크럽과 동기화) ─────────────────── */
-.ba-main{display:grid;grid-template-columns:auto minmax(300px,400px);gap:clamp(24px,4vw,60px);align-items:center;}
+.glohome .ba-main{display:grid;grid-template-columns:auto minmax(300px,400px);gap:clamp(24px,4vw,60px);align-items:center;}
 .glohome .ba-l{display:flex;flex-direction:column;align-items:center;}
 .glohome .ba-copy{position:relative;min-height:360px;}
 .glohome .bstage{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
@@ -386,20 +372,17 @@ html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lang="ko"] .card-body{
   text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
 .glohome .bs-intro{font-size:clamp(16px,1.8vw,20px);line-height:1.8;color:rgba(244,235,235,.7);}
 .glohome .bs-hint{margin-top:14px;font-size:12px;color:rgba(212,181,181,.5);}
-.glohome /* ── 6. 카운터 ───────────────────────────────────────────── */
-.nums{padding:clamp(70px,10vw,130px) 0;border-top:1px solid rgba(184,135,135,.15);border-bottom:1px solid rgba(184,135,135,.15);
+.glohome .nums{padding:clamp(70px,10vw,130px) 0;border-top:1px solid rgba(184,135,135,.15);border-bottom:1px solid rgba(184,135,135,.15);
   background:var(--burg-800);}
 .glohome .nums-g{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,4vw,48px);text-align:center;}
 .glohome .num-v{font-family:var(--en);font-weight:300;font-size:clamp(32px,5vw,68px);line-height:1;letter-spacing:-2px;}
 .glohome .num-u{font-family:var(--en);font-size:clamp(15px,2vw,24px);color:var(--gold);margin-left:3px;}
 .glohome .num-l{margin-top:12px;font-size:12.5px;letter-spacing:.4px;color:rgba(244,235,235,.55);}
-.glohome /* 데이터 타일은 science 로 — hover 시 떠오르고 화살표가 드러난다 */
-.num-link{display:block;color:inherit;border-radius:12px;transition:transform .3s var(--ease);}
+.glohome .num-link{display:block;color:inherit;border-radius:12px;transition:transform .3s var(--ease);}
 .glohome .num-link:hover{transform:translateY(-4px);}
 .glohome .num-link .num-l::after{content:" →";color:var(--gold);opacity:0;transition:opacity .25s;}
 .glohome .num-link:hover .num-l::after{opacity:1;}
-.glohome /* ── 6. CTA ──────────────────────────────────────────────── */
-.cta{position:relative;padding:clamp(100px,15vw,190px) 0;text-align:center;overflow:hidden;
+.glohome .cta{position:relative;padding:clamp(100px,15vw,190px) 0;text-align:center;overflow:hidden;
   background:radial-gradient(ellipse 90% 70% at 50% 108%,#4a1f28,var(--burg-900) 62%);}
 .glohome .cta h2{margin-bottom:20px;}
 .glohome .btn{position:relative;display:inline-flex;align-items:center;gap:14px;margin-top:40px;
@@ -410,8 +393,6 @@ html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lang="ko"] .card-body{
 .glohome .btn:hover{box-shadow:0 22px 60px rgba(184,135,135,.44);}
 .glohome .btn svg{width:18px;height:12px;}
 .glohome .cta-fine{margin-top:22px;font-size:13px;color:rgba(244,235,235,.45);}
-.glohome /* ── 푸터 ─────────────────────────────────────────────────── */
-.ft{background:#0e0609;border-top:1px solid rgba(184,135,135,.15);padding:64px 0 44px;}
 @media (max-width:900px){
 .glohome .nums-g{grid-template-columns:repeat(2,1fr);row-gap:38px;}
 .glohome .orb-stats{grid-template-columns:repeat(2,1fr);row-gap:22px;}
@@ -427,8 +408,7 @@ html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lang="ko"] .card-body{
 .glohome .scan-g{grid-template-columns:1fr;gap:34px;}
 .glohome .scan-stage{max-height:440px;}
 .glohome .rot-video{width:150vw;}
-.glohome /* 모바일: 체크리스트도 좌측 중앙에 (통은 우측이라 좌중앙이 빈다) */
-  .rot-list{left:18px;top:52%;transform:translateY(-50%);gap:12px;max-width:56vw;}
+.glohome .rot-list{left:18px;top:52%;transform:translateY(-50%);gap:12px;max-width:56vw;}
 .glohome .rot-spec{right:auto;left:50%;top:auto;bottom:6%;width:min(90vw,390px);
     transform:translateX(-50%) translateY(24px);}
 .glohome .rs-t{font-size:24px;}
@@ -458,8 +438,7 @@ html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lang="ko"] .card-body{
 .glohome .liq-stage{position:relative;height:70svh;}
 .glohome .bstage{display:none;position:static;transition:none;}
 .glohome .bstage.on{display:flex;opacity:1;transform:none;}
-.glohome /* BA: 스크럽 없이 마지막 프레임(8주) 정지 컷 */
-  .ba{height:auto;}
+.glohome .ba{height:auto;}
 .glohome .ba-stage{position:relative;height:auto;padding:80px 20px;}
 .glohome .ba-rail i{transform:scaleX(1);}
 }
@@ -588,9 +567,9 @@ html[lang="ko"] .hero-sub, html[lang="ko"] .tl-desc, html[lang="ko"] .card-body{
       <video src="/assets/video/hero-fluid.mp4" autoplay muted loop playsinline></video>
     </div>
     <div class="liq-copy">
-      <div class="ey" style="justify-content:center" data-reveal>Texture</div>
-      <h2 data-reveal>비리지 않습니다.<br/><em>파인애플</em> 한 모금.</h2>
-      <p class="lead" style="margin-inline:auto" data-reveal>물에 타지 않아도, 씹지 않아도 됩니다. 하루 한 포를 그대로.</p>
+      <div class="ey" style="justify-content:center">Texture</div>
+      <h2>비리지 않습니다.<br/><em>파인애플</em> 한 모금.</h2>
+      <p class="lead" style="margin-inline:auto">물에 타지 않아도, 씹지 않아도 됩니다. 하루 한 포를 그대로.</p>
     </div>
   </div>
 </section>
