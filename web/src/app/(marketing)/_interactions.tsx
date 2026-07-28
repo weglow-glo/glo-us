@@ -1153,12 +1153,23 @@ export function LandingInteractions() {
           cleanups.push(() => cancelAnimationFrame(ringRaf));
         }
 
-        // 폰트 로드 후 핀 위치 재계산
+        // 폰트·이미지·비디오 로드 후 핀/트리거 위치 재계산 — 이게 없으면
+        // 위 핀 스페이서들이 자산 로드로 밀리면서 모든 리빌 위치가 어긋난다
         if (document.fonts?.ready) {
           document.fonts.ready.then(() => {
             if (!disposed) ScrollTrigger.refresh();
           });
         }
+        const onLoad = () => {
+          if (!disposed) ScrollTrigger.refresh();
+        };
+        if (document.readyState === "complete") onLoad();
+        else {
+          window.addEventListener("load", onLoad);
+          cleanups.push(() => window.removeEventListener("load", onLoad));
+        }
+        const lateRefresh = window.setTimeout(onLoad, 2500); // 안전망
+        cleanups.push(() => window.clearTimeout(lateRefresh));
       }
 
       // ── AI 얼굴 스캔 (three) — reduce 는 정적 1프레임 ────────────
