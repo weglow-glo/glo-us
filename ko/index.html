@@ -177,14 +177,16 @@ html.glo-home-nav .nav-links.is-open a[aria-current="page"]{color:#8a4a52;}
 /* 로그인 유저 메뉴 트리거도 크림으로 */
 html.glo-home-nav .glo-um-trigger{color:#f4ebeb;}
 html.glo-home-nav .glo-um-name{color:#f4ebeb;}
-/* 유저 메뉴 드롭다운도 밝은 패널 — 안의 글자는 잉크색으로 되돌린다 */
+html.glo-home-nav .nav-r a{color:rgba(244,235,235,.78);}
+html.glo-home-nav .nav-r{color:rgba(244,235,235,.78);}
+html.glo-home-nav .nav-r button{color:inherit;}
+/* 유저 메뉴 드롭다운은 밝은 패널 — 안의 글자는 잉크색으로 되돌린다.
+   위 .nav-r a/button 크림 규칙과 특이도가 같아 반드시 이 순서(뒤)여야 이긴다 */
 html.glo-home-nav .glo-um-dd a,
 html.glo-home-nav .glo-um-dd button{color:#2a1218;}
 html.glo-home-nav .glo-um-dd a:hover,
 html.glo-home-nav .glo-um-dd button:hover{color:#8a4a52;}
-html.glo-home-nav .nav-r a{color:rgba(244,235,235,.78);}
-html.glo-home-nav .nav-r{color:rgba(244,235,235,.78);}
-html.glo-home-nav .nav-r button{color:inherit;}
+html.glo-home-nav .glo-um-dd .glo-um-logout{color:#5a2229;}
 html.glo-home-nav .nav-burger span{background:#f4ebeb;}
 html.glo-home-nav .nav-burger:active{background:rgba(244,235,235,.12);}
 @media (prefers-reduced-motion:reduce){
