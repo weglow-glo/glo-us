@@ -41,7 +41,76 @@ function Row({ name, required }: { name: string; required?: boolean }) {
   );
 }
 
-export default function NotifyConfigPage() {
+/**
+ * 이벗WMS 연결 라이브 테스트 — 이 서버(=Vercel 프로덕션)에서 orderstatus 를
+ * 실제로 호출해 인증/IP 통과 여부를 확인한다. 존재하지 않는 주문번호라
+ * 데이터 부작용은 없다.
+ */
+async function ebutLiveTest(): Promise<{
+  skipped?: string;
+  status?: number;
+  errCode?: string;
+  errMsg?: string;
+  error?: string;
+}> {
+  const key = (process.env.EBUT_API_KEY ?? "").trim();
+  const id = (process.env.EBUT_ID ?? "").trim();
+  const custCode = (process.env.EBUT_CUST_CODE ?? "").trim();
+  if (!key || !id || !custCode) return { skipped: "EBUT_* 환경변수 미설정" };
+  try {
+    const res = await fetch("https://zuzfzmjszb.apigw.ntruss.com/OrderSheet/v2/orderstatus", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id,
+        custCode,
+        codeType: "2",
+        codeList: [{ orderCodeNo: "GLO_CONN_TEST" }],
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(8000),
+    });
+    const text = await res.text();
+    let errCode: string | undefined;
+    let errMsg: string | undefined;
+    try {
+      const j = JSON.parse(text) as { errCode?: string; errMsg?: string };
+      errCode = j.errCode;
+      errMsg = j.errMsg;
+    } catch {
+      errMsg = text.slice(0, 200);
+    }
+    return { status: res.status, errCode, errMsg };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export default async function NotifyConfigPage() {
+  const ebut = await ebutLiveTest();
+  const ebutKey = process.env.EBUT_API_KEY ?? "";
+  const ebutOk = ebut.status === 200 && ebut.errCode === "000";
+  const ebutVerdict = ebut.skipped
+    ? { color: "text-red-700", text: `설정 안 됨 — ${ebut.skipped}` }
+    : ebut.error
+      ? { color: "text-red-700", text: `호출 실패 — ${ebut.error}` }
+      : ebutOk
+        ? { color: "text-green-700", text: "연결 정상 — 인증·IP 모두 통과 (크론 작동 가능)" }
+        : ebut.status === 401
+          ? {
+              color: "text-red-700",
+              text: "HTTP 401 인증 실패 — EBUT_API_KEY 값이 잘못됐을 가능성 (따옴표·공백·오타 확인)",
+            }
+          : ebut.errCode === "996"
+            ? {
+                color: "text-red-700",
+                text: "errCode 996 미허가 IP — 이 서버의 IP가 이벗 화이트리스트에 없음",
+              }
+            : {
+                color: "text-red-700",
+                text: `HTTP ${ebut.status} · errCode ${ebut.errCode ?? "?"} — ${ebut.errMsg ?? ""}`,
+              };
+
   const pfId = (process.env.SOLAPI_PFID ?? "").trim();
   const shipped = (process.env.SOLAPI_TEMPLATE_SHIPPED ?? "").trim();
   const review = (process.env.SOLAPI_TEMPLATE_REVIEW ?? "").trim();
@@ -105,6 +174,30 @@ export default function NotifyConfigPage() {
           <Row name="SOLAPI_TEMPLATE_SHIPPED" required />
           <Row name="SOLAPI_TEMPLATE_REVIEW" />
           <Row name="SOLAPI_TEMPLATE_POINTS" />
+        </tbody>
+      </table>
+
+      <div className="mt-10 rounded-2xl border border-ink-line bg-bg-2 p-6">
+        <h2 className="text-sm font-semibold text-ink">이벗WMS 연결 진단 (라이브 테스트)</h2>
+        <p className="mt-2 text-xs leading-relaxed text-ink-soft">
+          이 페이지를 여는 순간 <b>이 서버에서</b> 이벗 API를 실제로 한 번 호출한 결과입니다. 발주/송장
+          크론이 실패하면 여기서 원인이 보입니다.
+        </p>
+        <p className={`mt-3 text-sm font-semibold ${ebutVerdict.color}`}>{ebutVerdict.text}</p>
+        {ebutKey && (
+          <p className="mt-2 font-mono text-xs text-ink-mute">
+            EBUT_API_KEY: {ebutKey.slice(0, 4)}…{ebutKey.slice(-4)} ({ebutKey.length}자)
+          </p>
+        )}
+      </div>
+
+      <table className="mt-4 w-full border-collapse">
+        <tbody>
+          <Row name="EBUT_API_KEY" required />
+          <Row name="EBUT_ID" required />
+          <Row name="EBUT_CUST_CODE" required />
+          <Row name="EBUT_ORD_SHOP" required />
+          <Row name="CRON_SECRET" />
         </tbody>
       </table>
 
