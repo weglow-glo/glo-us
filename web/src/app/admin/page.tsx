@@ -138,7 +138,7 @@ export default async function AdminPage({
       {/* 이벗WMS 자동 발주 — 아침 크론이 돌지만 수동 실행도 가능 */}
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ink-line bg-bg-2 px-5 py-4">
         <div className="text-sm text-ink-soft">
-          <b className="text-ink">이벗WMS 자동 발주</b> — 매일 08:00 결제완료 건을 WMS로 전송하고,
+          <b className="text-ink">이벗WMS 자동 발주</b> — 매일 11:00 결제완료 건을 WMS로 전송하고,
           매시간 송장을 회수해 배송중 전환 + 알림톡까지 자동 처리합니다.
         </div>
         <WmsControls />
@@ -150,7 +150,11 @@ export default async function AdminPage({
         className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ink-line bg-bg-2 px-5 py-4"
       >
         <div className="text-sm text-ink-soft">
+          <span className="mr-2 rounded-full border border-ink-line px-2 py-0.5 text-[11px] text-ink-mute">
+            백업용
+          </span>
           결제완료 <b className="text-ink">{paidCount ?? 0}건</b>을 한 번에 배송준비중으로 전환합니다.
+          평소엔 WMS 자동 발주가 처리합니다 — 자동화 장애 시에만 사용하세요.
         </div>
         <button
           disabled={!paidCount}
@@ -180,6 +184,9 @@ export default async function AdminPage({
       <details className="mt-4 rounded-xl border border-ink-line bg-bg-2 p-5">
         <summary className="cursor-pointer text-sm font-semibold text-ink">
           송장번호 일괄 등록
+          <span className="ml-2 rounded-full border border-ink-line px-2 py-0.5 text-[11px] font-normal text-ink-mute">
+            백업용 — 자동 송장 회수 장애 시 또는 WMS 외 출고(교환·체험단) 시에만
+          </span>
         </summary>
         <form action={bulkTracking} className="mt-4">
           <p className="mb-2 text-xs text-ink-mute">
