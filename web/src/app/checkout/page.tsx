@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import CheckoutClient from "./checkout-client";
 
+export const metadata = { robots: { index: false, follow: false } };
+
 // Require login before checkout. Unauthenticated visitors go to /login and
 // return to this exact URL (option preserved) after signing in.
 export default async function CheckoutPage({
