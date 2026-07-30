@@ -3,7 +3,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { formatKRW } from "@/lib/product";
 import { CARRIERS } from "@/lib/carriers";
 import { STATUS_LABEL, type OrderStatus } from "./status";
-import { bulkTracking, bulkPrepareAll, resendFailedNotices, wmsPushAction, wmsPullAction } from "./actions";
+import { bulkTracking, bulkPrepareAll, resendFailedNotices } from "./actions";
+import { WmsControls } from "./wms-controls";
 
 export const dynamic = "force-dynamic";
 
@@ -140,18 +141,7 @@ export default async function AdminPage({
           <b className="text-ink">이벗WMS 자동 발주</b> — 매일 08:00 결제완료 건을 WMS로 전송하고,
           매시간 송장을 회수해 배송중 전환 + 알림톡까지 자동 처리합니다.
         </div>
-        <div className="flex gap-2">
-          <form action={wmsPushAction}>
-            <button className="rounded-full bg-burg-600 px-5 py-2 text-sm font-semibold text-bg-1 transition hover:bg-burg-400">
-              지금 발주 전송
-            </button>
-          </form>
-          <form action={wmsPullAction}>
-            <button className="rounded-full border border-ink-line px-5 py-2 text-sm font-semibold text-ink transition hover:border-accent hover:text-accent">
-              지금 송장 회수
-            </button>
-          </form>
-        </div>
+        <WmsControls />
       </div>
 
       {/* Bulk: move all paid orders → 배송준비중 */}

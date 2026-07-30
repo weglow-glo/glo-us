@@ -39,17 +39,33 @@ export async function markPreparing(formData: FormData) {
 }
 
 /** 이벗WMS 발주 전송 — 결제완료 주문을 오픈DB에 등록하고 배송준비중 전환. */
-export async function wmsPushAction() {
+export async function wmsPushAction(): Promise<string> {
   const result = await pushOrdersToWms(createAdminClient());
   console.log("[admin/wms-push]", JSON.stringify(result));
   revalidatePath("/admin");
+  if (!result.ok) return `실패: ${result.error ?? "알 수 없는 오류"}`;
+  const parts = [`${result.pushed}건 전송`];
+  if (result.skipped.length > 0)
+    parts.push(
+      `${result.skipped.length}건 제외 (${result.skipped.map((s) => `${s.order_id}: ${s.reason}`).join(", ")})`,
+    );
+  if (result.failed.length > 0)
+    parts.push(
+      `${result.failed.length}건 실패 (${result.failed.map((f) => `${f.order_id}: ${f.reason}`).join(", ")})`,
+    );
+  return `발주 완료 — ${parts.join(" · ")}`;
 }
 
 /** 이벗WMS 송장 회수 — 송장 나온 주문을 배송중 전환 + 알림톡 발송. */
-export async function wmsPullAction() {
+export async function wmsPullAction(): Promise<string> {
   const result = await pullInvoicesFromWms(createAdminClient());
   console.log("[admin/wms-pull]", JSON.stringify(result));
   revalidatePath("/admin");
+  if (!result.ok) return `실패: ${result.error ?? "알 수 없는 오류"}`;
+  const detail = result.shipped
+    .map((s) => `${s.order_id} → ${s.invoice}${s.notified ? "" : " (알림톡 실패)"}`)
+    .join(", ");
+  return `송장 회수 완료 — 대기 ${result.checked}건 중 ${result.shipped.length}건 배송중 전환${detail ? ` (${detail})` : ""}`;
 }
 
 /** Move ALL paid orders to 배송준비중 in one go (pre-order batch fulfillment). */
