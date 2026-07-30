@@ -138,8 +138,11 @@ export default async function AdminPage({
       {/* 이벗WMS 자동 발주 — 아침 크론이 돌지만 수동 실행도 가능 */}
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ink-line bg-bg-2 px-5 py-4">
         <div className="text-sm text-ink-soft">
-          <b className="text-ink">이벗WMS 자동 발주</b> — 매일 11:00 결제완료 건을 WMS로 전송하고,
-          매시간 송장을 회수해 배송중 전환 + 알림톡까지 자동 처리합니다.
+          <b className="text-ink">이벗WMS 자동 발주</b> — 사무실 PC 러너가 매일 11:00 발주 전송,
+          매시 30분 송장 회수(배송중 전환 + 알림톡)를 실행합니다. 이벗 IP 제한 때문에 아래 버튼(서버
+          실행)은 실패합니다 — 수동 실행은 사무실 PC에서{" "}
+          <code className="rounded bg-bg-3 px-1 text-xs">web\scripts\wms-task.cmd both</code>
+
         </div>
         <WmsControls />
       </div>
