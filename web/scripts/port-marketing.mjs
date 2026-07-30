@@ -155,12 +155,37 @@ function buildPage({ src, route, css, interactions }) {
     </>
   );`
     : `  return <div dangerouslySetInnerHTML={{ __html: HTML }} />;`;
+  // head 의 JSON-LD(Organization/Product/FAQ)는 본문 끝에 그대로 싣는다 —
+  // SSR 소스에 포함되므로 크롤러가 읽는다 (실행이 필요 없는 스크립트).
+  const ldBlocks = extract(
+    /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g,
+    html,
+  ).map((j) => `<script type="application/ld+json">${j}</script>`);
+  if (ldBlocks.length) body += "\n" + ldBlocks.join("\n");
+
+  const urlPath = route ? `/${route}` : "/";
+  const OG_IMG = "https://glo-us.com/assets/og/og-cover.jpg";
+  const isLegal = route === "privacy" || route === "terms";
+  const metaObj = {
+    title,
+    description,
+    alternates: { canonical: `https://glo-us.com${urlPath}` },
+    openGraph: {
+      title,
+      description,
+      url: urlPath,
+      siteName: "glo",
+      locale: "ko_KR",
+      type: "website",
+      images: [{ url: OG_IMG, width: 1200, height: 630 }],
+    },
+    twitter: { card: "summary_large_image", title, description, images: [OG_IMG] },
+    ...(isLegal ? { robots: { index: false, follow: true } } : {}),
+  };
+
   const page = `${importLine}
 
-export const metadata = {
-  title: ${JSON.stringify(title)},
-  description: ${JSON.stringify(description)},
-};
+export const metadata = ${JSON.stringify(metaObj, null, 2)};
 
 const HTML = ${JSON.stringify(body)};
 

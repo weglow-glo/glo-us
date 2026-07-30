@@ -8,6 +8,8 @@ import { getPointPolicy } from "@/lib/points";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SignOutButton } from "./sign-out-button";
 
+export const metadata = { robots: { index: false, follow: false } };
+
 type Order = {
   order_id: string;
   order_name: string;
