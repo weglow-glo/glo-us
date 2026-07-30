@@ -812,6 +812,34 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
 .po-scar-foot b{color:var(--ink);font-weight:700;}
 .po-scar-left b{color:var(--accent);}
 @media (max-width:640px){.po-scar-in{padding-left:24px;padding-right:24px;}}
+
+/* 제품 정보 표시사항 — "라벨이 곧 영수증" */
+.plabel{padding:110px 0;background:var(--bg-2);border-top:1px solid var(--ink-line);}
+.plabel-head{max-width:720px;margin-bottom:44px;}
+.plabel-h{font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-weight:300;font-size:clamp(28px,3.6vw,44px);line-height:1.2;letter-spacing:-1.4px;color:var(--ink);}
+.plabel-h em{font-style:italic;color:var(--accent);}
+.plabel-sub{margin-top:14px;font-size:14.5px;line-height:1.7;color:var(--ink-mute);}
+.plabel-t{background:var(--bg-1);border:1px solid var(--ink-line);border-radius:14px;overflow:hidden;}
+.pl-row{display:grid;grid-template-columns:190px 1fr;border-bottom:1px solid var(--ink-line-2,rgba(42,18,24,.06));}
+.pl-row:last-child{border-bottom:none;}
+.pl-k{padding:16px 20px;font-size:12px;font-weight:600;letter-spacing:.4px;color:var(--ink-mute);background:var(--bg-2);border-right:1px solid var(--ink-line-2,rgba(42,18,24,.06));display:flex;align-items:flex-start;}
+.pl-v{padding:16px 22px;font-size:14px;line-height:1.75;color:var(--ink-soft);word-break:keep-all;}
+.pl-v b{color:var(--ink);font-weight:600;}
+.pl-half{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--ink-line-2,rgba(42,18,24,.06));}
+.pl-half .pl-row{border-bottom:none;}
+.pl-half .pl-row:first-child{border-right:1px solid var(--ink-line-2,rgba(42,18,24,.06));}
+.pl-half .pl-row .pl-k{width:130px;flex:none;}
+.pl-half .pl-row{grid-template-columns:130px 1fr;}
+@media (max-width:860px){
+  .pl-row{grid-template-columns:120px 1fr;}
+  .pl-half{grid-template-columns:1fr;}
+  .pl-half .pl-row{border-right:none !important;border-bottom:1px solid var(--ink-line-2,rgba(42,18,24,.06));}
+  .pl-half .pl-row:last-child{border-bottom:none;}
+  .pl-half .pl-row{grid-template-columns:120px 1fr;}
+  .pl-half .pl-row .pl-k{width:auto;}
+  .pl-k{padding:13px 14px;font-size:11px;}
+  .pl-v{padding:13px 16px;font-size:13px;}
+}
 </style>
 </head>
 <body>
@@ -1466,6 +1494,44 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <div class="tcell"><div class="tc-n">02</div><div class="tc-l">미생물</div><div class="tc-t">병원균 <em>스크리닝</em></div><div class="tc-d">E. coli, salmonella, staph 미검출. 총균수, 효모/곰팡이 모두 약전 기준 이내.</div></div>
       <div class="tcell"><div class="tc-n">03</div><div class="tc-l">함량</div><div class="tc-t">HPLC <em>확인</em></div><div class="tc-d">출고 전 모든 active 함량 분석 (±10%).</div></div>
       <div class="tcell"><div class="tc-n">04</div><div class="tc-l">제조 시설</div><div class="tc-t">cGMP · <em>Prop. 65</em></div><div class="tc-d">미국 cGMP 인증 제조. 캘리포니아 Prop. 65 원소 기준 준수.</div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- 제품 정보 표시사항 -->
+<section class="plabel" id="label">
+  <div class="ctr">
+    <div class="plabel-head">
+      <div class="ey clay"><span class="dash"></span>Label</div>
+      <h2 class="plabel-h">라벨이 곧 <em>영수증</em>입니다.</h2>
+      <p class="plabel-sub">식품등의 표시기준에 따른 표시사항을 그대로 옮겼습니다. 숨긴 것 없이, 포장에 적힌 그대로입니다.</p>
+    </div>
+    <div class="plabel-t">
+      <div class="pl-half">
+        <div class="pl-row"><div class="pl-k">제품명</div><div class="pl-v">글로 지엘공일 <span class="gloword">glo</span> GL-01</div></div>
+        <div class="pl-row"><div class="pl-k">식품유형</div><div class="pl-v">혼합음료</div></div>
+      </div>
+      <div class="pl-half">
+        <div class="pl-row"><div class="pl-k">품목보고번호</div><div class="pl-v">20030554150411</div></div>
+        <div class="pl-row"><div class="pl-k">내용량</div><div class="pl-v">20g × 30포 (600g / 776kcal)</div></div>
+      </div>
+      <div class="pl-row"><div class="pl-k">원재료명 및 함량</div><div class="pl-v">정제수, 프락토올리고당, 파인애플농축액, 향료(파인애플향), 니코틴산아미드, 엘-글루타치온 효모추출물, L-시스틴, 시클로덱스트린, 화이트토마토추출분말, 효소처리스테비아(감미료), 히알루론산, 구연산, 저분자피쉬콜라겐, 발효식초, 정제소금, 향료(청포도향), 구연산삼나트륨, Tightening-PB 콤플렉스, 헤마토코쿠스추출분말, 밀크세라마이드 · <b>우유 함유</b></div></div>
+      <div class="pl-half">
+        <div class="pl-row"><div class="pl-k">소비기한</div><div class="pl-v">별도 표기일까지</div></div>
+        <div class="pl-row"><div class="pl-k">포장재질(내면)</div><div class="pl-v">PE</div></div>
+      </div>
+      <div class="pl-half">
+        <div class="pl-row"><div class="pl-k">제조원</div><div class="pl-v">위글로우 협력사</div></div>
+        <div class="pl-row"><div class="pl-k">유통전문판매원</div><div class="pl-v">주식회사 위글로우 · 서울시 성동구 왕십리로 38, 홍성빌딩 3층(성수동1가)</div></div>
+      </div>
+      <div class="pl-half">
+        <div class="pl-row"><div class="pl-k">반품 및 교환처</div><div class="pl-v">구입처 또는 고객상담실</div></div>
+        <div class="pl-row"><div class="pl-k">고객상담실</div><div class="pl-v"><a href="tel:02-467-1024" style="color:var(--accent);">02-467-1024</a></div></div>
+      </div>
+      <div class="pl-row"><div class="pl-k">섭취량 및 섭취방법</div><div class="pl-v">1일 1~2회, 1회 1포(20g)씩 섭취하십시오.</div></div>
+      <div class="pl-row"><div class="pl-k">섭취 시 주의사항</div><div class="pl-v">임산부, 수유부, 특이체질, 알레르기 체질인 경우 원료를 확인 후 섭취하십시오. 원료의 산지나 생육환경, 채취시기 등에 따라 맛과 색상이 차이가 있을 수 있습니다. 전자레인지에 포장 그대로 넣어 데우지 마십시오. 제품의 개봉 또는 섭취 시 포장재에 의해 상처를 입거나, 내용물이 흘러나올 수 있으므로 주의하십시오. 원재료 고유성분에 의해 침전물 또는 부유물이 생길 수 있으나 인체에 무해하니 안심하고 흔들어 드십시오. 제품이 부풀거나 새는 제품은 변질되었을 가능성이 높으니 섭취하지 마십시오.</div></div>
+      <div class="pl-row"><div class="pl-k">보관상 주의사항</div><div class="pl-v">고온과 직사광선을 피하여 서늘한 장소에 보관하십시오. 개봉 후 냉장 보관하거나 가급적 빨리 드십시오.</div></div>
     </div>
   </div>
 </section>
