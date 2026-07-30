@@ -93,6 +93,8 @@ function toOrderRow(o: PushableOrder): Record<string, unknown> | { skip: string 
 
   const address = [sa.address, sa.detail].filter(Boolean).join(" ").slice(0, 66);
   const row: Record<string, unknown> = {
+    id: process.env.EBUT_ID,
+    custCode: process.env.EBUT_CUST_CODE,
     ordShop: process.env.EBUT_ORD_SHOP,
     ordGbn: "1", // 신규
     ordDate: ymdKst(o.created_at),
@@ -183,11 +185,7 @@ export async function pushOrdersToWms(admin: SupabaseClient): Promise<{
     const res = await fetch(`${BASE}/ordercreatem`, {
       method: "POST",
       headers: headers(),
-      body: JSON.stringify({
-        id: process.env.EBUT_ID,
-        custCode: process.env.EBUT_CUST_CODE,
-        order: rows,
-      }),
+      body: JSON.stringify({ orderList: rows }),
     });
     const json = (await res.json().catch(() => ({}))) as {
       status?: string;
