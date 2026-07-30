@@ -1,18 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "regions": ["icn1"],
+  "regions": [
+    "icn1"
+  ],
   "crons": [
     {
       "path": "/api/cron/track-sync",
       "schedule": "0 * * * *"
-    },
-    {
-      "path": "/api/cron/wms-push",
-      "schedule": "0 2 * * *"
-    },
-    {
-      "path": "/api/cron/wms-pull",
-      "schedule": "30 * * * *"
     },
     {
       "path": "/api/cron/review-request",
