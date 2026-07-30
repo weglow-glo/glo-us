@@ -21,7 +21,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://glo-us.com"),
+  metadataBase: new URL("https://www.glo-us.com"),
   title: "glo — A quieter kind of glow.",
   description: "스킨 롱제비티 프로토콜. 9가지 임상 검증 성분, 4×9 프로토콜. 하루 한 잔.",
   icons: { icon: "/favicon.svg" },

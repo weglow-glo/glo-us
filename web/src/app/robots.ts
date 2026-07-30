@@ -21,6 +21,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: "https://glo-us.com/sitemap.xml",
+    sitemap: "https://www.glo-us.com/sitemap.xml",
   };
 }

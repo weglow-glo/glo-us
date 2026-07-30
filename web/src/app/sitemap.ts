@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE = "https://glo-us.com";
+const BASE = "https://www.glo-us.com";
 
 /**
  * /sitemap.xml — 공개 마케팅 페이지만 싣는다.
