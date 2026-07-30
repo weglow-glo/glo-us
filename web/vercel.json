@@ -7,6 +7,14 @@
       "schedule": "0 * * * *"
     },
     {
+      "path": "/api/cron/wms-push",
+      "schedule": "0 23 * * *"
+    },
+    {
+      "path": "/api/cron/wms-pull",
+      "schedule": "30 * * * *"
+    },
+    {
       "path": "/api/cron/review-request",
       "schedule": "0 1 * * *"
     },
