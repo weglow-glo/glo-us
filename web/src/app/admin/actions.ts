@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { normalizePhone, sendShippingNotice } from "@/lib/notify";
+import { pushOrdersToWms, pullInvoicesFromWms } from "@/lib/ebut";
 import { settleRefundPoints } from "@/lib/points";
 
 /** Enter a tracking number → 배송중 (dispatched / in transit). */
@@ -35,6 +36,20 @@ export async function markPreparing(formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath(`/admin/orders/${id}`);
+}
+
+/** 이벗WMS 발주 전송 — 결제완료 주문을 오픈DB에 등록하고 배송준비중 전환. */
+export async function wmsPushAction() {
+  const result = await pushOrdersToWms(createAdminClient());
+  console.log("[admin/wms-push]", JSON.stringify(result));
+  revalidatePath("/admin");
+}
+
+/** 이벗WMS 송장 회수 — 송장 나온 주문을 배송중 전환 + 알림톡 발송. */
+export async function wmsPullAction() {
+  const result = await pullInvoicesFromWms(createAdminClient());
+  console.log("[admin/wms-pull]", JSON.stringify(result));
+  revalidatePath("/admin");
 }
 
 /** Move ALL paid orders to 배송준비중 in one go (pre-order batch fulfillment). */

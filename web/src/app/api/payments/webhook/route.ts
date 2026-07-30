@@ -153,5 +153,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, expired: true });
   }
 
+  // 장부 기록: 입금대기가 아닌 주문(예: 사고로 이미 출고된 건)에 입금이
+  // 들어온 경우 — 상태는 건드리지 않고 결제 기록만 최신화한다.
+  if (
+    payment.status === "DONE" &&
+    (order.raw_payment as { status?: string } | null)?.status !== "DONE"
+  ) {
+    await admin
+      .from("orders")
+      .update({
+        payment_method: payment.method ?? null,
+        approved_at: payment.approvedAt ?? new Date().toISOString(),
+        raw_payment: payment,
+      })
+      .eq("id", order.id);
+    return NextResponse.json({ ok: true, recorded: true });
+  }
+
   return NextResponse.json({ ok: true, noop: true });
 }
