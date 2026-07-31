@@ -702,7 +702,7 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
 .bestrev-track{display:flex;gap:14px;margin-top:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;-webkit-overflow-scrolling:touch;}
 .bestrev-shot{flex:0 0 auto;width:clamp(170px,40vw,220px);scroll-snap-align:start;margin:0;}
 .bestrev-img{position:relative;aspect-ratio:4/5;border-radius:14px;overflow:hidden;background:linear-gradient(160deg,var(--bg-3),var(--burg-50) 120%);background-size:cover;background-position:center;box-shadow:0 14px 28px rgba(58,26,34,.10),inset 0 0 0 1px rgba(58,26,34,.05);}
-.bestrev-shot.is-before .bestrev-body{margin-top:16px;font-size:14px;line-height:1.75;color:var(--ink-soft);max-width:780px;}
+.bestrev-body{margin-top:24px;font-size:14px;line-height:1.75;color:var(--ink-soft);max-width:780px;}
 .bestrev-note{margin-top:14px;font-size:11.5px;color:var(--ink-faint);line-height:1.65;max-width:620px;}
 /* 리뷰 허브 탭 + 베스트 캐러셀 */
 .rvh-tabs{display:flex;gap:4px;margin-top:30px;border-bottom:1px solid var(--ink-line);}
@@ -1016,7 +1016,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
     </div>
 
     <div class="rvh-panel" id="rvh-best" role="tabpanel">
-      <p class="bestrev-sub">베스트 리뷰로 선정된 고객들의 생생한 후기를 읽어보세요. <span class="bestrev-hint">옆으로 넘겨보세요 →</span></p>
+      <p class="bestrev-sub"><span class="bestrev-hint" style="margin-left:0">옆으로 넘겨보세요 →</span></p>
       <div class="bestrev-car-wrap">
         <div class="bestrev-car" id="best-rev-list">
       <article class="bestrev-card" data-id="f9c58e87-65f0-42b3-8c76-d5040408dc3e">
