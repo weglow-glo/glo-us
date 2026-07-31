@@ -270,6 +270,38 @@ export function ProductInteractions() {
 
       // Initial load — try the API; static cards stay if it fails.
       void fetchPage(true);
+
+      // 베스트 리뷰 (단가표 아래) — 정적 카드가 기본. 선정 목록
+      // (app_settings.best_review_ids)이 바뀐 경우에만 API 응답으로 교체해
+      // 첫 페인트 플리커를 피한다.
+      const bestList = document.getElementById("best-rev-list");
+      if (bestList) {
+        const bestCard = (r: Rev) => {
+          const stars = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
+          const date = (r.review_date || "").replace(/-/g, ".");
+          const shots = (r.photos ?? [])
+            .map(
+              (u) =>
+                `<figure class="bestrev-shot"><div class="bestrev-img" style="background-image:url('${esc(u).replace(/'/g, "%27")}')"></div></figure>`,
+            )
+            .join("");
+          return `<article class="bestrev-card" data-id="${esc(r.id)}"><div class="bestrev-head"><span class="bestrev-badge">BEST</span><span class="bestrev-name">${esc(r.author_name)} <span>${esc(r.location ?? "")}</span></span><span class="bestrev-stars" aria-label="${r.rating}점 / 5점">${stars}</span><span class="bestrev-date">${date}</span></div>${
+            shots ? `<div class="bestrev-track">${shots}</div>` : ""
+          }<p class="bestrev-body">${esc(r.body)}</p></article>`;
+        };
+        fetch("/api/reviews/best", { cache: "no-store" })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((d: { reviews: Rev[] } | null) => {
+            const revs = d?.reviews ?? [];
+            if (revs.length === 0) return;
+            const cur = [...bestList.querySelectorAll("[data-id]")]
+              .map((e) => e.getAttribute("data-id"))
+              .join(",");
+            if (cur === revs.map((r) => r.id).join(",")) return;
+            bestList.innerHTML = revs.map(bestCard).join("");
+          })
+          .catch(() => {});
+      }
     }
 
     // Sticky section tabs — scroll-spy + hide the floating nav while pinned.
