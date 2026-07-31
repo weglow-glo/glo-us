@@ -304,6 +304,77 @@ export function ProductInteractions() {
       }
     }
 
+    // 공식 런칭 이벤트 마감 (2026-08-11 자정 KST) — 카운트다운 + 마감 후
+    // 일반 판매가(data-post-price/-disc) 자동 전환. 서버 결제가는
+    // lib/product.ts 의 launchEventActive() 가 같은 시각으로 전환한다.
+    {
+      const EVENT_ENDS = Date.parse("2026-08-11T15:00:00Z"); // 8/11 24:00 KST
+      const EVENT_STARTS = Date.parse("2026-07-21T15:00:00Z"); // 7/22 00:00 KST
+      const scar = document.getElementById("launch-scar");
+      const applyPostPricing = () => {
+        document.querySelectorAll<HTMLElement>(".opt").forEach((o) => {
+          const price = o.dataset.postPrice;
+          const disc = o.dataset.postDisc;
+          const priceEl = o.querySelector<HTMLElement>(".opt-price");
+          const discEl = o.querySelector<HTMLElement>(".opt-disc");
+          if (price && priceEl) priceEl.textContent = price;
+          if (disc && discEl) discEl.textContent = disc;
+        });
+        const activePrice = document.querySelector<HTMLElement>(
+          ".opt.active .opt-price",
+        )?.textContent;
+        const floatPrice = document.getElementById("buy-float-price");
+        if (floatPrice && activePrice) floatPrice.textContent = activePrice;
+        scar?.remove();
+        // 런칭 배너 → 상시 수량 할인 안내로 교체
+        const bannerEy = document.querySelector<HTMLElement>(".po-banner .ey");
+        if (bannerEy)
+          bannerEy.innerHTML = '<span class="dash"></span>수량별 할인 혜택';
+        const bannerH = document.querySelector<HTMLElement>(".po-banner-h");
+        if (bannerH) bannerH.innerHTML = "수량별 구매 혜택,<br><em>최대 35% 할인</em>";
+        const bannerNum = document.querySelector<HTMLElement>(".po-banner-num");
+        if (bannerNum)
+          bannerNum.innerHTML = '35<span class="po-banner-pct">%</span>';
+        const bannerSub = document.querySelector<HTMLElement>(".po-banner-sub");
+        if (bannerSub)
+          bannerSub.textContent =
+            "공식 런칭 이벤트는 마감되었습니다. 수량별 할인 혜택은 계속됩니다.";
+        document.querySelector(".po-banner-dl")?.remove();
+      };
+      if (Date.now() >= EVENT_ENDS) {
+        applyPostPricing();
+      } else if (scar) {
+        const cd = document.getElementById("launch-cd");
+        const fill = document.getElementById("launch-fill");
+        const pad = (n: number) => String(n).padStart(2, "0");
+        const tick = () => {
+          const left = EVENT_ENDS - Date.now();
+          if (left <= 0) {
+            clearInterval(timer);
+            applyPostPricing();
+            return;
+          }
+          if (cd) {
+            const d = Math.floor(left / 86400000);
+            const h = Math.floor((left % 86400000) / 3600000);
+            const m = Math.floor((left % 3600000) / 60000);
+            const sec = Math.floor((left % 60000) / 1000);
+            cd.textContent = `${d}일 ${pad(h)}:${pad(m)}:${pad(sec)}`;
+          }
+          if (fill) {
+            const frac = Math.max(
+              0.04,
+              Math.min(1, left / (EVENT_ENDS - EVENT_STARTS)),
+            );
+            fill.style.width = `${(frac * 100).toFixed(2)}%`;
+          }
+        };
+        const timer = window.setInterval(tick, 1000);
+        tick();
+        cleanups.push(() => clearInterval(timer));
+      }
+    }
+
     // Sticky section tabs — scroll-spy + hide the floating nav while pinned.
     const ptabBar = document.querySelector<HTMLElement>(".ptabs");
     const ptabs = [...document.querySelectorAll<HTMLAnchorElement>(".ptab")];

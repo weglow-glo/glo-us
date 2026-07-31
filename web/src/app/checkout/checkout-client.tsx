@@ -11,6 +11,7 @@ import {
 import {
   OPTIONS,
   getOption,
+  currentPrice,
   regularOf,
   discountOf,
   formatPct,
@@ -422,7 +423,7 @@ export default function CheckoutClient({
             >
               {OPTIONS.map((o) => (
                 <option key={o.key} value={o.key}>
-                  {o.label} — {formatKRW(o.price)}
+                  {o.label} — {formatKRW(currentPrice(o))}
                 </option>
               ))}
             </select>
