@@ -769,6 +769,22 @@ export function LandingInteractions() {
     if (reduce) htmlEl.classList.add("glo-nav-on");
     cleanups.push(() => htmlEl.classList.remove("glo-home-nav", "glo-nav-on"));
 
+    // 런칭 이벤트(8/11 자정 KST) 마감 후 — 최대 50% CTA 를 판매량 문구로 교체
+    // (상세페이지 가격 전환과 같은 시각 기준; lib/product LAUNCH_EVENT_ENDS_AT)
+    if (Date.now() >= Date.parse("2026-08-11T15:00:00Z")) {
+      const ctaSec = document.querySelector<HTMLElement>(".cta");
+      if (ctaSec) {
+        const ey = ctaSec.querySelector<HTMLElement>(".ey");
+        if (ey) ey.textContent = "10만 포 판매 돌파";
+        const h = ctaSec.querySelector<HTMLElement>("h2");
+        if (h) h.innerHTML = "런칭 전후 3개월 만에<br/><em>10만 포</em>를 달성했습니다.";
+        const lead = ctaSec.querySelector<HTMLElement>(".lead");
+        if (lead)
+          lead.textContent =
+            "이미 많은 분들이 glo와 함께 피부 루틴을 설계하고 있습니다. 결제 후 순차 배송해 드립니다.";
+      }
+    }
+
     // ── reduced-motion: 정적 상태 세팅 (CSS 폴백 + 값 채움) ─────────
     if (reduce) {
       const rotV = $<HTMLVideoElement>("#rotVideo");
