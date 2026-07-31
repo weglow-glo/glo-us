@@ -304,6 +304,80 @@ export function ProductInteractions() {
       }
     }
 
+    // 공식 런칭 이벤트 마감 (2026-08-11 자정 KST) — 카운트다운 + 마감 후
+    // 일반 판매가(data-post-price/-disc) 자동 전환. 서버 결제가는
+    // lib/product.ts 의 launchEventActive() 가 같은 시각으로 전환한다.
+    {
+      const EVENT_ENDS = Date.parse("2026-08-11T15:00:00Z"); // 8/11 24:00 KST
+      const EVENT_STARTS = Date.parse("2026-07-21T15:00:00Z"); // 7/22 00:00 KST
+      const scar = document.getElementById("launch-scar");
+      const applyPostPricing = () => {
+        document.querySelectorAll<HTMLElement>(".opt").forEach((o) => {
+          const price = o.dataset.postPrice;
+          const disc = o.dataset.postDisc;
+          const priceEl = o.querySelector<HTMLElement>(".opt-price");
+          const discEl = o.querySelector<HTMLElement>(".opt-disc");
+          if (price && priceEl) priceEl.textContent = price;
+          if (disc && discEl) discEl.textContent = disc;
+        });
+        const activePrice = document.querySelector<HTMLElement>(
+          ".opt.active .opt-price",
+        )?.textContent;
+        const floatPrice = document.getElementById("buy-float-price");
+        if (floatPrice && activePrice) floatPrice.textContent = activePrice;
+        scar?.remove();
+        // 런칭 배너 → 10만 포 달성 스토리로 교체
+        const bannerEy = document.querySelector<HTMLElement>(".po-banner .ey");
+        if (bannerEy)
+          bannerEy.innerHTML = '<span class="dash"></span>10만 포 판매 돌파';
+        const bannerH = document.querySelector<HTMLElement>(".po-banner-h");
+        if (bannerH)
+          bannerH.innerHTML = "런칭 전후 3개월 만에,<br><em>10만 포 달성</em>";
+        const bannerNum = document.querySelector<HTMLElement>(".po-banner-num");
+        if (bannerNum)
+          bannerNum.innerHTML = '10<span class="po-banner-pct">만</span>';
+        const bannerOff = document.querySelector<HTMLElement>(".po-banner-off");
+        if (bannerOff) bannerOff.textContent = "포";
+        const bannerSub = document.querySelector<HTMLElement>(".po-banner-sub");
+        if (bannerSub)
+          bannerSub.textContent =
+            "공식 런칭 이벤트는 마감되었지만, 런칭 전후 3개월 만에 누적 10만 포 판매를 달성했습니다. 수량별 할인 혜택은 계속됩니다.";
+        document.querySelector(".po-banner-dl")?.remove();
+      };
+      if (Date.now() >= EVENT_ENDS) {
+        applyPostPricing();
+      } else if (scar) {
+        const cd = document.getElementById("launch-cd");
+        const fill = document.getElementById("launch-fill");
+        const pad = (n: number) => String(n).padStart(2, "0");
+        const tick = () => {
+          const left = EVENT_ENDS - Date.now();
+          if (left <= 0) {
+            clearInterval(timer);
+            applyPostPricing();
+            return;
+          }
+          if (cd) {
+            const d = Math.floor(left / 86400000);
+            const h = Math.floor((left % 86400000) / 3600000);
+            const m = Math.floor((left % 3600000) / 60000);
+            const sec = Math.floor((left % 60000) / 1000);
+            cd.textContent = `${d}일 ${pad(h)}:${pad(m)}:${pad(sec)}`;
+          }
+          if (fill) {
+            const frac = Math.max(
+              0.04,
+              Math.min(1, left / (EVENT_ENDS - EVENT_STARTS)),
+            );
+            fill.style.width = `${(frac * 100).toFixed(2)}%`;
+          }
+        };
+        const timer = window.setInterval(tick, 1000);
+        tick();
+        cleanups.push(() => clearInterval(timer));
+      }
+    }
+
     // Sticky section tabs — scroll-spy + hide the floating nav while pinned.
     const ptabBar = document.querySelector<HTMLElement>(".ptabs");
     const ptabs = [...document.querySelectorAll<HTMLAnchorElement>(".ptab")];
@@ -697,6 +771,22 @@ export function LandingInteractions() {
     htmlEl.classList.add("glo-home-nav");
     if (reduce) htmlEl.classList.add("glo-nav-on");
     cleanups.push(() => htmlEl.classList.remove("glo-home-nav", "glo-nav-on"));
+
+    // 런칭 이벤트(8/11 자정 KST) 마감 후 — 최대 50% CTA 를 판매량 문구로 교체
+    // (상세페이지 가격 전환과 같은 시각 기준; lib/product LAUNCH_EVENT_ENDS_AT)
+    if (Date.now() >= Date.parse("2026-08-11T15:00:00Z")) {
+      const ctaSec = document.querySelector<HTMLElement>(".cta");
+      if (ctaSec) {
+        const ey = ctaSec.querySelector<HTMLElement>(".ey");
+        if (ey) ey.textContent = "10만 포 판매 돌파";
+        const h = ctaSec.querySelector<HTMLElement>("h2");
+        if (h) h.innerHTML = "런칭 전후 3개월 만에<br/><em>10만 포</em>를 달성했습니다.";
+        const lead = ctaSec.querySelector<HTMLElement>(".lead");
+        if (lead)
+          lead.textContent =
+            "이미 많은 분들이 glo와 함께 피부 루틴을 설계하고 있습니다. 결제 후 순차 배송해 드립니다.";
+      }
+    }
 
     // ── reduced-motion: 정적 상태 세팅 (CSS 폴백 + 값 채움) ─────────
     if (reduce) {

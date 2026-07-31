@@ -185,6 +185,7 @@ nav{position:fixed;top:18px;left:0;right:0;z-index:50;pointer-events:none;}
   .opt-disc{min-width:40px;font-size:9px;padding:2px 5px;}
 }
 .buy-fine{font-size:11px;color:var(--ink-mute);text-align:center;margin-top:14px;}
+.buy-scar{margin-bottom:18px;}
 
 /* QUICK SPECS */
 .qspecs{background:var(--bg-2);padding:0;border-top:1px solid var(--ink-line);border-bottom:1px solid var(--ink-line);}
@@ -497,6 +498,8 @@ footer{background:var(--burg-800);padding:64px 0 32px;color:rgba(244,235,235,.6)
 .po-banner-img{position:absolute;left:50%;top:50%;transform:translate(-50%,-46%);height:clamp(150px,32vw,260px);width:auto;z-index:2;filter:drop-shadow(0 22px 44px rgba(58,26,34,.3));pointer-events:none;user-select:none;}
 .po-banner-off{position:absolute;right:3%;bottom:7%;z-index:3;font-family:'Wanted Sans Variable','Wanted Sans','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-style:italic;font-size:clamp(26px,5.5vw,52px);color:var(--burg-200);}
 .po-banner-sub{margin-top:20px;font-size:13px;color:var(--ink-mute);line-height:1.7;}
+.po-banner-dl{margin-top:14px;font-size:clamp(12.5px,1.6vw,14px);font-weight:600;color:var(--accent);}
+.po-banner-dl b{font-weight:800;}
 
 /* ===== Designer sections rebuilt in CSS (matched to the design system) ===== */
 .po-sec{padding:clamp(72px,10vw,110px) 0;}
@@ -897,24 +900,33 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <p class="ph-desc">피부 나이는 바른다고 돌아오지 않습니다. 복합적인 성분들의 꾸준한 섭취로 안쪽에서부터 케어해야 합니다. glo의 GL-01은 9가지 성분을 과학적인 근거를 바탕으로 전문가들의 임상 실험을 통해 만들어졌습니다. 빠르면 1주부터 변화가 시작되고, 3개월차부턴 눈에 띄게 피부가 어려졌음을 느끼게 됩니다.</p>
       <div class="po-live"><span class="po-live-dot"></span>현재 <b id="po-live-n">47</b>명이 보고 있어요</div>
       <div class="buy-box">
+        <!-- 런칭 이벤트 마감 카운트다운 — 마감 후 JS 가 제거하고 일반 판매가로 교체 -->
+        <div class="buy-scar" id="launch-scar">
+          <div class="po-scar-top">
+            <span class="po-scar-lbl">공식 런칭 이벤트 <b>최대 50%</b></span>
+            <span class="po-scar-cd">마감까지 <b id="launch-cd">–</b></span>
+          </div>
+          <div class="po-scar-bar"><div class="po-scar-fill" id="launch-fill" style="width:100%"></div></div>
+          <div class="po-scar-foot"><span>8월 11일 <b>자정 마감</b></span><span class="po-scar-left">이후 <b>일반 판매가</b>로 전환</span></div>
+        </div>
         <div class="opt-list" role="radiogroup" aria-label="구성 선택">
-          <button type="button" class="opt active" data-key="1m" role="radio" aria-checked="true">
+          <button type="button" class="opt active" data-key="1m" role="radio" aria-checked="true" data-post-price="101,150원" data-post-disc="-15%">
             <span class="opt-name">1개월 분</span>
             <span class="opt-right"><span class="opt-prices"><s class="opt-was">119,000원</s><span class="opt-price">83,300원</span></span><span class="opt-disc">-30%</span></span>
           </button>
-          <button type="button" class="opt" data-key="2m" role="radio" aria-checked="false">
+          <button type="button" class="opt" data-key="2m" role="radio" aria-checked="false" data-post-price="195,160원" data-post-disc="-18%">
             <span class="opt-name">2개월 분 <em>추천</em></span>
             <span class="opt-right"><span class="opt-prices"><s class="opt-was">238,000원</s><span class="opt-price">159,460원</span></span><span class="opt-disc">-33%</span></span>
           </button>
-          <button type="button" class="opt" data-key="3m" role="radio" aria-checked="false">
+          <button type="button" class="opt" data-key="3m" role="radio" aria-checked="false" data-post-price="278,460원" data-post-disc="-22%">
             <span class="opt-name">3개월 분 <em>베스트</em> <span class="opt-note">눈에 띄는 효과</span></span>
             <span class="opt-right"><span class="opt-prices"><s class="opt-was">357,000원</s><span class="opt-price">224,910원</span></span><span class="opt-disc">-37%</span></span>
           </button>
-          <button type="button" class="opt" data-key="4m" role="radio" aria-checked="false">
+          <button type="button" class="opt" data-key="4m" role="radio" aria-checked="false" data-post-price="347,480원" data-post-disc="-27%">
             <span class="opt-name">4개월 분</span>
             <span class="opt-right"><span class="opt-prices"><s class="opt-was">476,000원</s><span class="opt-price">276,080원</span></span><span class="opt-disc">-42%</span></span>
           </button>
-          <button type="button" class="opt" data-key="6m" role="radio" aria-checked="false">
+          <button type="button" class="opt" data-key="6m" role="radio" aria-checked="false" data-post-price="464,100원" data-post-disc="-35%">
             <span class="opt-name">6개월 분</span>
             <span class="opt-right"><span class="opt-prices"><s class="opt-was">714,000원</s><span class="opt-price">357,000원</span></span><span class="opt-disc">-50%</span></span>
           </button>
@@ -1008,6 +1020,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <span class="po-banner-off">Off</span>
     </div>
     <p class="po-banner-sub">사전 결제에서 무려 1,100박스나 구매해주셨습니다.<br>이에 힘입어 공식 런칭 첫 이벤트로 최대 50% 할인 이벤트를 진행하기로 했습니다.</p>
+    <p class="po-banner-dl">이벤트는 <b>8월 11일 자정</b>에 마감되며, 이후 일반 판매가로 전환됩니다.</p>
   </div>
 </section>
 
