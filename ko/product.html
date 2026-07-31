@@ -728,6 +728,8 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
 .bestrev-card.is-open .bestrev-body{display:block;-webkit-line-clamp:unset;overflow:visible;}
 .bestrev-more{margin-top:8px;background:none;border:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--accent);cursor:pointer;padding:0;}
 .bestrev-hint{color:var(--ink-mute);font-size:12px;margin-left:8px;}
+.rvh-vid{margin:30px 0 0;}
+.rvh-vid video{display:block;width:100%;max-width:840px;border-radius:16px;background:var(--burg-900);box-shadow:0 18px 44px rgba(58,26,34,.16);}
 
 /* Sticky 섹션 탭 (상세정보 / 리뷰) — takes over the top; the floating nav fades while stuck */
 .ptabs{position:sticky;top:0;z-index:55;display:flex;background:var(--bg-1);border-bottom:1px solid var(--ink-line);box-shadow:0 6px 16px rgba(58,26,34,.06);pointer-events:auto;}
@@ -999,6 +1001,13 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
         </div>
       </div>
     </div>
+
+    <!-- 고객 인터뷰 영상 — 별점 요약 바로 아래 -->
+    <figure class="rvh-vid">
+      <video controls playsinline preload="none" poster="/assets/video/customer-poster.jpg" aria-label="glo 고객 인터뷰 · Diane R. · 1:21">
+        <source src="/assets/video/customer-interview.mp4" type="video/mp4"/>
+      </video>
+    </figure>
 
     <div class="rvh-tabs" role="tablist" aria-label="후기 보기 방식">
       <button type="button" class="rvh-tab is-on" data-rtab="best" role="tab" aria-selected="true">베스트</button>
@@ -1588,20 +1597,6 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
 </section>
 
 <!-- 고객 인터뷰 영상 -->
-<section class="po-vid" id="customer-video">
-  <div class="ctr">
-    <h2 class="po-h">체험 고객 <em>인터뷰</em>.</h2>
-    <p class="po-vid-sub">"사실 기대 안 했어요. 다른 피부 제품들 수도 없이 먹어 봤었으니깐요." — 그 다음 이야기를 영상으로 확인해 보세요.</p>
-    <figure class="po-vid-frame">
-      <video class="po-vid-el" controls playsinline preload="none" poster="/assets/video/customer-poster.jpg">
-        <source src="/assets/video/customer-interview.mp4" type="video/mp4"/>
-      </video>
-      <figcaption class="po-vid-cap"><b>Diane R.</b> · glo 고객 인터뷰 · 1:21</figcaption>
-    </figure>
-    <p class="po-vid-note">* 개인의 사용 후기이며 개인차가 있을 수 있습니다.</p>
-  </div>
-</section>
-
 <!-- INGREDIENTS -->
 <section class="ings" id="ingredients">
   <div class="ctr">
