@@ -111,7 +111,8 @@ function toOrderRow(o: PushableOrder): Record<string, unknown> | { skip: string 
     goodsCode: "GL-01",
     // 상품명에 옵션(N개월 분)을 넣으면 수량 필드와 곱해 읽혀 물류 혼동이
     // 난다 — 상품명은 단품 고정 표기, 박스 수는 goodsQty 로만 전달한다.
-    goodsName: "glo GL-01 30포 1박스",
+    // "[1] ..." 프리픽스 포함 표기가 WMS 상품 매칭 기준이라 그대로 맞춘다.
+    goodsName: "[1] glo GL-01 30포 1박스",
     goodsOpt: "기본",
     goodsQty: Math.max(1, o.quantity ?? 1),
     goodsPrice: o.amount,
