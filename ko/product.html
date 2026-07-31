@@ -704,6 +704,30 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
 .bestrev-img{position:relative;aspect-ratio:4/5;border-radius:14px;overflow:hidden;background:linear-gradient(160deg,var(--bg-3),var(--burg-50) 120%);background-size:cover;background-position:center;box-shadow:0 14px 28px rgba(58,26,34,.10),inset 0 0 0 1px rgba(58,26,34,.05);}
 .bestrev-shot.is-before .bestrev-body{margin-top:16px;font-size:14px;line-height:1.75;color:var(--ink-soft);max-width:780px;}
 .bestrev-note{margin-top:14px;font-size:11.5px;color:var(--ink-faint);line-height:1.65;max-width:620px;}
+/* 리뷰 허브 탭 + 베스트 캐러셀 */
+.rvh-tabs{display:flex;gap:4px;margin-top:30px;border-bottom:1px solid var(--ink-line);}
+.rvh-tab{font-family:inherit;font-size:14px;font-weight:600;color:var(--ink-mute);background:none;border:none;padding:12px 18px;cursor:pointer;position:relative;letter-spacing:-.01em;transition:color .2s;}
+.rvh-tab:hover{color:var(--ink);}
+.rvh-tab.is-on{color:var(--ink);}
+.rvh-tab.is-on::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--accent);}
+.rvh-n{color:var(--accent);font-weight:700;}
+.rvh-panel{margin-top:24px;}
+.rvh-panel[hidden]{display:none;}
+.bestrev .reviews{padding:0;background:transparent;border-top:0;}
+.bestrev-car-wrap{position:relative;}
+.bestrev-car{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;-webkit-overflow-scrolling:touch;}
+.bestrev-car .bestrev-card{flex:0 0 min(92%,640px);scroll-snap-align:start;margin-top:0;}
+.bestrev-car .bestrev-card + .bestrev-card{margin-top:0;}
+.bestrev-car .bestrev-shot{width:clamp(130px,30vw,175px);}
+.bestrev-arr{position:absolute;top:40%;width:40px;height:40px;border-radius:50%;border:1px solid var(--ink-line);background:rgba(255,250,250,.94);color:var(--ink);font-size:15px;cursor:pointer;display:grid;place-items:center;box-shadow:0 8px 20px rgba(58,26,34,.14);z-index:2;transition:border-color .2s,color .2s;}
+.bestrev-arr:hover{border-color:var(--accent);color:var(--accent);}
+.bestrev-arr.is-prev{left:-10px;}
+.bestrev-arr.is-next{right:-10px;}
+@media (max-width:640px){.bestrev-arr{display:none;}}
+.bestrev-body{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.bestrev-card.is-open .bestrev-body{display:block;-webkit-line-clamp:unset;overflow:visible;}
+.bestrev-more{margin-top:8px;background:none;border:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--accent);cursor:pointer;padding:0;}
+.bestrev-hint{color:var(--ink-mute);font-size:12px;margin-left:8px;}
 
 /* Sticky 섹션 탭 (상세정보 / 리뷰) — takes over the top; the floating nav fades while stuck */
 .ptabs{position:sticky;top:0;z-index:55;display:flex;background:var(--bg-1);border-bottom:1px solid var(--ink-line);box-shadow:0 6px 16px rgba(58,26,34,.06);pointer-events:auto;}
@@ -942,15 +966,50 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
   </div>
 </section>
 
+<!-- Sticky 섹션 탭 (고객 후기 / 상세정보) -->
+<nav class="ptabs" aria-label="섹션 바로가기">
+  <a href="#reviews" class="ptab is-active">고객 후기 <span class="ptab-n">756</span></a>
+  <a href="#detail" class="ptab">상세정보</a>
+</nav>
+
 <!-- 베스트 리뷰 — 단가표 바로 아래. 정적 카드가 기본이고,
      JS 가 /api/reviews/best 로 선정 목록이 바뀌었을 때만 교체한다 -->
-<section class="bestrev" aria-label="베스트 리뷰">
+<!-- 고객 후기 허브 — 베스트/전체/포토 탭 통합. 단가표 바로 아래 단일 리뷰 영역 -->
+<section class="bestrev" id="reviews" aria-label="고객 후기">
   <div class="ctr">
-    <div class="ey clay"><span class="dash"></span>베스트 리뷰</div>
-    <h2 class="po-h">고객님들의 <em>베스트 선정 리뷰</em>입니다.</h2>
-    <p class="bestrev-sub">베스트 리뷰로 선정된 고객들의 생생한 후기를 읽어보세요.</p>
+    <div class="rev-head">
+      <div>
+        <div class="ey clay"><span class="dash"></span>고객 후기</div>
+        <h2>먼저 써본 분들이<br/><em>전하는</em> 이야기.</h2>
+        <p class="rev-intro">지금까지 <b>756개</b>의 후기가 쌓였습니다. 좋은 후기만 골라 싣지 않고, 받은 그대로 공개합니다.</p>
+      </div>
+      <div class="rev-stats">
+        <div class="rev-summary">
+          <div class="rev-avg">4.8</div>
+          <div class="rev-stars-line">
+            <div class="rev-stars" aria-label="4.8점 / 5점">★★★★★</div>
+          </div>
+        </div>
+        <div class="rev-dist" aria-label="Star rating distribution">
+          <div class="rev-dist-row"><span class="rev-dist-label">5<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:89%"></div></div><span class="rev-dist-count">671</span></div>
+          <div class="rev-dist-row"><span class="rev-dist-label">4<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:8%"></div></div><span class="rev-dist-count">60</span></div>
+          <div class="rev-dist-row"><span class="rev-dist-label">3<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:1.7%"></div></div><span class="rev-dist-count">13</span></div>
+          <div class="rev-dist-row"><span class="rev-dist-label">2<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:0.5%"></div></div><span class="rev-dist-count">4</span></div>
+          <div class="rev-dist-row"><span class="rev-dist-label">1<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:0.7%"></div></div><span class="rev-dist-count">5</span></div>
+        </div>
+      </div>
+    </div>
 
-    <div id="best-rev-list">
+    <div class="rvh-tabs" role="tablist" aria-label="후기 보기 방식">
+      <button type="button" class="rvh-tab is-on" data-rtab="best" role="tab" aria-selected="true">베스트</button>
+      <button type="button" class="rvh-tab" data-rtab="all" role="tab" aria-selected="false">전체 <span class="rvh-n">756</span></button>
+      <button type="button" class="rvh-tab" data-rtab="media" role="tab" aria-selected="false">포토·영상</button>
+    </div>
+
+    <div class="rvh-panel" id="rvh-best" role="tabpanel">
+      <p class="bestrev-sub">베스트 리뷰로 선정된 고객들의 생생한 후기를 읽어보세요. <span class="bestrev-hint">옆으로 넘겨보세요 →</span></p>
+      <div class="bestrev-car-wrap">
+        <div class="bestrev-car" id="best-rev-list">
       <article class="bestrev-card" data-id="f9c58e87-65f0-42b3-8c76-d5040408dc3e">
         <div class="bestrev-head">
           <span class="bestrev-badge">BEST</span>
@@ -965,6 +1024,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
           <figure class="bestrev-shot"><div class="bestrev-img" style="background-image:url('/assets/images/ba-8w.jpg')"></div></figure>
         </div>
         <p class="bestrev-body">40대 중반 넘어가면서 기미랑 칙칙함이 늘 고민이었어요. 체험단으로 시작해서 8주 동안 매일 아침 한 포씩 챙겨 먹었습니다. 2주차엔 솔직히 잘 모르겠다 싶었는데, 4주차부터 세수할 때 피부 결이 다르다는 게 느껴졌어요. 8주 지난 지금은 광채가 확실히 달라져서 파운데이션을 한 톤 밝은 걸로 바꿨습니다. 사진은 같은 자리, 같은 조명에서 찍은 8주 기록이에요.</p>
+        <button type="button" class="bestrev-more">더 보기</button>
       </article>
 
       <article class="bestrev-card" data-id="b708c373-1ddf-47df-93bc-8a9a8bd6a910">
@@ -981,6 +1041,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
           <figure class="bestrev-shot"><div class="bestrev-img" style="background-image:url('/assets/images/ba2-8w.jpg')"></div></figure>
         </div>
         <p class="bestrev-body">30대인데 눈가 처짐이랑 다크서클 때문에 시작했어요. 파인애플 맛이라 아침에 부담 없이 먹기 좋았고요. 4주차부터 눈가가 좀 탄탄해진 느낌이 들었고, 8주차 사진 보니 확실히 눈 밑이 밝아졌더라고요. 주차별로 기록해 보길 잘했다 싶어요. 복용 전 사진이랑 비교하면 저도 놀랄 정도예요.</p>
+        <button type="button" class="bestrev-more">더 보기</button>
       </article>
 
       <article class="bestrev-card" data-id="c810631b-1895-4b2c-b83d-c5e680eab7f7">
@@ -997,18 +1058,329 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
           <figure class="bestrev-shot"><div class="bestrev-img" style="background-image:url('/assets/images/ba3-8w.jpg')"></div></figure>
         </div>
         <p class="bestrev-body">60대라 큰 기대는 없었는데 딸이 권해서 8주를 꼬박 먹었습니다. 6주쯤부터 세안 후 얼굴이 덜 푸석하고 볼이 당기는 느낌이 줄었어요. 나이 들어도 피부는 관리하기 나름이라는 걸 이번에 느꼈네요. 주차별로 사진으로 남기니 변화가 더 잘 보입니다.</p>
+        <button type="button" class="bestrev-more">더 보기</button>
+      </article>
+    </div>
+        <button type="button" class="bestrev-arr is-prev" aria-label="이전 후기">←</button>
+        <button type="button" class="bestrev-arr is-next" aria-label="다음 후기">→</button>
+      </div>
+      <p class="bestrev-note">* 개인의 사용 후기이며 변화에는 개인차가 있습니다. 본 제품은 일반 식품으로, 질병의 예방·치료를 목적으로 하지 않으며 효과를 보장하지 않습니다. 동일 조명·각도에서 촬영.</p>
+    </div>
+
+    <div class="rvh-panel reviews" id="rvh-all" role="tabpanel" hidden>
+      <div class="rev-controls">
+      <div>
+        <div class="rev-search">
+          <svg class="rev-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="rev-search-input" placeholder="후기 검색" aria-label="후기 검색"/>
+        </div>
+        <div class="rev-topics">
+          <span class="rev-topics-l">인기 키워드</span>
+          <button class="rev-chip">수분</button>
+          <button class="rev-chip">톤</button>
+          <button class="rev-chip">탄력</button>
+          <button class="rev-chip">맛</button>
+          <button class="rev-chip">광채</button>
+          <button class="rev-chip">효과</button>
+          <button class="rev-chip">민감성 피부</button>
+        </div>
+      </div>
+      <div class="rev-sort"><button type="button" id="rev-media-only" class="rev-media-toggle" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2.5"/><circle cx="12" cy="13" r="3.6"/><path d="M8.5 6l1.2-2h4.6l1.2 2"/></svg>포토·영상만</button><span class="rev-sort-l">정렬</span><select id="rev-sort" class="rev-sort-select"><option value="rating_desc">평점 높은 순</option><option value="recent">최신순</option><option value="helpful">도움 순</option></select></div>
+    </div>
+
+    <div class="rev-list" id="rev-list">
+      <article class="rev-item">
+        <div class="rev-author">
+          <div class="rev-name">김 OO <span class="loc">서울</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">피부가 오랜만에 수분을 머금는 느낌. 수분감이 먼저 와요 — 3주차쯤 되니까 보습제 깜빡해도 별 차이 없더라구요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.04.22</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>12</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item">
+        <div class="rev-author">
+          <div class="rev-name">박 OO <span class="loc">서울</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">둘째 출산 후 기미 때문에 시작했는데 피부 톤이 확실히 균일해진 게 보였어요. 피부과 갔더니 의사 선생님도 인정하시더라구요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.04.15</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>9</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item">
+        <div class="rev-author">
+          <div class="rev-name">이 OO <span class="loc">부산</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
+          <p class="rev-text">파인애플 향이 은은해서 엄청 달지도 않고 아침에 부담 없이 먹기 좋아요. 사이즈도 작아서 가방에 넣어 다니거나 매일 까먹지 않고 먹을 수 있어요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.04.02</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>6</span></button>
+            <button class="rev-vote">↓ <span>1</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item">
+        <div class="rev-author">
+          <div class="rev-name">최 OO <span class="loc">성남</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">콜라겐 따로 챙긴 지 몇 년 됐는데, 진짜 차이를 느낀 건 glo가 처음이에요. 피부 장벽 개선이 진짜 느껴지더라구요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.03.28</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>14</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item">
+        <div class="rev-author">
+          <div class="rev-name">정 OO <span class="loc">대구</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
+          <p class="rev-text">진짜 효과는 시간이 좀 걸려요. 수분 4주, 톤 8주, 탄력감은 12주라는데 '하루 만에 바뀝니다' 같은 약속 없이 솔직한 타임라인을 알려준 게 오히려 좋더라구요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.03.14</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>8</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item">
+        <div class="rev-author">
+          <div class="rev-name">한 OO <span class="loc">서울</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">8주차쯤 되니까 친구들이 시술 받았냐고 묻기 시작했어요. 아픈 게 싫어서 시술은 안 받았고 매일 glo만 한 포씩 먹었는데 신기하더라구요. 파인애플 향이라 오히려 좋아요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.02.28</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>21</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">윤 OO <span class="loc">인천</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">환절기마다 뒤집어지던 피부가 이번엔 잠잠했어요. 장벽이 단단해진 느낌이라 다음 환절기가 안 무서워요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.02.20</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>7</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">강 OO <span class="loc">서울</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
+          <p class="rev-text">드라마틱한 변화를 기대하면 실망할 수도 있어요. 저는 4주차부터 결이 정돈되는 게 느껴졌고, 꾸준히 먹는 게 핵심인 것 같아요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.02.11</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>11</span></button>
+            <button class="rev-vote">↓ <span>1</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">조 OO <span class="loc">수원</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">화장이 들뜨던 게 줄었어요. 아침에 메이크업 올릴 때 가장 먼저 체감돼요. 향도 인공적이지 않아서 좋습니다.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.01.30</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>5</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">임 OO <span class="loc">광주</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">성분표를 하나하나 찾아봤는데 용량까지 다 공개돼 있어서 신뢰가 갔어요. 먹는 입장에서 이런 투명함이 제일 중요하더라구요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.01.22</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>18</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">서 OO <span class="loc">대전</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
+          <p class="rev-text">한 포 용량이 작아서 부담 없이 꾸준히 먹게 돼요. 다만 가격대가 살짝 있는 편이라 정기적으로 먹으려면 고민은 되네요. 효과는 만족.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.01.15</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>9</span></button>
+            <button class="rev-vote">↓ <span>2</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">신 OO <span class="loc">서울</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">40대 들어 푸석해진 게 고민이었는데, 12주쯤 되니 탄력이 확실히 달라졌어요. 주변에서 피부 좋아졌다는 말 자주 들어요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2026.01.08</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>16</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">오 OO <span class="loc">용인</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">먹는 콜라겐은 다 비슷할 줄 알았는데, 흡수가 빠른 저분자라 그런지 체감이 달랐어요. 아침 컨디션부터 다릅니다.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2025.12.27</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>10</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">배 OO <span class="loc">제주</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
+          <p class="rev-text">처음 2주는 큰 변화가 없어서 반신반의했는데, 한 달 넘기니 확실히 수분감이 올라왔어요. 인내심이 좀 필요한 제품.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2025.12.19</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>8</span></button>
+            <button class="rev-vote">↓ <span>1</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="rev-item is-collapsed">
+        <div class="rev-author">
+          <div class="rev-name">문 OO <span class="loc">서울</span></div>
+          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
+        </div>
+        <div class="rev-body">
+          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
+          <p class="rev-text">자극적인 마케팅 없이 타임라인이랑 근거를 차분하게 보여줘서 신뢰가 갔고, 실제로 그 말대로 변하니까 더 믿게 됐어요.</p>
+        </div>
+        <div class="rev-meta">
+          <div class="rev-date">2025.12.10</div>
+          <div class="rev-helpful">
+            <span class="rev-helpful-q">도움됐나요?</span>
+            <button class="rev-vote">↑ <span>13</span></button>
+            <button class="rev-vote">↓ <span>0</span></button>
+          </div>
+        </div>
       </article>
     </div>
 
-    <p class="bestrev-note">* 개인의 사용 후기이며 변화에는 개인차가 있습니다. 본 제품은 일반 식품으로, 질병의 예방·치료를 목적으로 하지 않으며 효과를 보장하지 않습니다. 동일 조명·각도에서 촬영.</p>
+    <div class="rev-load">
+      <button type="button" id="rev-load" class="btn-g">후기 더 보기</button>
+    </div>
+    </div>
   </div>
 </section>
-
-<!-- Sticky 섹션 탭 (상세정보 / 리뷰) -->
-<nav class="ptabs" aria-label="섹션 바로가기">
-  <a href="#detail" class="ptab is-active">상세정보</a>
-  <a href="#reviews" class="ptab">고객 후기 <span class="ptab-n">756</span></a>
-</nav>
 
 <!-- 공식 런칭 이벤트 배너 (CSS) -->
 <section class="po-banner" id="detail">
@@ -1598,344 +1970,6 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
 </section>
 
 <!-- REVIEWS — verified customer reviews -->
-<section class="reviews" id="reviews">
-  <div class="ctr">
-    <div class="rev-head">
-      <div>
-        <div class="ey clay"><span class="dash"></span>고객 후기</div>
-        <h2>먼저 써본 분들이<br/><em>전하는</em> 이야기.</h2>
-        <p class="rev-intro">지금까지 <b>756개</b>의 후기가 쌓였습니다. 좋은 후기만 골라 싣지 않고, 받은 그대로 공개합니다.</p>
-      </div>
-      <div class="rev-stats">
-        <div class="rev-summary">
-          <div class="rev-avg">4.8</div>
-          <div class="rev-stars-line">
-            <div class="rev-stars" aria-label="4.8점 / 5점">★★★★★</div>
-          </div>
-        </div>
-        <div class="rev-dist" aria-label="Star rating distribution">
-          <div class="rev-dist-row"><span class="rev-dist-label">5<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:89%"></div></div><span class="rev-dist-count">671</span></div>
-          <div class="rev-dist-row"><span class="rev-dist-label">4<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:8%"></div></div><span class="rev-dist-count">60</span></div>
-          <div class="rev-dist-row"><span class="rev-dist-label">3<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:1.7%"></div></div><span class="rev-dist-count">13</span></div>
-          <div class="rev-dist-row"><span class="rev-dist-label">2<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:0.5%"></div></div><span class="rev-dist-count">4</span></div>
-          <div class="rev-dist-row"><span class="rev-dist-label">1<span class="rev-dist-label-star">★</span></span><div class="rev-dist-bar"><div class="rev-dist-fill" style="width:0.7%"></div></div><span class="rev-dist-count">5</span></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="rev-controls">
-      <div>
-        <div class="rev-search">
-          <svg class="rev-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-          <input type="text" id="rev-search-input" placeholder="후기 검색" aria-label="후기 검색"/>
-        </div>
-        <div class="rev-topics">
-          <span class="rev-topics-l">인기 키워드</span>
-          <button class="rev-chip">수분</button>
-          <button class="rev-chip">톤</button>
-          <button class="rev-chip">탄력</button>
-          <button class="rev-chip">맛</button>
-          <button class="rev-chip">광채</button>
-          <button class="rev-chip">효과</button>
-          <button class="rev-chip">민감성 피부</button>
-        </div>
-      </div>
-      <div class="rev-sort"><button type="button" id="rev-media-only" class="rev-media-toggle" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2.5"/><circle cx="12" cy="13" r="3.6"/><path d="M8.5 6l1.2-2h4.6l1.2 2"/></svg>포토·영상만</button><span class="rev-sort-l">정렬</span><select id="rev-sort" class="rev-sort-select"><option value="rating_desc">평점 높은 순</option><option value="recent">최신순</option><option value="helpful">도움 순</option></select></div>
-    </div>
-
-    <div class="rev-list" id="rev-list">
-      <article class="rev-item">
-        <div class="rev-author">
-          <div class="rev-name">김 OO <span class="loc">서울</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
-        </div>
-        <div class="rev-body">
-          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
-          <p class="rev-text">피부가 오랜만에 수분을 머금는 느낌. 수분감이 먼저 와요 — 3주차쯤 되니까 보습제 깜빡해도 별 차이 없더라구요.</p>
-        </div>
-        <div class="rev-meta">
-          <div class="rev-date">2026.04.22</div>
-          <div class="rev-helpful">
-            <span class="rev-helpful-q">도움됐나요?</span>
-            <button class="rev-vote">↑ <span>12</span></button>
-            <button class="rev-vote">↓ <span>0</span></button>
-          </div>
-        </div>
-      </article>
-
-      <article class="rev-item">
-        <div class="rev-author">
-          <div class="rev-name">박 OO <span class="loc">서울</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
-        </div>
-        <div class="rev-body">
-          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
-          <p class="rev-text">둘째 출산 후 기미 때문에 시작했는데 피부 톤이 확실히 균일해진 게 보였어요. 피부과 갔더니 의사 선생님도 인정하시더라구요.</p>
-        </div>
-        <div class="rev-meta">
-          <div class="rev-date">2026.04.15</div>
-          <div class="rev-helpful">
-            <span class="rev-helpful-q">도움됐나요?</span>
-            <button class="rev-vote">↑ <span>9</span></button>
-            <button class="rev-vote">↓ <span>0</span></button>
-          </div>
-        </div>
-      </article>
-
-      <article class="rev-item">
-        <div class="rev-author">
-          <div class="rev-name">이 OO <span class="loc">부산</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
-        </div>
-        <div class="rev-body">
-          <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
-          <p class="rev-text">파인애플 향이 은은해서 엄청 달지도 않고 아침에 부담 없이 먹기 좋아요. 사이즈도 작아서 가방에 넣어 다니거나 매일 까먹지 않고 먹을 수 있어요.</p>
-        </div>
-        <div class="rev-meta">
-          <div class="rev-date">2026.04.02</div>
-          <div class="rev-helpful">
-            <span class="rev-helpful-q">도움됐나요?</span>
-            <button class="rev-vote">↑ <span>6</span></button>
-            <button class="rev-vote">↓ <span>1</span></button>
-          </div>
-        </div>
-      </article>
-
-      <article class="rev-item">
-        <div class="rev-author">
-          <div class="rev-name">최 OO <span class="loc">성남</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
-        </div>
-        <div class="rev-body">
-          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
-          <p class="rev-text">콜라겐 따로 챙긴 지 몇 년 됐는데, 진짜 차이를 느낀 건 glo가 처음이에요. 피부 장벽 개선이 진짜 느껴지더라구요.</p>
-        </div>
-        <div class="rev-meta">
-          <div class="rev-date">2026.03.28</div>
-          <div class="rev-helpful">
-            <span class="rev-helpful-q">도움됐나요?</span>
-            <button class="rev-vote">↑ <span>14</span></button>
-            <button class="rev-vote">↓ <span>0</span></button>
-          </div>
-        </div>
-      </article>
-
-      <article class="rev-item">
-        <div class="rev-author">
-          <div class="rev-name">정 OO <span class="loc">대구</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
-        </div>
-        <div class="rev-body">
-          <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
-          <p class="rev-text">진짜 효과는 시간이 좀 걸려요. 수분 4주, 톤 8주, 탄력감은 12주라는데 '하루 만에 바뀝니다' 같은 약속 없이 솔직한 타임라인을 알려준 게 오히려 좋더라구요.</p>
-        </div>
-        <div class="rev-meta">
-          <div class="rev-date">2026.03.14</div>
-          <div class="rev-helpful">
-            <span class="rev-helpful-q">도움됐나요?</span>
-            <button class="rev-vote">↑ <span>8</span></button>
-            <button class="rev-vote">↓ <span>0</span></button>
-          </div>
-        </div>
-      </article>
-
-      <article class="rev-item">
-        <div class="rev-author">
-          <div class="rev-name">한 OO <span class="loc">서울</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
-        </div>
-        <div class="rev-body">
-          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
-          <p class="rev-text">8주차쯤 되니까 친구들이 시술 받았냐고 묻기 시작했어요. 아픈 게 싫어서 시술은 안 받았고 매일 glo만 한 포씩 먹었는데 신기하더라구요. 파인애플 향이라 오히려 좋아요.</p>
-        </div>
-        <div class="rev-meta">
-          <div class="rev-date">2026.02.28</div>
-          <div class="rev-helpful">
-            <span class="rev-helpful-q">도움됐나요?</span>
-            <button class="rev-vote">↑ <span>21</span></button>
-            <button class="rev-vote">↓ <span>0</span></button>
-          </div>
-        </div>
-      </article>
-
-      <article class="rev-item is-collapsed">
-        <div class="rev-author">
-          <div class="rev-name">윤 OO <span class="loc">인천</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
-        </div>
-        <div class="rev-body">
-          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
-          <p class="rev-text">환절기마다 뒤집어지던 피부가 이번엔 잠잠했어요. 장벽이 단단해진 느낌이라 다음 환절기가 안 무서워요.</p>
-        </div>
-        <div class="rev-meta">
-          <div class="rev-date">2026.02.20</div>
-          <div class="rev-helpful">
-            <span class="rev-helpful-q">도움됐나요?</span>
-            <button class="rev-vote">↑ <span>7</span></button>
-            <button class="rev-vote">↓ <span>0</span></button>
-          </div>
-        </div>
-      </article>
-
-      <article class="rev-item is-collapsed">
-        <div class="rev-author">
-          <div class="rev-name">강 OO <span class="loc">서울</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
-        </div>
-        <div class="rev-body">
-          <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
-          <p class="rev-text">드라마틱한 변화를 기대하면 실망할 수도 있어요. 저는 4주차부터 결이 정돈되는 게 느껴졌고, 꾸준히 먹는 게 핵심인 것 같아요.</p>
-        </div>
-        <div class="rev-meta">
-          <div class="rev-date">2026.02.11</div>
-          <div class="rev-helpful">
-            <span class="rev-helpful-q">도움됐나요?</span>
-            <button class="rev-vote">↑ <span>11</span></button>
-            <button class="rev-vote">↓ <span>1</span></button>
-          </div>
-        </div>
-      </article>
-
-      <article class="rev-item is-collapsed">
-        <div class="rev-author">
-          <div class="rev-name">조 OO <span class="loc">수원</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
-        </div>
-        <div class="rev-body">
-          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
-          <p class="rev-text">화장이 들뜨던 게 줄었어요. 아침에 메이크업 올릴 때 가장 먼저 체감돼요. 향도 인공적이지 않아서 좋습니다.</p>
-        </div>
-        <div class="rev-meta">
-          <div class="rev-date">2026.01.30</div>
-          <div class="rev-helpful">
-            <span class="rev-helpful-q">도움됐나요?</span>
-            <button class="rev-vote">↑ <span>5</span></button>
-            <button class="rev-vote">↓ <span>0</span></button>
-          </div>
-        </div>
-      </article>
-
-      <article class="rev-item is-collapsed">
-        <div class="rev-author">
-          <div class="rev-name">임 OO <span class="loc">광주</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
-        </div>
-        <div class="rev-body">
-          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
-          <p class="rev-text">성분표를 하나하나 찾아봤는데 용량까지 다 공개돼 있어서 신뢰가 갔어요. 먹는 입장에서 이런 투명함이 제일 중요하더라구요.</p>
-        </div>
-        <div class="rev-meta">
-          <div class="rev-date">2026.01.22</div>
-          <div class="rev-helpful">
-            <span class="rev-helpful-q">도움됐나요?</span>
-            <button class="rev-vote">↑ <span>18</span></button>
-            <button class="rev-vote">↓ <span>0</span></button>
-          </div>
-        </div>
-      </article>
-
-      <article class="rev-item is-collapsed">
-        <div class="rev-author">
-          <div class="rev-name">서 OO <span class="loc">대전</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
-        </div>
-        <div class="rev-body">
-          <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
-          <p class="rev-text">한 포 용량이 작아서 부담 없이 꾸준히 먹게 돼요. 다만 가격대가 살짝 있는 편이라 정기적으로 먹으려면 고민은 되네요. 효과는 만족.</p>
-        </div>
-        <div class="rev-meta">
-          <div class="rev-date">2026.01.15</div>
-          <div class="rev-helpful">
-            <span class="rev-helpful-q">도움됐나요?</span>
-            <button class="rev-vote">↑ <span>9</span></button>
-            <button class="rev-vote">↓ <span>2</span></button>
-          </div>
-        </div>
-      </article>
-
-      <article class="rev-item is-collapsed">
-        <div class="rev-author">
-          <div class="rev-name">신 OO <span class="loc">서울</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
-        </div>
-        <div class="rev-body">
-          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
-          <p class="rev-text">40대 들어 푸석해진 게 고민이었는데, 12주쯤 되니 탄력이 확실히 달라졌어요. 주변에서 피부 좋아졌다는 말 자주 들어요.</p>
-        </div>
-        <div class="rev-meta">
-          <div class="rev-date">2026.01.08</div>
-          <div class="rev-helpful">
-            <span class="rev-helpful-q">도움됐나요?</span>
-            <button class="rev-vote">↑ <span>16</span></button>
-            <button class="rev-vote">↓ <span>0</span></button>
-          </div>
-        </div>
-      </article>
-
-      <article class="rev-item is-collapsed">
-        <div class="rev-author">
-          <div class="rev-name">오 OO <span class="loc">용인</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
-        </div>
-        <div class="rev-body">
-          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
-          <p class="rev-text">먹는 콜라겐은 다 비슷할 줄 알았는데, 흡수가 빠른 저분자라 그런지 체감이 달랐어요. 아침 컨디션부터 다릅니다.</p>
-        </div>
-        <div class="rev-meta">
-          <div class="rev-date">2025.12.27</div>
-          <div class="rev-helpful">
-            <span class="rev-helpful-q">도움됐나요?</span>
-            <button class="rev-vote">↑ <span>10</span></button>
-            <button class="rev-vote">↓ <span>0</span></button>
-          </div>
-        </div>
-      </article>
-
-      <article class="rev-item is-collapsed">
-        <div class="rev-author">
-          <div class="rev-name">배 OO <span class="loc">제주</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
-        </div>
-        <div class="rev-body">
-          <div class="rev-body-stars" aria-label="4점 / 5점">★★★★☆</div>
-          <p class="rev-text">처음 2주는 큰 변화가 없어서 반신반의했는데, 한 달 넘기니 확실히 수분감이 올라왔어요. 인내심이 좀 필요한 제품.</p>
-        </div>
-        <div class="rev-meta">
-          <div class="rev-date">2025.12.19</div>
-          <div class="rev-helpful">
-            <span class="rev-helpful-q">도움됐나요?</span>
-            <button class="rev-vote">↑ <span>8</span></button>
-            <button class="rev-vote">↓ <span>1</span></button>
-          </div>
-        </div>
-      </article>
-
-      <article class="rev-item is-collapsed">
-        <div class="rev-author">
-          <div class="rev-name">문 OO <span class="loc">서울</span></div>
-          <div class="rev-verified"><span class="rev-verified-dot">✓</span>고객 후기</div>
-        </div>
-        <div class="rev-body">
-          <div class="rev-body-stars" aria-label="5점 / 5점">★★★★★</div>
-          <p class="rev-text">자극적인 마케팅 없이 타임라인이랑 근거를 차분하게 보여줘서 신뢰가 갔고, 실제로 그 말대로 변하니까 더 믿게 됐어요.</p>
-        </div>
-        <div class="rev-meta">
-          <div class="rev-date">2025.12.10</div>
-          <div class="rev-helpful">
-            <span class="rev-helpful-q">도움됐나요?</span>
-            <button class="rev-vote">↑ <span>13</span></button>
-            <button class="rev-vote">↓ <span>0</span></button>
-          </div>
-        </div>
-      </article>
-    </div>
-
-    <div class="rev-load">
-      <button type="button" id="rev-load" class="btn-g">후기 더 보기</button>
-    </div>
-  </div>
-</section>
-
 <!-- FINAL -->
 <section class="final">
   <div class="final-i">
