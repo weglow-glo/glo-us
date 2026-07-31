@@ -271,6 +271,41 @@ export function ProductInteractions() {
       // Initial load — try the API; static cards stay if it fails.
       void fetchPage(true);
 
+      // 리뷰 허브 탭 (베스트 / 전체 / 포토·영상) — 전체·포토는 같은 리스트
+      // 패널을 공유하고 포토 탭은 기존 mediaOnly 필터를 켠 상태로 연다.
+      const rvhTabs = [...document.querySelectorAll<HTMLButtonElement>(".rvh-tab")];
+      const panelBest = document.getElementById("rvh-best");
+      const panelAll = document.getElementById("rvh-all");
+      if (rvhTabs.length && panelBest && panelAll) {
+        const setMediaOnly = (on: boolean) => {
+          if (mediaOnly === on) return;
+          mediaOnly = on;
+          mediaBtn?.classList.toggle("is-on", on);
+          mediaBtn?.setAttribute("aria-pressed", String(on));
+          if (dynamic) fetchPage(true);
+        };
+        const tabHandlers: Array<[HTMLElement, () => void]> = [];
+        rvhTabs.forEach((tab) => {
+          const h = () => {
+            const key = tab.dataset.rtab;
+            rvhTabs.forEach((t) => {
+              const on = t === tab;
+              t.classList.toggle("is-on", on);
+              t.setAttribute("aria-selected", String(on));
+            });
+            panelBest.toggleAttribute("hidden", key !== "best");
+            panelAll.toggleAttribute("hidden", key === "best");
+            if (key === "all") setMediaOnly(false);
+            if (key === "media") setMediaOnly(true);
+          };
+          tab.addEventListener("click", h);
+          tabHandlers.push([tab, h]);
+        });
+        cleanups.push(() =>
+          tabHandlers.forEach(([el, h]) => el.removeEventListener("click", h)),
+        );
+      }
+
       // 베스트 리뷰 (단가표 아래) — 정적 카드가 기본. 선정 목록
       // (app_settings.best_review_ids)이 바뀐 경우에만 API 응답으로 교체해
       // 첫 페인트 플리커를 피한다.
@@ -287,7 +322,7 @@ export function ProductInteractions() {
             .join("");
           return `<article class="bestrev-card" data-id="${esc(r.id)}"><div class="bestrev-head"><span class="bestrev-badge">BEST</span><span class="bestrev-name">${esc(r.author_name)} <span>${esc(r.location ?? "")}</span></span><span class="bestrev-stars" aria-label="${r.rating}점 / 5점">${stars}</span><span class="bestrev-date">${date}</span></div>${
             shots ? `<div class="bestrev-track">${shots}</div>` : ""
-          }<p class="bestrev-body">${esc(r.body)}</p></article>`;
+          }<p class="bestrev-body">${esc(r.body)}</p><button type="button" class="bestrev-more">더 보기</button></article>`;
         };
         fetch("/api/reviews/best", { cache: "no-store" })
           .then((r) => (r.ok ? r.json() : null))
@@ -301,6 +336,32 @@ export function ProductInteractions() {
             bestList.innerHTML = revs.map(bestCard).join("");
           })
           .catch(() => {});
+
+        // 캐러셀 좌우 화살표 (PC) — 카드 한 장 폭만큼 스크롤
+        const arrPrev = document.querySelector<HTMLElement>(".bestrev-arr.is-prev");
+        const arrNext = document.querySelector<HTMLElement>(".bestrev-arr.is-next");
+        const scrollCar = (dir: number) => () =>
+          bestList.scrollBy({ left: dir * bestList.clientWidth * 0.9, behavior: "smooth" });
+        const goPrev = scrollCar(-1);
+        const goNext = scrollCar(1);
+        arrPrev?.addEventListener("click", goPrev);
+        arrNext?.addEventListener("click", goNext);
+        cleanups.push(() => {
+          arrPrev?.removeEventListener("click", goPrev);
+          arrNext?.removeEventListener("click", goNext);
+        });
+
+        // 본문 3줄 클램프 토글 (더 보기 / 접기)
+        const onMore = (e: Event) => {
+          const btn = (e.target as HTMLElement).closest<HTMLElement>(".bestrev-more");
+          if (!btn || !bestList.contains(btn)) return;
+          const card = btn.closest(".bestrev-card");
+          if (!card) return;
+          const open = card.classList.toggle("is-open");
+          btn.textContent = open ? "접기" : "더 보기";
+        };
+        bestList.addEventListener("click", onMore);
+        cleanups.push(() => bestList.removeEventListener("click", onMore));
       }
     }
 
@@ -398,11 +459,16 @@ export function ProductInteractions() {
         cleanups.push(() => t.removeEventListener("click", onTabClick));
       });
       let praf: number | null = null;
+      const detailSec = document.getElementById("detail");
       const spy = () => {
         praf = null;
         // pinned once the tab bar reaches the top of the viewport
         document.body.classList.toggle("po-stuck", ptabBar.getBoundingClientRect().top <= 0);
-        const reviewsActive = reviewsSec.getBoundingClientRect().top <= 80;
+        // 리뷰 허브가 탭 바로 아래 첫 섹션 — 상세정보(#detail)에 아직
+        // 도달하지 않았으면 고객 후기 탭이 활성.
+        const reviewsActive = detailSec
+          ? detailSec.getBoundingClientRect().top > 80
+          : reviewsSec.getBoundingClientRect().top <= 80;
         ptabs.forEach((t) =>
           t.classList.toggle(
             "is-active",
