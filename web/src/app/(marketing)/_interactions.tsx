@@ -351,6 +351,90 @@ export function ProductInteractions() {
           arrNext?.removeEventListener("click", goNext);
         });
 
+        // 도트 인디케이터 — 카드 수만큼 생성, 스크롤 위치와 동기화.
+        // 카드가 화면 폭을 꽉 채워 옆 카드가 안 보이므로 이게 "더 있다" 신호.
+        const dots = document.getElementById("best-rev-dots");
+        if (dots) {
+          const cardStep = () => {
+            const card = bestList.querySelector<HTMLElement>(".bestrev-card");
+            return card ? card.offsetWidth + 18 : bestList.clientWidth;
+          };
+          const buildDots = () => {
+            const n = bestList.querySelectorAll(".bestrev-card").length;
+            dots.innerHTML =
+              Array.from(
+                { length: n },
+                (_, i) =>
+                  `<button type="button" class="bestrev-dot${i === 0 ? " is-on" : ""}" aria-label="${i + 1}번째 후기"></button>`,
+              ).join("") + `<span class="bestrev-dots-n">1 / ${n}</span>`;
+          };
+          buildDots();
+          const syncDots = () => {
+            const i = Math.round(bestList.scrollLeft / cardStep());
+            const ds = dots.querySelectorAll(".bestrev-dot");
+            ds.forEach((d, j) => d.classList.toggle("is-on", j === i));
+            const n = dots.querySelector(".bestrev-dots-n");
+            if (n) n.textContent = `${Math.min(i + 1, ds.length)} / ${ds.length}`;
+          };
+          let draf: number | null = null;
+          const onCarScroll = () => {
+            if (draf == null)
+              draf = requestAnimationFrame(() => {
+                draf = null;
+                syncDots();
+              });
+          };
+          bestList.addEventListener("scroll", onCarScroll, { passive: true });
+          const onDotClick = (e: Event) => {
+            const dot = (e.target as HTMLElement).closest(".bestrev-dot");
+            if (!dot) return;
+            const i = [...dots.querySelectorAll(".bestrev-dot")].indexOf(dot);
+            bestList.scrollTo({ left: i * cardStep(), behavior: "smooth" });
+          };
+          dots.addEventListener("click", onDotClick);
+          // 동적 교체(베스트 목록 변경) 시 도트 재구성
+          const dotMo = new MutationObserver(() => {
+            buildDots();
+            syncDots();
+          });
+          dotMo.observe(bestList, { childList: true });
+          cleanups.push(() => {
+            bestList.removeEventListener("scroll", onCarScroll);
+            dots.removeEventListener("click", onDotClick);
+            dotMo.disconnect();
+          });
+
+          // 첫 진입 넛지 — 살짝 밀렸다 돌아와서 옆 카드 존재를 알린다 (1회)
+          const reduceMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)",
+          ).matches;
+          if (!reduceMotion && "IntersectionObserver" in window) {
+            const nudged = { done: false };
+            const io = new IntersectionObserver(
+              (entries) => {
+                if (nudged.done || !entries.some((e) => e.isIntersecting)) return;
+                if (bestList.scrollLeft > 4) {
+                  nudged.done = true;
+                  io.disconnect();
+                  return;
+                }
+                nudged.done = true;
+                io.disconnect();
+                // scroll-snap mandatory 라 부분 스크롤은 즉시 스냅백된다 —
+                // 실제 스크롤 대신 카드 transform 으로 옆 카드를 살짝 보여준다.
+                bestList.classList.add("is-nudge");
+                window.setTimeout(
+                  () => bestList.classList.remove("is-nudge"),
+                  1000,
+                );
+              },
+              { threshold: 0.5 },
+            );
+            io.observe(bestList);
+            cleanups.push(() => io.disconnect());
+          }
+        }
+
         // 본문 3줄 클램프 토글 (더 보기 / 접기)
         const onMore = (e: Event) => {
           const btn = (e.target as HTMLElement).closest<HTMLElement>(".bestrev-more");
