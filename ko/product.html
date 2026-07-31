@@ -719,7 +719,7 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
 .bestrev-car .bestrev-card{flex:0 0 100%;min-width:0;scroll-snap-align:start;margin-top:0;}
 .bestrev-car .bestrev-card + .bestrev-card{margin-top:0;}
 .bestrev-car .bestrev-shot{width:clamp(130px,30vw,175px);}
-.bestrev-arr{position:absolute;top:40%;width:40px;height:40px;border-radius:50%;border:1px solid var(--ink-line);background:rgba(255,250,250,.94);color:var(--ink);font-size:15px;cursor:pointer;display:grid;place-items:center;box-shadow:0 8px 20px rgba(58,26,34,.14);z-index:2;transition:border-color .2s,color .2s;}
+.bestrev-arr{position:absolute;top:40%;width:46px;height:46px;border-radius:50%;border:1px solid var(--ink-line);background:rgba(255,250,250,.94);color:var(--ink);font-size:15px;cursor:pointer;display:grid;place-items:center;box-shadow:0 8px 20px rgba(58,26,34,.14);z-index:2;transition:border-color .2s,color .2s;}
 .bestrev-arr:hover{border-color:var(--accent);color:var(--accent);}
 .bestrev-arr.is-prev{left:-10px;}
 .bestrev-arr.is-next{right:-10px;}
@@ -727,7 +727,12 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
 .bestrev-body{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
 .bestrev-card.is-open .bestrev-body{display:block;-webkit-line-clamp:unset;overflow:visible;}
 .bestrev-more{margin-top:8px;background:none;border:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--accent);cursor:pointer;padding:0;}
-.bestrev-hint{color:var(--ink-mute);font-size:12px;margin-left:8px;}
+.bestrev-dots{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:16px;}
+.bestrev-dot{width:8px;height:8px;padding:0;border-radius:100px;border:none;background:var(--burg-50);cursor:pointer;transition:width .25s ease,background .25s ease;}
+.bestrev-dot.is-on{width:24px;background:var(--accent);}
+.bestrev-dots-n{font-size:12px;color:var(--ink-mute);margin-left:6px;font-variant-numeric:tabular-nums;}
+@keyframes bestrevNudge{0%,100%{transform:none}45%{transform:translateX(-64px)}}
+.bestrev-car.is-nudge .bestrev-card{animation:bestrevNudge .95s ease-in-out both;}
 .rvh-vid{margin:30px 0 0;}
 .rvh-vid video{display:block;width:100%;max-width:840px;border-radius:16px;background:var(--burg-900);box-shadow:0 18px 44px rgba(58,26,34,.16);}
 
@@ -1016,7 +1021,6 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
     </div>
 
     <div class="rvh-panel" id="rvh-best" role="tabpanel">
-      <p class="bestrev-sub"><span class="bestrev-hint" style="margin-left:0">옆으로 넘겨보세요 →</span></p>
       <div class="bestrev-car-wrap">
         <div class="bestrev-car" id="best-rev-list">
       <article class="bestrev-card" data-id="f9c58e87-65f0-42b3-8c76-d5040408dc3e">
@@ -1073,6 +1077,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
         <button type="button" class="bestrev-arr is-prev" aria-label="이전 후기">←</button>
         <button type="button" class="bestrev-arr is-next" aria-label="다음 후기">→</button>
       </div>
+      <div class="bestrev-dots" id="best-rev-dots" role="tablist" aria-label="베스트 리뷰 위치"></div>
       <p class="bestrev-note">* 개인의 사용 후기이며 변화에는 개인차가 있습니다. 본 제품은 일반 식품으로, 질병의 예방·치료를 목적으로 하지 않으며 효과를 보장하지 않습니다. 동일 조명·각도에서 촬영.</p>
     </div>
 
