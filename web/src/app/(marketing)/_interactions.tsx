@@ -276,18 +276,14 @@ export function ProductInteractions() {
       // 첫 페인트 플리커를 피한다.
       const bestList = document.getElementById("best-rev-list");
       if (bestList) {
-        const WKS = ["복용 전", "2주", "4주", "8주"];
         const bestCard = (r: Rev) => {
           const stars = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
           const date = (r.review_date || "").replace(/-/g, ".");
-          const ps = r.photos ?? [];
-          const shots = ps
-            .map((u, i) => {
-              const wk = ps.length === 4 ? WKS[i] : "";
-              return `<figure class="bestrev-shot${i === 0 && wk ? " is-before" : ""}"><div class="bestrev-img" style="background-image:url('${esc(u).replace(/'/g, "%27")}')">${
-                wk ? `<span class="bestrev-wk">${wk}</span>` : ""
-              }</div></figure>`;
-            })
+          const shots = (r.photos ?? [])
+            .map(
+              (u) =>
+                `<figure class="bestrev-shot"><div class="bestrev-img" style="background-image:url('${esc(u).replace(/'/g, "%27")}')"></div></figure>`,
+            )
             .join("");
           return `<article class="bestrev-card" data-id="${esc(r.id)}"><div class="bestrev-head"><span class="bestrev-badge">BEST</span><span class="bestrev-name">${esc(r.author_name)} <span>${esc(r.location ?? "")}</span></span><span class="bestrev-stars" aria-label="${r.rating}점 / 5점">${stars}</span><span class="bestrev-date">${date}</span></div>${
             shots ? `<div class="bestrev-track">${shots}</div>` : ""
