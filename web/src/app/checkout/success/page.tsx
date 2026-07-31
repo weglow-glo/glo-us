@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { formatKRW } from "@/lib/product";
 import { metaTrack } from "@/lib/meta";
+import { naverPurchase } from "@/lib/naver-cts";
 
 type VirtualAccount = {
   bankCode?: string;
@@ -87,6 +88,8 @@ function SuccessInner() {
           },
           orderId,
         );
+        // 네이버 전환추적 구매완료 — 주문번호 기준 1회만 발화
+        naverPurchase(orderId, data.totalAmount ?? amount, data.orderName);
       })
       .catch((e) =>
         setResult({
