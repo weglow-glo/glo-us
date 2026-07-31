@@ -16,9 +16,11 @@ import {
   discountOf,
   formatPct,
   formatKRW,
+  orderNameOf,
 } from "@/lib/product";
 import type { Address } from "@/lib/address";
 import { metaTrack } from "@/lib/meta";
+import { naverConv } from "@/lib/naver-cts";
 
 const CLIENT_KEY = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!;
 const IS_TEST_KEY = CLIENT_KEY?.startsWith("test_") ?? false;
@@ -117,6 +119,10 @@ export default function CheckoutClient({
       content_type: "product",
       currency: "KRW",
       value: opt.price,
+    });
+    naverConv({
+      type: "begin_checkout",
+      items: [{ id: "GL-01", name: orderNameOf(opt), quantity: opt.months, payAmount: opt.price }],
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
