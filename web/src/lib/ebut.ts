@@ -116,6 +116,23 @@ function toOrderRow(o: PushableOrder): Record<string, unknown> | { skip: string 
     orderDside: "1", // 판매자 선불 (무료배송)
     orderArea: "D",
   };
+  // 이벗 매칭상품 정보 — ordercreatep 는 이걸 실으면 창고 매칭 작업 없이
+  // 완전한 주문서로 등록된다. 코드는 마스터매칭 조회로 확인 (2026-07-31):
+  // Weglow_Glo(글로) · [30포] glo GL-01 → prodCode 143490 / optionCode 150868
+  const qty = Math.max(1, o.quantity ?? 1);
+  row.edata = [
+    {
+      prodCode: process.env.EBUT_PROD_CODE ?? "143490",
+      optionCode: process.env.EBUT_OPTION_CODE ?? "150868",
+      basicName: "[30포] glo GL-01",
+      basicNicn: "",
+      boptcodeName: "-",
+      orderQty: String(qty),
+      basicCost: "",
+      provCode: "",
+      provName: "",
+    },
+  ];
   if (process.env.EBUT_COURIER_CODE) row.invcExpr = process.env.EBUT_COURIER_CODE;
   if (process.env.EBUT_GOODS_SG_CODE) row.goodsSGCode = process.env.EBUT_GOODS_SG_CODE;
   if (process.env.EBUT_GOODS_SO_CODE) row.goodsSOCode = process.env.EBUT_GOODS_SO_CODE;
@@ -136,9 +153,14 @@ type CreateResult = {
 };
 
 /**
- * 발주 푸시: 결제완료(+아직 미전송된 배송준비중) 주문을 WMS 임시 테이블에
+ * 발주 푸시: 결제완료(+아직 미전송된 배송준비중) 주문을 WMS 운영 주문서로
  * 등록하고 배송준비중으로 전환한다. orderNo+orderNoSeq 중복은 WMS 가
  * 거부하므로 재실행해도 이중 발주는 나지 않는다.
+ *
+ * 엔드포인트는 ordercreatem(임시 테이블 → WMS 화면에서 사용자 승인 필요)이
+ * 아니라 **ordercreatep** — 매칭정보(edata) 포함 시 승인 없이 운영서버에
+ * 바로 완전한 주문서가 등록된다. (2026-07-31 임시 테이블에 걸려 출고 누락될
+ * 뻔한 사고 후 전환.)
  */
 export async function pushOrdersToWms(admin: SupabaseClient): Promise<{
   ok: boolean;
@@ -182,7 +204,7 @@ export async function pushOrdersToWms(admin: SupabaseClient): Promise<{
   let pushed = 0;
 
   if (rows.length > 0) {
-    const res = await fetch(`${BASE}/ordercreatem`, {
+    const res = await fetch(`${BASE}/ordercreatep`, {
       method: "POST",
       headers: headers(),
       body: JSON.stringify({ orderList: rows }),
