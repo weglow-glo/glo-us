@@ -83,6 +83,16 @@ function ymdKst(iso: string | null): string {
   return d.toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" }); // yyyy-MM-dd
 }
 
+/** 이벗 백엔드(EUC-KR 계열)는 이모지 등 비BMP 문자가 한 행에만 있어도
+ *  배치 전체를 "알수없는 오류"로 거부한다 (2026-08-03 "선경💙" 실사고).
+ *  이름·주소·메모에서 이모지/기호를 제거한다. */
+function cleanText(s: string): string {
+  return s
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2190}-\u{2BFF}️‍]/gu, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 /** 주문 → v2 주문등록(복수) 행 */
 function toOrderRow(o: PushableOrder): Record<string, unknown> | { skip: string } {
   const sa = o.shipping_address ?? {};
@@ -91,7 +101,9 @@ function toOrderRow(o: PushableOrder): Record<string, unknown> | { skip: string 
   if (!phone) return { skip: "수령인 연락처 없음" };
   if (!sa.postcode) return { skip: "우편번호 없음" };
 
-  const address = [sa.address, sa.detail].filter(Boolean).join(" ").slice(0, 66);
+  const receiverName = cleanText(sa.recipient).slice(0, 18) || "고객";
+  const orderName = cleanText(o.customer_name ?? sa.recipient).slice(0, 18) || receiverName;
+  const address = cleanText([sa.address, sa.detail].filter(Boolean).join(" ")).slice(0, 66);
   const row: Record<string, unknown> = {
     id: process.env.EBUT_ID,
     custCode: process.env.EBUT_CUST_CODE,
@@ -101,13 +113,13 @@ function toOrderRow(o: PushableOrder): Record<string, unknown> | { skip: string 
     payDate: ymdKst(o.approved_at ?? o.created_at),
     orderNo: o.order_id,
     orderNoSeq: "01",
-    orderName: (o.customer_name ?? sa.recipient).slice(0, 18),
-    receiverName: sa.recipient.slice(0, 18),
+    orderName,
+    receiverName,
     receiverPhone: phone,
     receiverCellPhone: phone,
     receiverZipcode: String(sa.postcode).slice(0, 7),
     receiverAddress: address,
-    receiverMemo: (sa.memo ?? "").slice(0, 300),
+    receiverMemo: cleanText(sa.memo ?? "").slice(0, 300),
     goodsCode: "GL-01",
     // 상품명에 옵션(N개월 분)을 넣으면 수량 필드와 곱해 읽혀 물류 혼동이
     // 난다 — 상품명은 단품 고정 표기, 박스 수는 goodsQty 로만 전달한다.
