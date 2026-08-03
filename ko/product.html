@@ -687,6 +687,7 @@ html[lang="ko"] p,html[lang="ko"] .ph-desc,html[lang="ko"] .t-sub,html[lang="ko"
 
 /* Point font — 색 들어간 영문은 Times New Roman, 한글은 Wanted Sans로 자동 폴백(Times엔 한글 글리프 없음) */
 .ey,.ph-lbl,.po-banner-off,.logo .dot,em{font-family:'Times New Roman',Times,'Wanted Sans Variable','Wanted Sans',serif;}
+.gloword{font-family:var(--font-fraunces),'Fraunces',Georgia,'Times New Roman',serif;font-weight:400;text-transform:none;letter-spacing:normal;}
 
 /* 베스트 리뷰 — 단가표 바로 아래, 체험단 8주 기록을 리뷰 카드로 (구 .ba 섹션 승격) */
 .bestrev{padding:clamp(64px,9vw,100px) 0;background:var(--bg-2);border-top:1px solid var(--ink-line);}
@@ -1822,7 +1823,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
     <h2 class="po-h">비교해봐도,<br><em>정답은 glo 입니다.</em></h2>
     <table class="po-cmp-table">
       <thead>
-        <tr><th></th><th class="glo-col">glo GL-01</th><th>타사 제품</th></tr>
+        <tr><th></th><th class="glo-col"><span class="gloword">glo</span> GL-01</th><th>타사 제품</th></tr>
       </thead>
       <tbody>
         <tr><td class="feat"><b>Tightening-PB®</b> 특허 복합물<br>모공·피지 개선 전용</td><td class="glo-col"><span class="mk">○</span><span class="po-cmp-sm">KR 특허 10-2911449</span></td><td><span class="mk x">✕</span><span class="po-cmp-sm">특허 성분 없음</span></td></tr>
@@ -1851,7 +1852,7 @@ body.po-stuck nav:not(.ptabs){opacity:0;visibility:hidden;transition:opacity .2s
       <p class="dt-sub">아래는 실제 임상에서 사용된 용량과 GL-01 활성 성분의 대조 분석표입니다. 또한, 일반 타사 제품들의 평균 함량과 함께 분석해 보았습니다.<sup class="c">1–10</sup></p>
     </div>
     <div class="vt">
-      <div class="vr vh"><div class="vc">Active</div><div class="vc">임상 연구 함량</div><div class="vc">타사 평균</div><div class="vc vg">glo GL-01</div></div>
+      <div class="vr vh"><div class="vc">Active</div><div class="vc">임상 연구 함량</div><div class="vc">타사 평균</div><div class="vc vg"><span class="gloword">glo</span> GL-01</div></div>
       <div class="vr"><div class="vc vn">Glutathione (reduced)</div><div class="vc">250–500 mg</div><div class="vc">50–100 mg</div><div class="vc vg">250 mg · yeast-derived</div></div>
       <div class="vr"><div class="vc vn">L-Cystine</div><div class="vc">200–500 mg</div><div class="vc">대부분 생략</div><div class="vc vg">200 mg · 100% L-cystine</div></div>
       <div class="vr"><div class="vc vn">White tomato extract</div><div class="vc">100–250 mg</div><div class="vc">5–15 mg</div><div class="vc vg">200 mg · 식물성 melatonin 2%</div></div>
