@@ -5,6 +5,7 @@ import { formatKRW } from "@/lib/product";
 import { statusLabel, isCancelable, type OrderStatus } from "@/lib/order-status";
 import { carrierName, trackingUrlOf } from "@/lib/carriers";
 import CancelButton from "./cancel-button";
+import AddressEdit from "./address-edit";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +34,7 @@ type Order = {
   shipped_at: string | null;
   delivered_at: string | null;
   created_at: string;
+  wms_pushed_at: string | null;
 };
 
 function fmtDate(iso: string | null): string {
@@ -65,7 +67,7 @@ export default async function OrderDetailPage({
   const { data: order } = await supabase
     .from("orders")
     .select(
-      "order_id, order_name, product_code, quantity, status, amount, used_points, payment_method, customer_phone, shipping_address, carrier, tracking_number, shipped_at, delivered_at, created_at",
+      "order_id, order_name, product_code, quantity, status, amount, used_points, payment_method, customer_phone, shipping_address, carrier, tracking_number, shipped_at, delivered_at, created_at, wms_pushed_at",
     )
     .eq("order_id", orderId)
     .single<Order>();
@@ -75,6 +77,11 @@ export default async function OrderDetailPage({
   const s = statusLabel(order.status);
   const sa = order.shipping_address ?? {};
   const cancelable = isCancelable(order.status);
+  // 배송지 셀프 변경 가능 조건 — API(/api/orders/address)와 동일 기준
+  const addressEditable =
+    ["paid", "awaiting_deposit"].includes(order.status) &&
+    !order.wms_pushed_at &&
+    !order.tracking_number;
   const trackingUrl = order.tracking_number
     ? trackingUrlOf(order.carrier, order.tracking_number)
     : null;
@@ -136,6 +143,26 @@ export default async function OrderDetailPage({
         <Row k="송장번호" v={order.tracking_number || "아직 등록 전이에요"} />
         <Row k="발송일시" v={fmtDate(order.shipped_at)} />
         {order.delivered_at ? <Row k="배송완료" v={fmtDate(order.delivered_at)} /> : null}
+
+        {/* 배송지 셀프 변경 — WMS 발주 전(paid)에만. 발주 후엔 CS 안내 */}
+        {addressEditable ? (
+          <AddressEdit
+            orderId={order.order_id}
+            prefill={{
+              recipient: sa.recipient ?? "",
+              phone: sa.phone ?? order.customer_phone ?? "",
+              postcode: sa.postcode ?? "",
+              address: sa.address ?? "",
+              detail: sa.detail ?? "",
+              memo: sa.memo ?? "",
+            }}
+          />
+        ) : order.status === "preparing" ? (
+          <p className="mt-3 text-xs text-ink-faint">
+            배송 준비가 시작되어 배송지 직접 변경이 어려워요. 급하시면 고객센터(채널톡)로
+            문의해주세요.
+          </p>
+        ) : null}
       </Section>
 
       {/* 배송 조회 — 송장이 등록된 뒤에만 노출 */}
