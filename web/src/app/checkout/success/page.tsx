@@ -16,7 +16,7 @@ type VirtualAccount = {
 
 type Result =
   | { state: "loading" }
-  | { state: "ok"; orderName?: string; method?: string; totalAmount?: number }
+  | { state: "ok"; orderName?: string; method?: string; totalAmount?: number; orderId?: string }
   | {
       state: "awaiting";
       orderName?: string;
@@ -76,6 +76,7 @@ function SuccessInner() {
           orderName: data.orderName,
           method: data.method,
           totalAmount: data.totalAmount,
+          orderId,
         });
         // Browser Purchase event — deduped with the server CAPI via event_id = orderId.
         metaTrack(
@@ -179,6 +180,17 @@ function SuccessInner() {
       >
         홈으로
       </Link>
+      {/* 오입력을 깨닫는 순간이 결제 직후 — 셀프 배송지 변경 창구를 바로 안내 */}
+      <p className="mt-6 text-xs text-ink-faint">
+        배송지를 잘못 입력하셨나요?{" "}
+        <Link
+          href={result.orderId ? `/account/orders/${result.orderId}` : "/account"}
+          className="font-semibold text-accent underline"
+        >
+          주문 상세
+        </Link>
+        에서 발주 전까지 직접 수정할 수 있어요.
+      </p>
     </Centered>
   );
 }
