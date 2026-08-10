@@ -11,9 +11,11 @@ import {
   sellerRejectedNotice,
 } from "@/lib/groupbuy-notices";
 
-/** 폼의 date 입력(YYYY-MM-DD)을 KST 자정 기준 timestamptz 로 */
+/** 폼의 datetime-local(YYYY-MM-DDTHH:mm) 또는 date 입력을 KST timestamptz 로.
+ *  날짜만 오면 시작은 자정, 종료는 23:59:59 로 채운다. */
 function kstDate(value: FormDataEntryValue | null, endOfDay = false): string | null {
   const s = String(value ?? "").trim();
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(s)) return `${s}:00+09:00`;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
   return `${s}T${endOfDay ? "23:59:59" : "00:00:00"}+09:00`;
 }
@@ -184,7 +186,7 @@ export async function approveRound(formData: FormData) {
       seller?.phone,
       roundApprovedNotice({
         name: seller?.name ?? "셀러",
-        period: `${startsAt.slice(0, 10)} ~ ${endsAt.slice(0, 10)}`,
+        period: `${startsAt.slice(0, 10)} ${startsAt.slice(11, 16)} ~ ${endsAt.slice(0, 10)} ${endsAt.slice(11, 16)}`,
         rate,
         handle,
       }),

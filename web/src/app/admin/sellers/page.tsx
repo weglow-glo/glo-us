@@ -65,10 +65,25 @@ function fmtDate(iso: string | null) {
   return new Date(iso).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" });
 }
 
-/** date 입력 프리필용 — KST 기준 YYYY-MM-DD (UTC slice 하면 하루 밀린다) */
-function kstDateInput(iso: string | null): string | undefined {
+/** datetime-local 프리필용 — KST 기준 YYYY-MM-DDTHH:mm (UTC slice 하면 밀린다) */
+function kstDateTimeInput(iso: string | null): string | undefined {
   if (!iso) return undefined;
-  return new Date(iso).toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
+  return new Date(iso)
+    .toLocaleString("sv-SE", { timeZone: "Asia/Seoul" })
+    .slice(0, 16)
+    .replace(" ", "T");
+}
+
+/** 기간 표시 — 날짜 + 시각 (KST) */
+function fmtDT(iso: string | null) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleString("ko-KR", {
+    timeZone: "Asia/Seoul",
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 type ApplicationRow = {
@@ -244,7 +259,7 @@ export default async function AdminSellersPage() {
               <div key={r.id} className="rounded-xl border border-accent/40 bg-bg-2 p-5">
                 <p className="text-sm font-semibold text-ink">
                   {sellerName.get(r.seller_id) ?? "?"} · {ROUND_TYPE_LABEL[r.type]} ·{" "}
-                  희망 {fmtDate(r.starts_at)} ~ {fmtDate(r.ends_at)}
+                  희망 {fmtDT(r.starts_at)} ~ {fmtDT(r.ends_at)}
                 </p>
                 {r.request_note && (
                   <p className="mt-1 text-sm text-ink-soft">요청: {r.request_note}</p>
@@ -253,8 +268,8 @@ export default async function AdminSellersPage() {
                   <input type="hidden" name="round_id" value={r.id} />
                   <Input name="handle" label="핸들 (URL)" placeholder="ellie-oct" required />
                   <Input name="display_name" label="표시 이름" placeholder="엘리" />
-                  <Input name="starts_at" label="시작일" type="date" required defaultValue={kstDateInput(r.starts_at)} />
-                  <Input name="ends_at" label="종료일" type="date" required defaultValue={kstDateInput(r.ends_at)} />
+                  <Input name="starts_at" label="시작 일시" type="datetime-local" required defaultValue={kstDateTimeInput(r.starts_at)} />
+                  <Input name="ends_at" label="종료 일시" type="datetime-local" required defaultValue={kstDateTimeInput(r.ends_at)} />
                   <Input name="commission_rate" label="수수료율 (%)" type="number" step="0.5" required />
                   <label className="block sm:col-span-2">
                     <span className="mb-1 block text-xs font-medium text-ink-soft">
@@ -466,7 +481,7 @@ function RoundTable({
                 </td>
                 <td className="px-4 py-3 text-ink-soft">{ROUND_TYPE_LABEL[r.type]}</td>
                 <td className="px-4 py-3 text-ink-soft">
-                  {fmtDate(r.starts_at)} ~ {fmtDate(r.ends_at)}
+                  {fmtDT(r.starts_at)} ~ {fmtDT(r.ends_at)}
                   {r.settle_due_at && (
                     <p className="text-[11px] text-ink-mute">정산 기준 {fmtDate(r.settle_due_at)}</p>
                   )}

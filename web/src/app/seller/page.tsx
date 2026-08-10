@@ -41,6 +41,17 @@ type OrderRow = {
   created_at: string;
 };
 
+function fmtDT(iso: string | null) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleString("ko-KR", {
+    timeZone: "Asia/Seoul",
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 function fmtDate(iso: string | null) {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" });
@@ -156,7 +167,7 @@ export default async function SellerDashboard() {
           <h2 className="text-sm font-semibold text-ink">승인 대기 중인 신청</h2>
           {requested.map((r) => (
             <p key={r.id} className="mt-2 text-sm text-ink-soft">
-              {fmtDate(r.starts_at)} ~ {fmtDate(r.ends_at)}
+              {fmtDT(r.starts_at)} ~ {fmtDT(r.ends_at)}
               {r.request_note ? ` · ${r.request_note}` : ""} —{" "}
               <span className="text-accent">운영팀 확인 중</span>
             </p>
@@ -185,7 +196,7 @@ export default async function SellerDashboard() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-ink">
-                  {ROUND_TYPE_LABEL[r.type]} · {fmtDate(r.starts_at)} ~ {fmtDate(r.ends_at)}{" "}
+                  {ROUND_TYPE_LABEL[r.type]} · {fmtDT(r.starts_at)} ~ {fmtDT(r.ends_at)}{" "}
                   {isLive ? (
                     <span className="ml-1 rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold text-cream">
                       LIVE

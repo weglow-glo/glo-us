@@ -40,13 +40,21 @@ export default function RoundBuyPatch({ round }: { round: PublicRound }) {
     const sellerName = round.displayName ?? "셀러";
     const maxDisc = Math.round(Math.max(...round.options.map(roundDiscountOf)));
     const endsAt = round.endsAt ? new Date(round.endsAt) : null;
-    const endLabel = endsAt
-      ? endsAt.toLocaleDateString("ko-KR", {
-          timeZone: "Asia/Seoul",
-          month: "long",
-          day: "numeric",
-        })
-      : "";
+    let endLabel = "";
+    if (endsAt) {
+      endLabel = endsAt.toLocaleDateString("ko-KR", {
+        timeZone: "Asia/Seoul",
+        month: "long",
+        day: "numeric",
+      });
+      const hm = endsAt.toLocaleTimeString("ko-KR", {
+        timeZone: "Asia/Seoul",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+      if (hm !== "23:59") endLabel += ` ${hm}`;
+    }
 
     // 1) 런칭 이벤트 카운트다운 제거 → 프로모션 안내 바로 교체
     document.getElementById("launch-scar")?.remove();

@@ -1,6 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatKRW } from "@/lib/product";
-import { grantSeller, revokeSeller } from "./actions";
 import { DEMO_MEMBERS, DEMO_SELLERS, groupbuyDemoMode } from "@/lib/groupbuy-demo";
 
 export const dynamic = "force-dynamic";
@@ -128,7 +127,7 @@ export default async function MembersPage() {
               <th className="py-3 pr-4">최근 로그인</th>
               <th className="py-3 pr-4">주문</th>
               <th className="py-3 pr-4">결제액</th>
-              <th className="py-3 pr-4">셀러 권한</th>
+              <th className="py-3 pr-4">권한</th>
             </tr>
           </thead>
           <tbody>
@@ -151,31 +150,11 @@ export default async function MembersPage() {
                   <td className="py-3 pr-4 text-ink">{formatKRW(act?.spent ?? 0)}</td>
                   <td className="py-3 pr-4">
                     {seller?.active ? (
-                      <span className="flex items-center gap-2">
-                        <span className="rounded-full bg-accent px-2.5 py-0.5 text-[11px] font-bold text-cream">
-                          셀러
-                        </span>
-                        <form action={revokeSeller}>
-                          <input type="hidden" name="userId" value={m.id} />
-                          <button
-                            type="submit"
-                            className="text-xs font-medium text-ink-mute underline-offset-2 hover:text-burg-400 hover:underline"
-                          >
-                            해제
-                          </button>
-                        </form>
+                      <span className="rounded-full bg-accent px-2.5 py-0.5 text-[11px] font-bold text-cream">
+                        셀러
                       </span>
                     ) : (
-                      <form action={grantSeller}>
-                        <input type="hidden" name="userId" value={m.id} />
-                        <input type="hidden" name="name" value={m.full_name ?? m.email ?? ""} />
-                        <button
-                          type="submit"
-                          className="rounded-full border border-ink-line px-3 py-1 text-xs font-medium text-ink-soft transition hover:border-accent hover:text-accent"
-                        >
-                          {seller ? "권한 복구" : "셀러 권한 부여"}
-                        </button>
-                      </form>
+                      <span className="text-xs text-ink-mute">고객</span>
                     )}
                   </td>
                 </tr>
