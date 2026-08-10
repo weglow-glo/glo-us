@@ -513,6 +513,12 @@ function RoundTable({
                     ) : (
                       <span className="text-ink-mute">{ROUND_STATUS_LABEL[r.status] ?? r.status}</span>
                     )}
+                    <a
+                      href={`/admin/sellers/rounds/${r.id}`}
+                      className="ml-2 font-medium text-accent hover:underline"
+                    >
+                      상세 · 주문 회원
+                    </a>
                   </p>
                 </td>
                 <td className="px-4 py-3 text-ink-soft">{ROUND_TYPE_LABEL[r.type]}</td>
