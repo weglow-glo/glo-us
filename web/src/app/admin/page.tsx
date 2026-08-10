@@ -29,6 +29,8 @@ type Row = {
   customer_phone: string | null;
   tracking_number: string | null;
   created_at: string;
+  round_id: string | null;
+  seller_handle: string | null;
 };
 
 function fmtDate(iso: string) {
@@ -46,7 +48,7 @@ export default async function AdminPage({
   const base = admin
     .from("orders")
     .select(
-      "id, order_id, status, amount, quantity, customer_name, customer_phone, tracking_number, created_at",
+      "id, order_id, status, amount, quantity, customer_name, customer_phone, tracking_number, created_at, round_id, seller_handle",
     );
   const filtered = status ? base.eq("status", status) : base;
   const { data, error } = await filtered
@@ -54,6 +56,27 @@ export default async function AdminPage({
     .limit(500)
     .returns<Row[]>();
   const orders = data ?? [];
+
+  // 공구 주문 표시 — round_id → 회차(차수) → 셀러 이름. "준호 공구 1차" 배지용.
+  const roundLabel = new Map<string, string>();
+  {
+    const roundIds = [...new Set(orders.map((o) => o.round_id).filter(Boolean))] as string[];
+    if (roundIds.length > 0) {
+      const { data: rounds } = await admin
+        .from("groupbuy_rounds")
+        .select("id, seller_id, display_name, round_no")
+        .in("id", roundIds);
+      const sellerIds = [...new Set((rounds ?? []).map((r) => r.seller_id))];
+      const { data: sellerRows } = sellerIds.length
+        ? await admin.from("sellers").select("id, name").in("id", sellerIds)
+        : { data: [] };
+      const sellerName = new Map((sellerRows ?? []).map((s) => [s.id, s.name]));
+      for (const r of rounds ?? []) {
+        const name = r.display_name ?? sellerName.get(r.seller_id) ?? "셀러";
+        roundLabel.set(r.id, `${name} 공구${r.round_no != null ? ` ${r.round_no}차` : ""}`);
+      }
+    }
+  }
 
   // How many orders are awaiting fulfillment (for the bulk-prepare button).
   const { count: paidCount } = await admin
@@ -264,6 +287,14 @@ export default async function AdminPage({
                     <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${s.className}`}>
                       {s.label}
                     </span>
+                    {o.round_id && (
+                      <p className="mt-1">
+                        <span className="whitespace-nowrap rounded-full bg-bg-3 px-2 py-0.5 text-[11px] font-bold text-accent">
+                          {roundLabel.get(o.round_id) ??
+                            (o.seller_handle ? `@${o.seller_handle} 공구` : "공구")}
+                        </span>
+                      </p>
+                    )}
                   </td>
                   <td className="py-3 pr-4 text-xs text-ink-soft">{o.tracking_number ?? "—"}</td>
                   <td className="py-3">
