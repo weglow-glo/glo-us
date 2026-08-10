@@ -1,5 +1,5 @@
+import { redirect } from "next/navigation";
 import { getSellerContext } from "../_lib";
-import NotSeller from "../_not-seller";
 import { requestRound } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 /** 공동구매 일정 신청 — 승인되면 전용 링크·가격·수수료율이 확정된다 */
 export default async function SellerApplyPage() {
   const ctx = await getSellerContext();
-  if (!ctx) return <NotSeller />;
+  if (!ctx) redirect("/seller");
 
   return (
     <main className="mx-auto max-w-xl px-6 py-10">

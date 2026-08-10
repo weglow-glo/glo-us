@@ -59,6 +59,22 @@ const DAY = 86400_000;
 const now = () => Date.now();
 const iso = (t: number) => new Date(t).toISOString();
 
+/** 셀러 지원 심사 데모 — 어드민 인박스 확인용 */
+export const DEMO_APPLICATIONS = [
+  {
+    id: "demo-app-1",
+    user_id: "demo-user-4",
+    status: "pending",
+    name: "박지원",
+    phone: "01033334444",
+    channel: "instagram.com/jiwon.beauty",
+    follower: "인스타 3.2만",
+    note: "뷰티 루틴 릴스 위주로 운영합니다. 9월 중 공구 희망합니다.",
+    admin_note: null,
+    created_at: iso(now() - 1 * DAY),
+  },
+];
+
 /** 회원관리 화면용 데모 회원 — 셀러 권한 부여 흐름 확인 */
 export const DEMO_MEMBERS = [
   {

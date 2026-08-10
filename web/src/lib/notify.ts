@@ -152,6 +152,86 @@ export async function sendShippingNotice(opts: ShippingNotice): Promise<NotifyRe
   }
 }
 
+/** 범용 운영 안내 1건 — 셀러 심사 결과, 공구 일정 확정 등.
+ *
+ *  알림톡: SOLAPI_PFID + 해당 템플릿 env(templateEnvKey, 예:
+ *  SOLAPI_TEMPLATE_SELLER_APPROVED)가 채워져 있으면 알림톡으로 나가고,
+ *  실패 시 같은 text 가 문자로 자동 대체발송된다 (배송 알림과 동일 패턴).
+ *  템플릿 env 가 비어 있으면 처음부터 문자(LMS)로 나간다 —
+ *  즉 템플릿 심사 전에도 동작하고, 심사가 끝나면 .env 만 채우면 전환된다.
+ *
+ *  셀러 관련 템플릿 env 이름 (SOLAPI 콘솔에서 템플릿 등록 후 채울 것):
+ *    SOLAPI_TEMPLATE_SELLER_APPROVED   셀러 심사 완료
+ *    SOLAPI_TEMPLATE_SELLER_REJECTED   셀러 심사 반려
+ *    SOLAPI_TEMPLATE_ROUND_APPROVED    공구 일정 확정
+ *    SOLAPI_TEMPLATE_ROUND_REJECTED    공구 일정 반려
+ */
+export async function sendPlainNotice(opts: {
+  to: string;
+  subject: string;
+  text: string;
+  /** 알림톡 템플릿 ID 가 담긴 환경변수 이름 (비어 있으면 LMS) */
+  templateEnvKey?: string;
+  /** 알림톡 템플릿 변수 — #{이름} 형태 키 */
+  variables?: Record<string, string>;
+}): Promise<NotifyResult> {
+  const key = process.env.SOLAPI_API_KEY;
+  const secret = process.env.SOLAPI_API_SECRET;
+  const from = process.env.SOLAPI_SENDER;
+  if (!key || !secret || !from) {
+    return { ok: false, channel: "lms", error: "발송 환경변수(SOLAPI_*) 미설정" };
+  }
+
+  const pfId = process.env.SOLAPI_PFID;
+  const templateId = opts.templateEnvKey ? process.env[opts.templateEnvKey] : undefined;
+  const useAlimtalk = Boolean(pfId && templateId);
+
+  const message: Record<string, unknown> = {
+    to: opts.to,
+    from: from.replace(/\D/g, ""),
+    // 알림톡일 때는 대체발송(문자) 본문으로 쓰인다.
+    text: opts.text,
+    subject: opts.subject,
+  };
+  if (useAlimtalk) {
+    message.kakaoOptions = {
+      pfId,
+      templateId,
+      variables: opts.variables ?? {},
+      // 알림톡 실패 시 위 text 로 문자 대체발송
+      disableSms: false,
+    };
+  }
+
+  const channel: NotifyResult["channel"] = useAlimtalk ? "alimtalk" : "lms";
+
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authHeader(key, secret),
+      },
+      body: JSON.stringify({ messages: [message] }),
+    });
+    const json = (await res.json().catch(() => ({}))) as {
+      failedMessageList?: Array<{ statusMessage?: string }>;
+      messageList?: Array<{ messageId?: string }>;
+      groupId?: string;
+      message?: string;
+      errorMessage?: string;
+    };
+    if (!res.ok) {
+      return { ok: false, channel, error: json.errorMessage ?? json.message ?? `HTTP ${res.status}` };
+    }
+    const failed = json.failedMessageList?.[0];
+    if (failed) return { ok: false, channel, error: failed.statusMessage ?? "발송 실패" };
+    return { ok: true, channel, messageId: json.messageList?.[0]?.messageId ?? json.groupId };
+  } catch (e) {
+    return { ok: false, channel, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
 /** 배송완료 7일 후 리뷰 요청 문자 본문. 금액은 지급 정책(app_settings)에서 받는다. */
 export function reviewRequestMessage(opts: {
   name: string | null;

@@ -3,6 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { parseRoundOptions, SETTLE_HOLD_DAYS } from "@/lib/groupbuy";
+import {
+  dispatchSellerNotice,
+  roundApprovedNotice,
+  roundRejectedNotice,
+  sellerApprovedNotice,
+  sellerRejectedNotice,
+} from "@/lib/groupbuy-notices";
 
 /** 폼의 date 입력(YYYY-MM-DD)을 KST 자정 기준 timestamptz 로 */
 function kstDate(value: FormDataEntryValue | null, endOfDay = false): string | null {
@@ -61,39 +68,77 @@ export async function toggleSellerActive(formData: FormData) {
   revalidatePath("/admin/sellers");
 }
 
-// ─────────────────────────────────────────────── 회차
+// ─────────────────────────────────────────────── 셀러 지원 심사
 
-/** 회차 생성 — 운영자가 조건까지 채워서 바로 승인 상태로 만든다.
- *  (셀러 신청 건은 approveRound 로 처리) */
-export async function createRound(formData: FormData) {
-  const sellerId = str(formData.get("seller_id"));
-  const handle = str(formData.get("handle"))?.toLowerCase() ?? null;
-  const startsAt = kstDate(formData.get("starts_at"));
-  const endsAt = kstDate(formData.get("ends_at"), true);
-  const rate = Number(formData.get("commission_rate"));
-  const options = parseOptionsField(formData.get("options"));
-
-  if (!sellerId || !handle || !/^[a-z0-9-]{2,40}$/.test(handle)) return;
-  if (!startsAt || !endsAt || Date.parse(endsAt) <= Date.parse(startsAt)) return;
-  if (!Number.isFinite(rate) || rate < 0 || rate > 100) return;
-  if (!options) return;
+/** 지원 승인 — sellers 행 생성(또는 재활성화) + 계정 연결 + 문자 안내 */
+export async function approveApplication(formData: FormData) {
+  const appId = str(formData.get("application_id"));
+  if (!appId) return;
 
   const admin = createAdminClient();
-  await admin.from("groupbuy_rounds").insert({
-    seller_id: sellerId,
-    type: String(formData.get("type")) === "sponsored" ? "sponsored" : "groupbuy",
-    status: "approved",
-    handle,
-    display_name: str(formData.get("display_name")),
-    starts_at: startsAt,
-    ends_at: endsAt,
-    options,
-    commission_rate: rate,
-    settle_due_at: settleDueOf(endsAt),
-    admin_note: str(formData.get("admin_note")),
-  });
+  const { data: app } = await admin
+    .from("seller_applications")
+    .select("id, user_id, status, name, phone, channel, follower, note")
+    .eq("id", appId)
+    .maybeSingle();
+  if (!app || app.status !== "pending") return;
+
+  // 과거 셀러였던 계정이면 재활성화, 아니면 새로 생성
+  const { data: existing } = await admin
+    .from("sellers")
+    .select("id")
+    .eq("user_id", app.user_id)
+    .maybeSingle();
+  if (existing) {
+    await admin
+      .from("sellers")
+      .update({ active: true, name: app.name, phone: app.phone })
+      .eq("id", existing.id);
+  } else {
+    await admin.from("sellers").insert({
+      user_id: app.user_id,
+      name: app.name,
+      phone: app.phone,
+      note: [app.channel, app.follower].filter(Boolean).join(" · ") || null,
+    });
+  }
+
+  await admin
+    .from("seller_applications")
+    .update({ status: "approved", decided_at: new Date().toISOString() })
+    .eq("id", app.id);
+
+  dispatchSellerNotice(app.phone, sellerApprovedNotice(app.name));
+
+  revalidatePath("/admin/sellers");
+  revalidatePath("/admin/members");
+}
+
+/** 지원 반려 — 사유 기록 + 문자 안내 (재지원 가능) */
+export async function rejectApplication(formData: FormData) {
+  const appId = str(formData.get("application_id"));
+  if (!appId) return;
+  const note = str(formData.get("admin_note"));
+
+  const admin = createAdminClient();
+  const { data: app } = await admin
+    .from("seller_applications")
+    .select("id, status, name, phone")
+    .eq("id", appId)
+    .maybeSingle();
+  if (!app || app.status !== "pending") return;
+
+  await admin
+    .from("seller_applications")
+    .update({ status: "rejected", admin_note: note, decided_at: new Date().toISOString() })
+    .eq("id", app.id);
+
+  dispatchSellerNotice(app.phone, sellerRejectedNotice(app.name, note));
+
   revalidatePath("/admin/sellers");
 }
+
+// ─────────────────────────────────────────────── 회차
 
 /** 셀러 신청(requested) 승인 — 조건을 채워서 approved 로 전환 */
 export async function approveRound(formData: FormData) {
@@ -110,7 +155,7 @@ export async function approveRound(formData: FormData) {
   if (!options) return;
 
   const admin = createAdminClient();
-  await admin
+  const { data: updated } = await admin
     .from("groupbuy_rounds")
     .update({
       status: "approved",
@@ -124,20 +169,54 @@ export async function approveRound(formData: FormData) {
       admin_note: str(formData.get("admin_note")),
     })
     .eq("id", roundId)
-    .eq("status", "requested");
+    .eq("status", "requested")
+    .select("seller_id")
+    .maybeSingle();
+
+  // 확정 안내 문자 — 링크·기간·수수료율
+  if (updated) {
+    const { data: seller } = await admin
+      .from("sellers")
+      .select("name, phone")
+      .eq("id", updated.seller_id)
+      .maybeSingle();
+    dispatchSellerNotice(
+      seller?.phone,
+      roundApprovedNotice({
+        name: seller?.name ?? "셀러",
+        period: `${startsAt.slice(0, 10)} ~ ${endsAt.slice(0, 10)}`,
+        rate,
+        handle,
+      }),
+    );
+  }
+
   revalidatePath("/admin/sellers");
 }
 
 export async function rejectRound(formData: FormData) {
   const roundId = str(formData.get("round_id"));
   if (!roundId) return;
+  const note = str(formData.get("admin_note"));
 
   const admin = createAdminClient();
-  await admin
+  const { data: updated } = await admin
     .from("groupbuy_rounds")
-    .update({ status: "rejected", admin_note: str(formData.get("admin_note")) })
+    .update({ status: "rejected", admin_note: note })
     .eq("id", roundId)
-    .eq("status", "requested");
+    .eq("status", "requested")
+    .select("seller_id")
+    .maybeSingle();
+
+  if (updated) {
+    const { data: seller } = await admin
+      .from("sellers")
+      .select("name, phone")
+      .eq("id", updated.seller_id)
+      .maybeSingle();
+    dispatchSellerNotice(seller?.phone, roundRejectedNotice(seller?.name ?? "셀러", note));
+  }
+
   revalidatePath("/admin/sellers");
 }
 

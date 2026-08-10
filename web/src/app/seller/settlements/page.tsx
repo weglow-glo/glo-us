@@ -1,8 +1,8 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatKRW } from "@/lib/product";
 import { ROUND_TYPE_LABEL, type RoundType } from "@/lib/groupbuy";
+import { redirect } from "next/navigation";
 import { getSellerContext } from "../_lib";
-import NotSeller from "../_not-seller";
 import { DEMO_ORDERS, DEMO_ROUNDS, groupbuyDemoMode } from "@/lib/groupbuy-demo";
 
 export const dynamic = "force-dynamic";
@@ -28,7 +28,7 @@ function fmtDate(iso: string | null) {
 /** 정산 내역 — 회차별 매출·차감·수수료율·정산액 */
 export default async function SellerSettlementsPage() {
   const ctx = await getSellerContext();
-  if (!ctx) return <NotSeller />;
+  if (!ctx) redirect("/seller");
 
   const demo = groupbuyDemoMode();
   let rounds: RoundRow[] = [];
