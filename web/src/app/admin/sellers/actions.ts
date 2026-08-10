@@ -262,10 +262,12 @@ export async function settleRound(formData: FormData) {
 
   const { data: round } = await admin
     .from("groupbuy_rounds")
-    .select("id, status, commission_rate, settled_at")
+    .select("id, status, commission_rate, settled_at, ends_at")
     .eq("id", roundId)
     .maybeSingle();
   if (!round || round.settled_at || round.status !== "approved") return;
+  // 진행 중 회차는 확정 불가 — 종료 후에만 (UI 도 기준일부터만 노출)
+  if (!round.ends_at || Date.now() < Date.parse(round.ends_at)) return;
 
   const { data: orders } = await admin
     .from("orders")
