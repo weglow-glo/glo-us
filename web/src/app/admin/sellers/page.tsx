@@ -337,19 +337,20 @@ export default async function AdminSellersPage() {
       <section className="mt-10">
         <h2 className="font-sans text-lg text-ink">셀러</h2>
         <div className="mt-3 overflow-x-auto rounded-xl border border-ink-line">
-          <table className="w-full min-w-[720px] text-sm">
+          <table className="w-full min-w-[720px] table-fixed text-sm">
             <thead>
               <tr className="border-b border-ink-line bg-bg-2 text-left text-xs text-ink-mute">
-                <th className="px-4 py-3">이름</th>
-                <th className="px-4 py-3">전용 URL</th>
-                <th className="px-4 py-3">셀러 정보</th>
+                {/* 셀러 정보 아코디언이 펼쳐져도 열이 밀리지 않도록 폭 고정 */}
+                <th className="w-24 px-4 py-3">이름</th>
+                <th className="w-56 px-4 py-3">전용 URL</th>
+                <th className="w-72 px-4 py-3">셀러 정보</th>
                 <th className="px-4 py-3">포털 계정</th>
-                <th className="px-4 py-3">상태</th>
+                <th className="w-20 px-4 py-3">상태</th>
               </tr>
             </thead>
             <tbody>
               {sellers.map((s) => (
-                <tr key={s.id} className="border-b border-ink-line last:border-0">
+                <tr key={s.id} className="border-b border-ink-line align-top last:border-0">
                   <td className="px-4 py-3 font-medium text-ink">{s.name}</td>
                   <td className="px-4 py-3">
                     <form action={updateSellerHandle} className="flex items-center gap-1.5">
@@ -371,7 +372,7 @@ export default async function AdminSellersPage() {
                       <summary className="cursor-pointer select-none rounded-full border border-ink-line px-3 py-1 text-[11px] font-medium text-ink-soft hover:border-accent hover:text-accent [&::-webkit-details-marker]:hidden">
                         셀러 정보 보기
                       </summary>
-                      <dl className="mt-2 space-y-1 rounded-md bg-bg-2 px-3 py-2 text-xs text-ink-soft">
+                      <dl className="mt-2 space-y-1 break-words rounded-md bg-bg-2 px-3 py-2 text-xs text-ink-soft">
                         <div className="flex gap-2">
                           <dt className="w-14 shrink-0 text-ink-mute">연락처</dt>
                           <dd>{s.phone ?? "—"}</dd>
