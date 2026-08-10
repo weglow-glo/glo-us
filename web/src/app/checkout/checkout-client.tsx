@@ -10,14 +10,13 @@ import {
 } from "@tosspayments/tosspayments-sdk";
 import {
   OPTIONS,
+  PRODUCT,
   getOption,
   currentPrice,
-  regularOf,
-  discountOf,
   formatPct,
   formatKRW,
-  orderNameOf,
 } from "@/lib/product";
+import { type RoundOption, type RoundType } from "@/lib/groupbuy";
 import type { Address } from "@/lib/address";
 import { metaTrack } from "@/lib/meta";
 import { naverConv } from "@/lib/naver-cts";
@@ -37,13 +36,25 @@ declare global {
   }
 }
 
+/** 일반 옵션·회차 전용 옵션을 하나로 다루기 위한 최소 형태 */
+type CheckoutOption = { key: string; months: number; label: string; price: number };
+
+export type CheckoutRound = {
+  handle: string;
+  displayName: string | null;
+  type: RoundType;
+  options: RoundOption[];
+};
+
 export default function CheckoutClient({
   initialOption,
+  round = null,
   defaultName = "",
   defaultPhone = "",
   accountEmail = "",
 }: {
   initialOption: string;
+  round?: CheckoutRound | null;
   defaultName?: string;
   defaultPhone?: string;
   accountEmail?: string;
@@ -54,18 +65,34 @@ export default function CheckoutClient({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [optionKey, setOptionKey] = useState(() => getOption(initialOption).key);
-  const opt = useMemo(() => getOption(optionKey), [optionKey]);
+  // 회차(공구·협찬) 체크아웃이면 옵션·가격은 회차 전용 구성에서만 나온다.
+  const optionList: CheckoutOption[] = useMemo(
+    () =>
+      round
+        ? round.options
+        : OPTIONS.map((o) => ({ ...o, price: currentPrice(o) })),
+    [round],
+  );
+  const [optionKey, setOptionKey] = useState(() =>
+    round
+      ? (round.options.find((o) => o.key === initialOption) ?? round.options[0]).key
+      : getOption(initialOption).key,
+  );
+  const opt = useMemo(
+    () => optionList.find((o) => o.key === optionKey) ?? optionList[0],
+    [optionList, optionKey],
+  );
 
   // 포인트 — 잔액은 서버에서, 사용액은 [0, min(잔액, 상품가-100)]로 클램프.
   // (토스 최소 결제금액 100원을 남겨야 한다)
+  // 회차 주문은 포인트 사용 불가 — 잔액을 아예 불러오지 않아 UI 도 뜨지 않는다.
   const [pointBalance, setPointBalance] = useState(0);
   const [pointInput, setPointInput] = useState(0);
-  const maxUsable = Math.max(0, Math.min(pointBalance, opt.price - 100));
+  const maxUsable = round ? 0 : Math.max(0, Math.min(pointBalance, opt.price - 100));
   const usePoints = Math.max(0, Math.min(pointInput, maxUsable));
   const amount = opt.price - usePoints;
-  const regularAmount = regularOf(opt);
-  const discount = discountOf(opt);
+  const regularAmount = opt.months * PRODUCT.regularPrice;
+  const discount = Math.round((1 - opt.price / regularAmount) * 1000) / 10;
 
   // Prefill from the signed-in Kakao account (nickname only — phone/address
   // aren't shared by Kakao without extra approved consent scopes).
@@ -81,6 +108,11 @@ export default function CheckoutClient({
   const [showAddr, setShowAddr] = useState(false);
   const [addrBusy, setAddrBusy] = useState(false);
   const prefilledRef = useRef(false);
+
+  // Field-level validation highlight (declared before applyAddress uses it).
+  const [invalid, setInvalid] = useState<Record<string, boolean>>({});
+  const clearInvalid = (k: string) =>
+    setInvalid((s) => (s[k] ? { ...s, [k]: false } : s));
 
   const applyAddress = (a: Address) => {
     setRecipient(a.recipient);
@@ -110,19 +142,22 @@ export default function CheckoutClient({
 
   useEffect(() => {
     loadAddresses(true);
-    fetch("/api/points/me", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((d: { balance?: number }) => setPointBalance(d.balance ?? 0))
-      .catch(() => {});
+    if (!round) {
+      fetch("/api/points/me", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((d: { balance?: number }) => setPointBalance(d.balance ?? 0))
+        .catch(() => {});
+    }
     metaTrack("InitiateCheckout", {
       content_ids: ["GL-01"],
       content_type: "product",
+      content_category: round ? "groupbuy" : undefined,
       currency: "KRW",
       value: opt.price,
     });
     naverConv({
       type: "begin_checkout",
-      items: [{ id: "GL-01", name: orderNameOf(opt), quantity: opt.months, payAmount: opt.price }],
+      items: [{ id: "GL-01", name: `${PRODUCT.name} ${opt.label}`, quantity: opt.months, payAmount: opt.price }],
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -174,11 +209,7 @@ export default function CheckoutClient({
     }
   }
 
-  // Field-level validation highlight + auto-dismissing top toast.
-  const [invalid, setInvalid] = useState<Record<string, boolean>>({});
-  const clearInvalid = (k: string) =>
-    setInvalid((s) => (s[k] ? { ...s, [k]: false } : s));
-
+  // Auto-dismissing top toast.
   const [toast, setToast] = useState<{ id: number; msg: string } | null>(null);
   const toastSeq = useRef(0);
   const toastTimer = useRef<number | undefined>(undefined);
@@ -265,6 +296,7 @@ export default function CheckoutClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           option: optionKey,
+          round: round?.handle,
           customerName: recipient,
           customerEmail: accountEmail,
           customerPhone: phone,
@@ -412,10 +444,19 @@ export default function CheckoutClient({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <span className="inline-block rounded-full bg-accent px-2.5 py-1 text-[11px] font-bold tracking-wide text-cream">
-              런칭 할인 {formatPct(discount)}
+              {round ? "프로모션 혜택가" : "런칭 할인"} {formatPct(discount)}
             </span>
             <p className="mt-2 font-sans text-xl text-ink">{PREORDER_NAME}</p>
-            <p className="mt-1 text-sm text-ink-mute">20ml 데일리 샷 · 스킨 롱제비티</p>
+            <p className="mt-1 text-sm text-ink-mute">
+              {round ? (
+                <>
+                  {round.displayName ?? "셀러"}님 × <span className="font-display">glo</span>{" "}
+                  프로모션 전용 구성
+                </>
+              ) : (
+                "20ml 데일리 샷 · 스킨 롱제비티"
+              )}
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <label htmlFor="opt" className="shrink-0 whitespace-nowrap text-sm text-ink-mute">
@@ -427,9 +468,9 @@ export default function CheckoutClient({
               onChange={(e) => setOptionKey(e.target.value)}
               className="w-full rounded-md border border-ink-line bg-bg-1 px-3 py-2 text-sm text-ink sm:w-auto"
             >
-              {OPTIONS.map((o) => (
+              {optionList.map((o) => (
                 <option key={o.key} value={o.key}>
-                  {o.label} — {formatKRW(currentPrice(o))}
+                  {o.label} — {formatKRW(o.price)}
                 </option>
               ))}
             </select>
@@ -486,6 +527,13 @@ export default function CheckoutClient({
           <b className="text-accent">결제 후 순차 배송</b>
           <br />
           배송이 시작되면 문자로 송장번호와 배송 조회 링크를 보내드립니다.
+          {round && (
+            <>
+              <br />
+              프로모션 주문은 포인트 적립·사용 대상이 아니며, 배송·교환·환불은 일반
+              주문과 동일하게 처리됩니다.
+            </>
+          )}
         </p>
       </section>
 
