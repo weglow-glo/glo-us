@@ -56,25 +56,86 @@ export default function RoundBuyPatch({ round }: { round: PublicRound }) {
       if (hm !== "23:59") endLabel += ` ${hm}`;
     }
 
-    // 1) 런칭 이벤트 카운트다운 제거 → 프로모션 안내 바로 교체
+    // 1) 런칭 이벤트 카운트다운 제거 → 회차 기간으로 도는 프로모션 카운트다운
     document.getElementById("launch-scar")?.remove();
     const buyBox = optList.closest<HTMLElement>(".buy-box");
     let banner: HTMLElement | null = null;
+    let timerEl: HTMLElement | null = null;
+    let timerRight: HTMLElement | null = null;
+    let barFill: HTMLElement | null = null;
+    let bottomRight: HTMLElement | null = null;
+
     if (buyBox && !buyBox.querySelector("[data-round-banner]")) {
       banner = document.createElement("div");
       banner.setAttribute("data-round-banner", "");
       banner.style.cssText =
-        "display:flex;justify-content:space-between;align-items:center;gap:8px;" +
-        "padding:12px 16px;margin-bottom:14px;border-radius:10px;" +
+        "padding:14px 16px;margin-bottom:14px;border-radius:10px;" +
         "background:var(--bg-3);border:1px solid var(--burg-50);";
+
+      const row1 = document.createElement("div");
+      row1.style.cssText =
+        "display:flex;justify-content:space-between;align-items:center;gap:8px;";
       const left = document.createElement("span");
       left.style.cssText = "font-size:13px;font-weight:700;color:var(--accent);";
-      left.append(`${sellerName}님 × `, gloWord(), " 프로모션 최대 혜택가");
-      const right = document.createElement("span");
-      right.style.cssText = "font-size:12px;color:var(--ink-soft);";
-      right.textContent = endLabel ? `${endLabel} 마감` : "";
-      banner.append(left, right);
+      left.append(`${sellerName}님 × `, gloWord(), ` 프로모션 최대 ${maxDisc}%`);
+      timerRight = document.createElement("span");
+      timerRight.style.cssText = "font-size:12px;color:var(--ink-soft);";
+      timerEl = document.createElement("b");
+      timerEl.style.cssText =
+        "color:var(--ink);font-variant-numeric:tabular-nums;font-weight:700;";
+      timerRight.append("마감까지 ", timerEl);
+      row1.append(left, timerRight);
+
+      const bar = document.createElement("div");
+      bar.style.cssText =
+        "height:5px;border-radius:100px;background:var(--burg-50);margin:10px 0;overflow:hidden;";
+      barFill = document.createElement("div");
+      barFill.style.cssText =
+        "height:100%;width:0%;border-radius:100px;background:var(--burg-300);transition:width .5s;";
+      bar.appendChild(barFill);
+
+      const row2 = document.createElement("div");
+      row2.style.cssText =
+        "display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;";
+      const bottomLeft = document.createElement("span");
+      bottomLeft.style.cssText = "color:var(--ink);font-weight:600;";
+      bottomLeft.textContent = endLabel ? `${endLabel} 마감` : "";
+      bottomRight = document.createElement("span");
+      bottomRight.style.cssText = "color:var(--ink-soft);";
+      bottomRight.textContent = "이후 일반 판매가로 전환";
+      row2.append(bottomLeft, bottomRight);
+
+      banner.append(row1, bar, row2);
       buyBox.prepend(banner);
+    }
+
+    // 1.2) 카운트다운 — 회차 종료 시각까지 1초 단위. 0 이 되면 새로고침 →
+    //      서버가 진행 중 회차 없음으로 판단해 일반 상세페이지로 리다이렉트.
+    const startMs = round.startsAt ? Date.parse(round.startsAt) : null;
+    const endMs = round.endsAt ? Date.parse(round.endsAt) : null;
+    let timerId: number | undefined;
+    if (endMs && timerEl) {
+      const pad = (n: number) => String(n).padStart(2, "0");
+      const tick = () => {
+        const left = endMs - Date.now();
+        if (left <= 0) {
+          window.clearInterval(timerId);
+          window.location.reload();
+          return;
+        }
+        const d = Math.floor(left / 86400_000);
+        const h = Math.floor(left / 3600_000) % 24;
+        const m = Math.floor(left / 60_000) % 60;
+        const s = Math.floor(left / 1000) % 60;
+        timerEl!.textContent =
+          d > 0 ? `${d}일 ${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(h)}:${pad(m)}:${pad(s)}`;
+        if (barFill && startMs) {
+          const p = Math.min(100, Math.max(2, ((Date.now() - startMs) / (endMs - startMs)) * 100));
+          barFill.style.width = `${p}%`;
+        }
+      };
+      tick();
+      timerId = window.setInterval(tick, 1000);
     }
 
     // 1.5) 하단 대형 배너(po-banner) — "공식 런칭 기념" → 셀러 프로모션 문구.
@@ -192,6 +253,7 @@ export default function RoundBuyPatch({ round }: { round: PublicRound }) {
     if (cards[0]) select(cards[0]);
 
     return () => {
+      window.clearInterval(timerId);
       handlers.forEach(([el, h]) => el.removeEventListener("click", h));
       banner?.remove();
     };

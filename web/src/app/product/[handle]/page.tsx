@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { fetchPublicRound } from "@/lib/groupbuy-server";
-import { isRoundLive, type PublicRound } from "@/lib/groupbuy";
+import { type PublicRound } from "@/lib/groupbuy";
 // 생성된 마케팅 상세페이지를 그대로 재사용한다 — predev/prebuild 가
 // ko/product.html 에서 생성하므로 빌드 시점에는 항상 존재한다 (gitignored).
 import MarketingLayout from "../../(marketing)/layout";
@@ -29,9 +29,9 @@ function normalizeHandle(raw: string): string | null {
 async function resolveRound(rawHandle: string): Promise<PublicRound | null> {
   const handle = normalizeHandle(rawHandle);
   if (!handle) return null;
-  const round = await fetchPublicRound(handle);
-  if (!round || !isRoundLive(round)) return null;
-  return round;
+  // fetchPublicRound 는 "지금 진행 중인" 회차만 돌려준다 —
+  // 시작 전·종료 후·미승인은 null → 일반 상세페이지로 리다이렉트.
+  return fetchPublicRound(handle);
 }
 
 export async function generateMetadata({
