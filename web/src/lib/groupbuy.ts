@@ -34,7 +34,9 @@ export const GROUPBUY_STANDARD_OPTIONS: RoundOption[] = [
 
 export type RoundType = "groupbuy" | "sponsored";
 
-/** 익명 조회가 허용된 공개 필드만 (수수료율·정산 정보 없음) */
+/** 익명 조회가 허용된 공개 필드만 (수수료율·정산 정보 없음).
+ *  handle 은 셀러의 영구 핸들 — URL 은 회차가 바뀌어도 동일하고,
+ *  이 링크가 "지금 진행 중인 회차"에 자동 연결된다. */
 export type PublicRound = {
   id: string;
   handle: string;
@@ -43,6 +45,8 @@ export type PublicRound = {
   startsAt: string | null;
   endsAt: string | null;
   options: RoundOption[];
+  /** 셀러별 차수 (1차, 2차…) — 어드민·셀러 포털 표시용, 고객 화면 미노출 */
+  roundNo: number | null;
 };
 
 export const ROUND_TYPE_LABEL: Record<RoundType, string> = {

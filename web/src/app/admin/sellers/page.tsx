@@ -20,6 +20,7 @@ import {
   rejectRound,
   settleRound,
   toggleSellerActive,
+  updateSellerHandle,
 } from "./actions";
 import {
   DEMO_APPLICATIONS,
@@ -34,6 +35,7 @@ export const dynamic = "force-dynamic";
 type SellerRow = {
   id: string;
   user_id: string | null;
+  handle: string | null;
   name: string;
   phone: string | null;
   email: string | null;
@@ -45,6 +47,7 @@ type SellerRow = {
 type RoundRow = {
   id: string;
   seller_id: string;
+  round_no: number | null;
   type: RoundType;
   status: string;
   handle: string | null;
@@ -127,13 +130,13 @@ export default async function AdminSellersPage() {
     const [{ data: sellerRows }, { data: roundRowsData }] = await Promise.all([
       admin
         .from("sellers")
-        .select("id, user_id, name, phone, email, bank_info, active, note")
+        .select("id, user_id, handle, name, phone, email, bank_info, active, note")
         .order("created_at", { ascending: true })
         .returns<SellerRow[]>(),
       admin
         .from("groupbuy_rounds")
         .select(
-          "id, seller_id, type, status, handle, display_name, starts_at, ends_at, options, commission_rate, settle_due_at, settled_at, settled_amount, request_note, admin_note",
+          "id, seller_id, round_no, type, status, handle, display_name, starts_at, ends_at, options, commission_rate, settle_due_at, settled_at, settled_amount, request_note, admin_note",
         )
         .order("created_at", { ascending: false })
         .returns<RoundRow[]>(),
@@ -163,6 +166,7 @@ export default async function AdminSellersPage() {
   }
 
   const sellerName = new Map(sellers.map((s) => [s.id, s.name]));
+  const sellerHandle = new Map(sellers.map((s) => [s.id, s.handle]));
 
   // 회차별 매출 집계 — paid 만 매출, canceled/refunded 는 참고 표기
   const agg = new Map<string, { paid: number; paidCount: number; lost: number; lostCount: number }>();
@@ -266,7 +270,16 @@ export default async function AdminSellersPage() {
                 )}
                 <form action={approveRound} className="mt-4 grid gap-2 sm:grid-cols-2">
                   <input type="hidden" name="round_id" value={r.id} />
-                  <Input name="handle" label="핸들 (URL)" placeholder="ellie-oct" required />
+                  {sellerHandle.get(r.seller_id) ? (
+                    <label className="block">
+                      <span className="mb-1 block text-xs font-medium text-ink-soft">전용 URL — 고정</span>
+                      <p className="rounded-md border border-ink-line bg-bg-3 px-3 py-2 font-mono text-xs text-ink">
+                        /product/@{sellerHandle.get(r.seller_id)}
+                      </p>
+                    </label>
+                  ) : (
+                    <Input name="handle" label="전용 URL 핸들 — 최초 1회 지정, 이후 고정" placeholder="ellie" required />
+                  )}
                   <Input name="display_name" label="표시 이름" placeholder="엘리" />
                   <Input name="starts_at" label="시작 일시" type="datetime-local" required defaultValue={kstDateTimeInput(r.starts_at)} />
                   <Input name="ends_at" label="종료 일시" type="datetime-local" required defaultValue={kstDateTimeInput(r.ends_at)} />
@@ -310,14 +323,14 @@ export default async function AdminSellersPage() {
       {/* ── 진행·예정 회차 ─────────────────────────── */}
       <section className="mt-8">
         <h2 className="font-sans text-lg text-ink">진행 · 예정 회차</h2>
-        <RoundTable rounds={activeRounds} sellerName={sellerName} agg={agg} now={now} showSettle />
+        <RoundTable rounds={activeRounds} sellerName={sellerName} sellerHandle={sellerHandle} agg={agg} now={now} showSettle />
       </section>
 
       {/* ── 종료된 회차 ─────────────────────────── */}
       {doneRounds.length > 0 && (
         <section className="mt-8">
           <h2 className="font-sans text-lg text-ink">종료 · 반려</h2>
-          <RoundTable rounds={doneRounds} sellerName={sellerName} agg={agg} now={now} />
+          <RoundTable rounds={doneRounds} sellerName={sellerName} sellerHandle={sellerHandle} agg={agg} now={now} />
         </section>
       )}
 
@@ -329,6 +342,7 @@ export default async function AdminSellersPage() {
             <thead>
               <tr className="border-b border-ink-line bg-bg-2 text-left text-xs text-ink-mute">
                 <th className="px-4 py-3">이름</th>
+                <th className="px-4 py-3">전용 URL</th>
                 <th className="px-4 py-3">연락처</th>
                 <th className="px-4 py-3">정산 계좌</th>
                 <th className="px-4 py-3">포털 계정</th>
@@ -339,6 +353,21 @@ export default async function AdminSellersPage() {
               {sellers.map((s) => (
                 <tr key={s.id} className="border-b border-ink-line last:border-0">
                   <td className="px-4 py-3 font-medium text-ink">{s.name}</td>
+                  <td className="px-4 py-3">
+                    <form action={updateSellerHandle} className="flex items-center gap-1.5">
+                      <input type="hidden" name="seller_id" value={s.id} />
+                      <span className="text-xs text-ink-mute">@</span>
+                      <input
+                        name="handle"
+                        defaultValue={s.handle ?? ""}
+                        placeholder="첫 회차 승인 때 지정"
+                        className="w-36 rounded-md border border-ink-line bg-bg-1 px-2 py-1 font-mono text-[11px] text-ink"
+                      />
+                      <button className="rounded-full border border-ink-line px-3 py-1 text-[11px] font-medium text-ink-soft hover:border-accent hover:text-accent">
+                        저장
+                      </button>
+                    </form>
+                  </td>
                   <td className="px-4 py-3 text-ink-soft">
                     {[s.phone, s.email].filter(Boolean).join(" · ") || "—"}
                   </td>
@@ -382,7 +411,7 @@ export default async function AdminSellersPage() {
               ))}
               {sellers.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-ink-mute">
+                  <td colSpan={6} className="px-4 py-8 text-center text-ink-mute">
                     등록된 셀러가 없습니다.
                   </td>
                 </tr>
@@ -417,12 +446,14 @@ export default async function AdminSellersPage() {
 function RoundTable({
   rounds,
   sellerName,
+  sellerHandle,
   agg,
   now,
   showSettle = false,
 }: {
   rounds: RoundRow[];
   sellerName: Map<string, string>;
+  sellerHandle: Map<string, string | null>;
   agg: Map<string, { paid: number; paidCount: number; lost: number; lostCount: number }>;
   now: number;
   showSettle?: boolean;
@@ -461,14 +492,19 @@ function RoundTable({
                   <p className="font-medium text-ink">
                     {sellerName.get(r.seller_id) ?? "?"}
                     {r.display_name ? ` (${r.display_name})` : ""}
+                    {r.round_no != null && (
+                      <span className="ml-1.5 rounded-full bg-bg-3 px-2 py-0.5 text-[11px] font-bold text-accent">
+                        {r.round_no}차
+                      </span>
+                    )}
                   </p>
-                  {r.handle && (
+                  {sellerHandle.get(r.seller_id) && (
                     <a
-                      href={`/product/@${r.handle}`}
+                      href={`/product/@${sellerHandle.get(r.seller_id)}`}
                       target="_blank"
                       className="font-mono text-xs text-accent hover:underline"
                     >
-                      /product/@{r.handle}
+                      /product/@{sellerHandle.get(r.seller_id)}
                     </a>
                   )}
                   <p className="mt-0.5 text-[11px]">

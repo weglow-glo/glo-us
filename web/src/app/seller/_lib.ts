@@ -7,6 +7,8 @@ export type SellerContext = {
   sellerId: string;
   name: string;
   userId: string;
+  /** 영구 전용 URL 핸들 — 첫 회차 승인 때 지정, 이후 고정 */
+  handle: string | null;
 };
 
 /**
@@ -17,7 +19,7 @@ export type SellerContext = {
 export async function getSellerContext(): Promise<SellerContext | null> {
   // 로컬 데모 — 서버 키 없이 화면 확인용 (프로덕션에서는 도달 불가)
   if (groupbuyDemoMode()) {
-    return { sellerId: "demo-seller-1", name: "엘리", userId: "demo-user-1" };
+    return { sellerId: "demo-seller-1", name: "엘리", userId: "demo-user-1", handle: "demo" };
   }
 
   const supabase = await createClient();
@@ -29,12 +31,12 @@ export async function getSellerContext(): Promise<SellerContext | null> {
   const admin = createAdminClient();
   const { data } = await admin
     .from("sellers")
-    .select("id, name, active")
+    .select("id, name, active, handle")
     .eq("user_id", user.id)
     .maybeSingle();
 
   if (!data || !data.active) return null;
-  return { sellerId: data.id, name: data.name, userId: user.id };
+  return { sellerId: data.id, name: data.name, userId: user.id, handle: data.handle };
 }
 
 export type SellerApplication = {
@@ -66,7 +68,7 @@ export async function getSellerGate(): Promise<SellerGate> {
   if (groupbuyDemoMode()) {
     return {
       kind: "seller",
-      ctx: { sellerId: "demo-seller-1", name: "엘리", userId: "demo-user-1" },
+      ctx: { sellerId: "demo-seller-1", name: "엘리", userId: "demo-user-1", handle: "demo" },
     };
   }
 
@@ -79,14 +81,14 @@ export async function getSellerGate(): Promise<SellerGate> {
   const admin = createAdminClient();
   const { data: seller } = await admin
     .from("sellers")
-    .select("id, name, active")
+    .select("id, name, active, handle")
     .eq("user_id", user.id)
     .maybeSingle();
 
   if (seller?.active) {
     return {
       kind: "seller",
-      ctx: { sellerId: seller.id, name: seller.name, userId: user.id },
+      ctx: { sellerId: seller.id, name: seller.name, userId: user.id, handle: seller.handle },
     };
   }
 

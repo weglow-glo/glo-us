@@ -1,11 +1,15 @@
 /**
  * 공동구매 회차 — 서버 전용 조회.
- * 익명(anon) 클라이언트로 조회한다: RLS(status='approved') + 컬럼 권한이
- * 공개 필드만 통과시키므로 service_role 없이도 셀러 페이지가 뜬다.
+ *
+ * URL 은 셀러당 하나(/product/@{sellers.handle})로 고정이고, 이 모듈이
+ * "그 셀러의 지금 진행 중인 회차"를 찾아준다. 익명(anon) 클라이언트로
+ * 조회한다: RLS(활성 셀러 + 승인된 회차) + 컬럼 권한이 공개 필드만
+ * 통과시키므로 service_role 없이도 셀러 페이지가 뜬다.
  */
 import { createClient } from "@/lib/supabase/server";
 import {
   GROUPBUY_STANDARD_OPTIONS,
+  isRoundLive,
   parseRoundOptions,
   type PublicRound,
   type RoundType,
@@ -21,13 +25,15 @@ const DEMO_ROUND: PublicRound = {
   startsAt: new Date(Date.now() - 24 * 3600_000).toISOString(),
   endsAt: new Date(Date.now() + 7 * 24 * 3600_000).toISOString(),
   options: GROUPBUY_STANDARD_OPTIONS,
+  roundNo: 2,
 };
 
 function isDemoEnabled(): boolean {
   return process.env.NODE_ENV !== "production";
 }
 
-/** handle 로 승인된 회차의 공개 정보를 조회. 없거나 비정상이면 null. */
+/** 셀러 핸들로 "지금 진행 중인" 회차의 공개 정보를 조회.
+ *  셀러가 없거나 비활성, 진행 중 회차가 없으면 null (→ 일반 페이지로). */
 export async function fetchPublicRound(
   handle: string,
 ): Promise<PublicRound | null> {
@@ -35,26 +41,39 @@ export async function fetchPublicRound(
 
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("groupbuy_rounds")
-      .select("id, handle, display_name, type, status, starts_at, ends_at, options")
+
+    const { data: seller } = await supabase
+      .from("sellers")
+      .select("id, handle")
       .eq("handle", handle)
-      .eq("status", "approved")
       .maybeSingle();
+    if (!seller) return null;
 
-    if (error || !data) return null;
+    const { data: rounds } = await supabase
+      .from("groupbuy_rounds")
+      .select("id, display_name, type, status, starts_at, ends_at, options, round_no")
+      .eq("seller_id", seller.id)
+      .eq("status", "approved");
 
-    const options = parseRoundOptions(data.options);
+    const now = Date.now();
+    const live = (rounds ?? [])
+      .filter((r) => isRoundLive({ startsAt: r.starts_at, endsAt: r.ends_at }, now))
+      // 겹치면 가장 늦게 시작한 회차 우선
+      .sort((a, b) => Date.parse(b.starts_at ?? "") - Date.parse(a.starts_at ?? ""))[0];
+    if (!live) return null;
+
+    const options = parseRoundOptions(live.options);
     if (!options) return null;
 
     return {
-      id: data.id,
-      handle: data.handle,
-      displayName: data.display_name,
-      type: (data.type as RoundType) ?? "groupbuy",
-      startsAt: data.starts_at,
-      endsAt: data.ends_at,
+      id: live.id,
+      handle: seller.handle,
+      displayName: live.display_name,
+      type: (live.type as RoundType) ?? "groupbuy",
+      startsAt: live.starts_at,
+      endsAt: live.ends_at,
       options,
+      roundNo: live.round_no ?? null,
     };
   } catch {
     // 테이블 미적용 등 — 회차 없음으로 처리 (일반 페이지로 흘려보낸다)
