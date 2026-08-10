@@ -488,6 +488,7 @@ function RoundTable({
               now >= Date.parse(r.starts_at) &&
               now < Date.parse(r.ends_at);
             const dueReached = r.settle_due_at ? now >= Date.parse(r.settle_due_at) : false;
+            const ended = r.ends_at ? now >= Date.parse(r.ends_at) : false;
             const opts = parseRoundOptions(r.options) ?? [];
             return (
               <tr key={r.id} className="border-b border-ink-line align-top last:border-0">
@@ -551,21 +552,21 @@ function RoundTable({
                   ) : (
                     <>
                       <p className="text-ink-soft">예상 {formatKRW(est)}</p>
-                      {showSettle && (
-                        <form action={settleRound} className="mt-1">
-                          <input type="hidden" name="round_id" value={r.id} />
-                          <button
-                            className={`rounded-full px-3 py-1 text-[11px] font-semibold ${
-                              dueReached
-                                ? "bg-burg-600 text-bg-1 hover:bg-burg-400"
-                                : "border border-ink-line text-ink-mute"
-                            }`}
-                            title={dueReached ? "정산 확정" : "정산 기준일 전입니다 — 확정 시 현재 스냅샷으로 계산됩니다"}
-                          >
-                            정산 확정
-                          </button>
-                        </form>
-                      )}
+                      {/* 정산 확정은 기준일(종료 3주 뒤 금요일)부터만 — 진행 중엔 노출하지 않는다 */}
+                      {showSettle &&
+                        ended &&
+                        (dueReached ? (
+                          <form action={settleRound} className="mt-1">
+                            <input type="hidden" name="round_id" value={r.id} />
+                            <button className="rounded-full bg-burg-600 px-3 py-1 text-[11px] font-semibold text-bg-1 hover:bg-burg-400">
+                              정산 확정
+                            </button>
+                          </form>
+                        ) : (
+                          <p className="mt-1 text-[11px] text-ink-mute">
+                            {fmtDate(r.settle_due_at)} 확정 예정
+                          </p>
+                        ))}
                     </>
                   )}
                 </td>
