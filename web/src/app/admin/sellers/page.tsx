@@ -470,6 +470,7 @@ function RoundTable({
             <th className="px-4 py-3 text-right">취소·환불</th>
             <th className="px-4 py-3 text-right">수수료율</th>
             <th className="px-4 py-3 text-right">정산</th>
+            <th className="w-16 px-4 py-3" />
           </tr>
         </thead>
         <tbody>
@@ -513,12 +514,6 @@ function RoundTable({
                     ) : (
                       <span className="text-ink-mute">{ROUND_STATUS_LABEL[r.status] ?? r.status}</span>
                     )}
-                    <a
-                      href={`/admin/sellers/rounds/${r.id}`}
-                      className="ml-2 font-medium text-accent hover:underline"
-                    >
-                      상세 · 주문 회원
-                    </a>
                   </p>
                 </td>
                 <td className="px-4 py-3 text-ink-soft">{ROUND_TYPE_LABEL[r.type]}</td>
@@ -572,12 +567,20 @@ function RoundTable({
                     </>
                   )}
                 </td>
+                <td className="px-4 py-3">
+                  <a
+                    href={`/admin/sellers/rounds/${r.id}`}
+                    className="whitespace-nowrap text-accent hover:underline"
+                  >
+                    상세
+                  </a>
+                </td>
               </tr>
             );
           })}
           {rounds.length === 0 && (
             <tr>
-              <td colSpan={8} className="px-4 py-8 text-center text-ink-mute">
+              <td colSpan={9} className="px-4 py-8 text-center text-ink-mute">
                 회차가 없습니다.
               </td>
             </tr>
