@@ -192,7 +192,7 @@ export default async function AdminSellersPage() {
       <h1 className="font-sans text-2xl font-light text-ink">셀러 · 공동구매 관리</h1>
       <p className="mt-1 text-sm text-ink-mute">
         전용 링크는 <code className="rounded bg-bg-3 px-1.5 py-0.5">glo-us.com/product/@핸들</code> ·
-        정산 기준일은 회차 종료 + 21일 (paid 스냅샷 × 수수료율)
+        정산 기준일은 회차 종료 3주 뒤 금요일 (paid 스냅샷 × 수수료율)
       </p>
       {demo && (
         <p className="mt-3 rounded-md border border-amber-300 bg-amber-50 px-4 py-2.5 text-xs font-medium text-amber-800">

@@ -58,7 +58,7 @@ export default async function SellerApplyPage() {
           신청하기
         </button>
         <p className="text-xs leading-relaxed text-ink-mute">
-          정산은 회차 종료 21일 후 결제완료 스냅샷 기준으로 확정되며, 취소·환불 건은
+          정산은 회차 종료 3주 뒤 금요일에 결제완료 스냅샷 기준으로 확정되며, 취소·환불 건은
           차감됩니다. 공동구매 주문은 포인트 적립·사용 대상이 아닙니다.
         </p>
       </form>
