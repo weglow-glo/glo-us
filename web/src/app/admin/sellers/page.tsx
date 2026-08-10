@@ -14,7 +14,6 @@ const OPTIONS_TEMPLATE = GROUPBUY_STANDARD_OPTIONS.map(
 import {
   approveApplication,
   approveRound,
-  createSeller,
   linkSellerUser,
   rejectApplication,
   rejectRound,
@@ -343,8 +342,7 @@ export default async function AdminSellersPage() {
               <tr className="border-b border-ink-line bg-bg-2 text-left text-xs text-ink-mute">
                 <th className="px-4 py-3">이름</th>
                 <th className="px-4 py-3">전용 URL</th>
-                <th className="px-4 py-3">연락처</th>
-                <th className="px-4 py-3">정산 계좌</th>
+                <th className="px-4 py-3">셀러 정보</th>
                 <th className="px-4 py-3">포털 계정</th>
                 <th className="px-4 py-3">상태</th>
               </tr>
@@ -368,15 +366,38 @@ export default async function AdminSellersPage() {
                       </button>
                     </form>
                   </td>
-                  <td className="px-4 py-3 text-ink-soft">
-                    {[s.phone, s.email].filter(Boolean).join(" · ") || "—"}
-                  </td>
-                  <td className="px-4 py-3 text-ink-soft">
-                    {s.bank_info
-                      ? [s.bank_info.bank, s.bank_info.account, s.bank_info.holder]
-                          .filter(Boolean)
-                          .join(" ")
-                      : "—"}
+                  <td className="px-4 py-3">
+                    <details>
+                      <summary className="cursor-pointer select-none rounded-full border border-ink-line px-3 py-1 text-[11px] font-medium text-ink-soft hover:border-accent hover:text-accent [&::-webkit-details-marker]:hidden">
+                        셀러 정보 보기
+                      </summary>
+                      <dl className="mt-2 space-y-1 rounded-md bg-bg-2 px-3 py-2 text-xs text-ink-soft">
+                        <div className="flex gap-2">
+                          <dt className="w-14 shrink-0 text-ink-mute">연락처</dt>
+                          <dd>{s.phone ?? "—"}</dd>
+                        </div>
+                        <div className="flex gap-2">
+                          <dt className="w-14 shrink-0 text-ink-mute">이메일</dt>
+                          <dd>{s.email ?? "—"}</dd>
+                        </div>
+                        <div className="flex gap-2">
+                          <dt className="w-14 shrink-0 text-ink-mute">정산 계좌</dt>
+                          <dd>
+                            {s.bank_info
+                              ? [s.bank_info.bank, s.bank_info.account, s.bank_info.holder]
+                                  .filter(Boolean)
+                                  .join(" ")
+                              : "미입력 — 셀러가 내 정보에서 입력"}
+                          </dd>
+                        </div>
+                        {s.note && (
+                          <div className="flex gap-2">
+                            <dt className="w-14 shrink-0 text-ink-mute">메모</dt>
+                            <dd>{s.note}</dd>
+                          </div>
+                        )}
+                      </dl>
+                    </details>
                   </td>
                   <td className="px-4 py-3">
                     <form action={linkSellerUser} className="flex items-center gap-1.5">
@@ -411,7 +432,7 @@ export default async function AdminSellersPage() {
               ))}
               {sellers.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-ink-mute">
+                  <td colSpan={5} className="px-4 py-8 text-center text-ink-mute">
                     등록된 셀러가 없습니다.
                   </td>
                 </tr>
@@ -420,24 +441,6 @@ export default async function AdminSellersPage() {
           </table>
         </div>
 
-        <form action={createSeller} className="mt-4 grid gap-2 rounded-xl border border-ink-line bg-bg-2 p-5 sm:grid-cols-3">
-          <p className="text-sm font-semibold text-ink sm:col-span-3">셀러 추가</p>
-          <Input name="name" label="이름" required />
-          <Input name="phone" label="연락처" placeholder="01012345678" />
-          <Input name="email" label="이메일" type="email" />
-          <Input name="bank" label="은행" placeholder="국민" />
-          <Input name="account" label="계좌번호" />
-          <Input name="holder" label="예금주" />
-          <label className="block sm:col-span-2">
-            <span className="mb-1 block text-xs font-medium text-ink-soft">메모</span>
-            <input name="note" className="w-full rounded-md border border-ink-line bg-bg-1 px-3 py-2 text-sm text-ink" />
-          </label>
-          <div className="flex items-end">
-            <button className="rounded-full bg-burg-600 px-6 py-2.5 text-sm font-semibold text-bg-1 hover:bg-burg-400">
-              추가
-            </button>
-          </div>
-        </form>
       </section>
     </main>
   );

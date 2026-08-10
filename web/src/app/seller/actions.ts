@@ -56,6 +56,45 @@ function kstStamp(value: FormDataEntryValue | null, endOfDay: boolean): string |
 }
 
 /**
+ * 내 정보 수정 — 연락처·이메일·정산 계좌를 셀러가 직접 관리한다.
+ * 세션의 user_id 로만 자기 sellers 행을 갱신한다.
+ */
+export async function updateMyProfile(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect(`/login?next=${encodeURIComponent("/seller/profile")}`);
+
+  const admin = createAdminClient();
+  const { data: seller } = await admin
+    .from("sellers")
+    .select("id, active")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (!seller || !seller.active) redirect("/seller");
+
+  const phone = normalizePhone(String(formData.get("phone") ?? ""));
+  const email = String(formData.get("email") ?? "").trim().slice(0, 120) || null;
+  const bank = String(formData.get("bank") ?? "").trim().slice(0, 30);
+  const account = String(formData.get("account") ?? "").trim().slice(0, 40);
+  const holder = String(formData.get("holder") ?? "").trim().slice(0, 30);
+
+  await admin
+    .from("sellers")
+    .update({
+      phone: phone ?? null,
+      email,
+      bank_info: bank || account || holder ? { bank, account, holder } : null,
+    })
+    .eq("id", seller.id);
+
+  revalidatePath("/seller/profile");
+  revalidatePath("/admin/sellers");
+  redirect("/seller/profile?saved=1");
+}
+
+/**
  * 셀러 일정 신청 — 서버 액션은 세션에서 셀러를 다시 확인한다
  * (클라이언트가 보낸 seller_id 는 절대 신뢰하지 않는다).
  */

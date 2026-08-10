@@ -27,24 +27,6 @@ function str(value: FormDataEntryValue | null): string | null {
 
 // ─────────────────────────────────────────────── 셀러
 
-export async function createSeller(formData: FormData) {
-  const name = str(formData.get("name"));
-  if (!name) return;
-
-  const bank = str(formData.get("bank"));
-  const account = str(formData.get("account"));
-  const holder = str(formData.get("holder"));
-
-  const admin = createAdminClient();
-  await admin.from("sellers").insert({
-    name,
-    phone: str(formData.get("phone")),
-    email: str(formData.get("email")),
-    note: str(formData.get("note")),
-    bank_info: bank || account ? { bank, account, holder } : null,
-  });
-  revalidatePath("/admin/sellers");
-}
 
 /** 카카오 계정 연결 — /admin/members 에서 확인한 회원 UUID 를 붙인다 */
 export async function linkSellerUser(formData: FormData) {

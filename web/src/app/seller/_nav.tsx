@@ -7,6 +7,7 @@ const TABS: Array<{ href: string; label: string; match: (p: string) => boolean }
   { href: "/seller", label: "대시보드", match: (p) => p === "/seller" },
   { href: "/seller/apply", label: "일정 신청", match: (p) => p.startsWith("/seller/apply") },
   { href: "/seller/settlements", label: "정산", match: (p) => p.startsWith("/seller/settlements") },
+  { href: "/seller/profile", label: "내 정보", match: (p) => p.startsWith("/seller/profile") },
 ];
 
 export default function SellerNav() {
