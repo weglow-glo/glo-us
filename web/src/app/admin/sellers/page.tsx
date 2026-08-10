@@ -14,7 +14,6 @@ const OPTIONS_TEMPLATE = GROUPBUY_STANDARD_OPTIONS.map(
 import {
   approveApplication,
   approveRound,
-  linkSellerUser,
   rejectApplication,
   rejectRound,
   settleRound,
@@ -337,15 +336,15 @@ export default async function AdminSellersPage() {
       <section className="mt-10">
         <h2 className="font-sans text-lg text-ink">셀러</h2>
         <div className="mt-3 overflow-x-auto rounded-xl border border-ink-line">
-          <table className="w-full min-w-[720px] table-fixed text-sm">
+          <table className="w-full min-w-[760px] table-fixed text-sm">
             <thead>
               <tr className="border-b border-ink-line bg-bg-2 text-left text-xs text-ink-mute">
-                {/* 셀러 정보 아코디언이 펼쳐져도 열이 밀리지 않도록 폭 고정 */}
-                <th className="w-24 px-4 py-3">이름</th>
-                <th className="w-56 px-4 py-3">전용 URL</th>
-                <th className="w-72 px-4 py-3">셀러 정보</th>
-                <th className="px-4 py-3">포털 계정</th>
-                <th className="w-20 px-4 py-3">상태</th>
+                {/* 폭 고정(table-fixed) — 아코디언을 펼쳐도 열이 밀리지 않는다 */}
+                <th className="w-28 px-4 py-3">이름</th>
+                <th className="w-64 px-4 py-3">전용 URL</th>
+                <th className="px-4 py-3">셀러 정보</th>
+                <th className="w-28 px-4 py-3">포털 계정</th>
+                <th className="w-28 px-4 py-3">상태</th>
               </tr>
             </thead>
             <tbody>
@@ -355,14 +354,14 @@ export default async function AdminSellersPage() {
                   <td className="px-4 py-3">
                     <form action={updateSellerHandle} className="flex items-center gap-1.5">
                       <input type="hidden" name="seller_id" value={s.id} />
-                      <span className="text-xs text-ink-mute">@</span>
+                      <span className="shrink-0 text-xs text-ink-mute">@</span>
                       <input
                         name="handle"
                         defaultValue={s.handle ?? ""}
-                        placeholder="첫 회차 승인 때 지정"
-                        className="w-36 rounded-md border border-ink-line bg-bg-1 px-2 py-1 font-mono text-[11px] text-ink"
+                        placeholder="첫 승인 때 지정"
+                        className="min-w-0 flex-1 rounded-md border border-ink-line bg-bg-1 px-2 py-1 font-mono text-[11px] text-ink"
                       />
-                      <button className="rounded-full border border-ink-line px-3 py-1 text-[11px] font-medium text-ink-soft hover:border-accent hover:text-accent">
+                      <button className="shrink-0 whitespace-nowrap rounded-full border border-ink-line px-3 py-1 text-[11px] font-medium text-ink-soft hover:border-accent hover:text-accent">
                         저장
                       </button>
                     </form>
@@ -401,25 +400,21 @@ export default async function AdminSellersPage() {
                     </details>
                   </td>
                   <td className="px-4 py-3">
-                    <form action={linkSellerUser} className="flex items-center gap-1.5">
-                      <input type="hidden" name="seller_id" value={s.id} />
-                      <input
-                        name="user_id"
-                        defaultValue={s.user_id ?? ""}
-                        placeholder="회원 UUID (/admin/members)"
-                        className="w-56 rounded-md border border-ink-line bg-bg-1 px-2 py-1 font-mono text-[11px] text-ink"
-                      />
-                      <button className="rounded-full border border-ink-line px-3 py-1 text-[11px] font-medium text-ink-soft hover:border-accent hover:text-accent">
-                        저장
-                      </button>
-                    </form>
+                    {/* 지원 승인 시 자동 연결 — UUID 는 노출하지 않는다 */}
+                    {s.user_id ? (
+                      <span className="whitespace-nowrap rounded-full bg-bg-3 px-2.5 py-1 text-[11px] font-semibold text-accent">
+                        연결됨
+                      </span>
+                    ) : (
+                      <span className="whitespace-nowrap text-xs text-ink-mute">미연결</span>
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     <form action={toggleSellerActive}>
                       <input type="hidden" name="seller_id" value={s.id} />
                       <input type="hidden" name="active" value={String(!s.active)} />
                       <button
-                        className={`rounded-full px-3 py-1 text-[11px] font-semibold ${
+                        className={`whitespace-nowrap rounded-full px-3 py-1 text-[11px] font-semibold ${
                           s.active
                             ? "bg-bg-3 text-burg-400"
                             : "border border-ink-line text-ink-mute"

@@ -28,19 +28,6 @@ function str(value: FormDataEntryValue | null): string | null {
 // ─────────────────────────────────────────────── 셀러
 
 
-/** 카카오 계정 연결 — /admin/members 에서 확인한 회원 UUID 를 붙인다 */
-export async function linkSellerUser(formData: FormData) {
-  const sellerId = str(formData.get("seller_id"));
-  const userId = str(formData.get("user_id"));
-  if (!sellerId) return;
-
-  const admin = createAdminClient();
-  await admin
-    .from("sellers")
-    .update({ user_id: userId }) // 빈 값이면 연결 해제
-    .eq("id", sellerId);
-  revalidatePath("/admin/sellers");
-}
 
 /** 전용 URL 핸들 수정 — 셀러당 하나, 회차가 바뀌어도 고정.
  *  비우면 해제(다음 회차 승인 때 다시 지정). */
