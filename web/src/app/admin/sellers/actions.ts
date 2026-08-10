@@ -60,6 +60,20 @@ export async function linkSellerUser(formData: FormData) {
   revalidatePath("/admin/sellers");
 }
 
+/** 전용 URL 핸들 수정 — 셀러당 하나, 회차가 바뀌어도 고정.
+ *  비우면 해제(다음 회차 승인 때 다시 지정). */
+export async function updateSellerHandle(formData: FormData) {
+  const sellerId = str(formData.get("seller_id"));
+  if (!sellerId) return;
+
+  const raw = str(formData.get("handle"))?.toLowerCase() ?? null;
+  if (raw && !/^[a-z0-9-]{2,40}$/.test(raw)) return;
+
+  const admin = createAdminClient();
+  await admin.from("sellers").update({ handle: raw }).eq("id", sellerId);
+  revalidatePath("/admin/sellers");
+}
+
 export async function toggleSellerActive(formData: FormData) {
   const sellerId = str(formData.get("seller_id"));
   const active = String(formData.get("active")) === "true";
@@ -142,26 +156,65 @@ export async function rejectApplication(formData: FormData) {
 
 // ─────────────────────────────────────────────── 회차
 
-/** 셀러 신청(requested) 승인 — 조건을 채워서 approved 로 전환 */
+/** 셀러 신청(requested) 승인 — 조건을 채워서 approved 로 전환.
+ *
+ *  URL 핸들은 셀러당 하나로 영구 고정: 첫 회차 승인 때 폼에서 지정하고,
+ *  이후 회차는 자동 재사용된다. 차수(round_no: 1차, 2차…)도 자동 부여. */
 export async function approveRound(formData: FormData) {
   const roundId = str(formData.get("round_id"));
-  const handle = str(formData.get("handle"))?.toLowerCase() ?? null;
   const startsAt = kstDate(formData.get("starts_at"));
   const endsAt = kstDate(formData.get("ends_at"), true);
   const rate = Number(formData.get("commission_rate"));
   const options = parseOptionsField(formData.get("options"));
 
-  if (!roundId || !handle || !/^[a-z0-9-]{2,40}$/.test(handle)) return;
+  if (!roundId) return;
   if (!startsAt || !endsAt || Date.parse(endsAt) <= Date.parse(startsAt)) return;
   if (!Number.isFinite(rate) || rate < 0 || rate > 100) return;
   if (!options) return;
 
   const admin = createAdminClient();
+
+  const { data: reqRound } = await admin
+    .from("groupbuy_rounds")
+    .select("id, status, seller_id")
+    .eq("id", roundId)
+    .eq("status", "requested")
+    .maybeSingle();
+  if (!reqRound) return;
+
+  const { data: seller } = await admin
+    .from("sellers")
+    .select("id, name, phone, handle")
+    .eq("id", reqRound.seller_id)
+    .maybeSingle();
+  if (!seller) return;
+
+  // 핸들: 이미 있으면 재사용, 없으면(첫 회차) 폼 입력을 셀러에 저장
+  let handle = seller.handle;
+  if (!handle) {
+    const input = str(formData.get("handle"))?.toLowerCase() ?? null;
+    if (!input || !/^[a-z0-9-]{2,40}$/.test(input)) return;
+    const { error: handleErr } = await admin
+      .from("sellers")
+      .update({ handle: input })
+      .eq("id", seller.id);
+    if (handleErr) return; // 중복 핸들 등 — 화면에서 다른 값으로 재시도
+    handle = input;
+  }
+
+  // 차수: 이 셀러의 승인·종료 회차 수 + 1
+  const { count } = await admin
+    .from("groupbuy_rounds")
+    .select("id", { count: "exact", head: true })
+    .eq("seller_id", seller.id)
+    .in("status", ["approved", "ended"]);
+  const roundNo = (count ?? 0) + 1;
+
   const { data: updated } = await admin
     .from("groupbuy_rounds")
     .update({
       status: "approved",
-      handle,
+      round_no: roundNo,
       display_name: str(formData.get("display_name")),
       starts_at: startsAt,
       ends_at: endsAt,
@@ -172,20 +225,15 @@ export async function approveRound(formData: FormData) {
     })
     .eq("id", roundId)
     .eq("status", "requested")
-    .select("seller_id")
+    .select("id")
     .maybeSingle();
 
-  // 확정 안내 문자 — 링크·기간·수수료율
+  // 확정 안내 — 링크·기간·수수료율
   if (updated) {
-    const { data: seller } = await admin
-      .from("sellers")
-      .select("name, phone")
-      .eq("id", updated.seller_id)
-      .maybeSingle();
     dispatchSellerNotice(
-      seller?.phone,
+      seller.phone,
       roundApprovedNotice({
-        name: seller?.name ?? "셀러",
+        name: seller.name ?? "셀러",
         period: `${startsAt.slice(0, 10)} ${startsAt.slice(11, 16)} ~ ${endsAt.slice(0, 10)} ${endsAt.slice(11, 16)}`,
         rate,
         handle,

@@ -12,6 +12,7 @@ type RoundRow = {
   type: RoundType;
   status: string;
   handle: string | null;
+  round_no: number | null;
   starts_at: string | null;
   ends_at: string | null;
   commission_rate: number | null;
@@ -46,7 +47,7 @@ export default async function SellerSettlementsPage() {
     const { data: roundRowsData } = await admin
       .from("groupbuy_rounds")
       .select(
-        "id, type, status, handle, starts_at, ends_at, commission_rate, settle_due_at, settled_at, settled_amount",
+        "id, type, status, handle, round_no, starts_at, ends_at, commission_rate, settle_due_at, settled_at, settled_amount",
       )
       .eq("seller_id", ctx.sellerId)
       .in("status", ["approved", "ended"])
@@ -115,8 +116,8 @@ export default async function SellerSettlementsPage() {
                 <tr key={r.id} className="border-b border-ink-line last:border-0">
                   <td className="px-4 py-3">
                     <p className="font-medium text-ink">{ROUND_TYPE_LABEL[r.type]}</p>
-                    {r.handle && (
-                      <p className="font-mono text-xs text-ink-mute">@{r.handle}</p>
+                    {r.round_no != null && (
+                      <p className="text-xs font-semibold text-accent">{r.round_no}차</p>
                     )}
                   </td>
                   <td className="px-4 py-3 text-ink-soft">

@@ -19,6 +19,7 @@ type RoundRow = {
   type: RoundType;
   status: string;
   handle: string | null;
+  round_no: number | null;
   display_name: string | null;
   starts_at: string | null;
   ends_at: string | null;
@@ -97,7 +98,7 @@ export default async function SellerDashboard() {
     const { data: roundRows } = await admin
       .from("groupbuy_rounds")
       .select(
-        "id, type, status, handle, display_name, starts_at, ends_at, options, commission_rate, settle_due_at, settled_at, request_note, admin_note",
+        "id, type, status, handle, round_no, display_name, starts_at, ends_at, options, commission_rate, settle_due_at, settled_at, request_note, admin_note",
       )
       .eq("seller_id", ctx.sellerId)
       .order("created_at", { ascending: false })
@@ -196,7 +197,7 @@ export default async function SellerDashboard() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-ink">
-                  {ROUND_TYPE_LABEL[r.type]} · {fmtDT(r.starts_at)} ~ {fmtDT(r.ends_at)}{" "}
+                  {ROUND_TYPE_LABEL[r.type]}{r.round_no != null ? ` ${r.round_no}차` : ""} · {fmtDT(r.starts_at)} ~ {fmtDT(r.ends_at)}{" "}
                   {isLive ? (
                     <span className="ml-1 rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold text-cream">
                       LIVE
@@ -205,9 +206,9 @@ export default async function SellerDashboard() {
                     <span className="ml-1 text-xs text-ink-mute">시작 전</span>
                   )}
                 </p>
-                {r.handle && (
+                {ctx.handle && (
                   <p className="mt-1 font-mono text-xs text-accent">
-                    glo-us.com/product/@{r.handle}
+                    glo-us.com/product/@{ctx.handle}
                   </p>
                 )}
               </div>

@@ -50,22 +50,34 @@ export async function POST(request: Request) {
   let sellerHandle: string | null = null;
 
   if (body.round) {
+    // round 파라미터 = 셀러의 영구 핸들. 그 셀러의 "지금 진행 중인" 회차를 찾는다.
     const handle = String(body.round).toLowerCase();
-    const { data: round, error: roundError } = await admin
-      .from("groupbuy_rounds")
-      .select("id, handle, status, starts_at, ends_at, options")
+    const { data: seller } = await admin
+      .from("sellers")
+      .select("id, handle, active")
       .eq("handle", handle)
       .maybeSingle();
 
     const now = Date.now();
-    const live =
-      round &&
-      round.status === "approved" &&
-      round.starts_at &&
-      round.ends_at &&
-      now >= Date.parse(round.starts_at) &&
-      now < Date.parse(round.ends_at);
-    if (roundError || !live) {
+    let round: { id: string; options: unknown } | null = null;
+    if (seller?.active) {
+      const { data: rounds } = await admin
+        .from("groupbuy_rounds")
+        .select("id, starts_at, ends_at, options")
+        .eq("seller_id", seller.id)
+        .eq("status", "approved");
+      round =
+        (rounds ?? [])
+          .filter(
+            (r) =>
+              r.starts_at &&
+              r.ends_at &&
+              now >= Date.parse(r.starts_at) &&
+              now < Date.parse(r.ends_at),
+          )
+          .sort((a, b) => Date.parse(b.starts_at!) - Date.parse(a.starts_at!))[0] ?? null;
+    }
+    if (!round) {
       // 핸들 조작·기간 종료 — 공구가로 결제되지 않도록 명시적으로 거절한다.
       return NextResponse.json(
         { error: "진행 중인 프로모션이 아닙니다. 일반 구매로 진행해주세요." },
@@ -86,7 +98,7 @@ export async function POST(request: Request) {
     }
     opt = ropt;
     roundId = round.id;
-    sellerHandle = round.handle;
+    sellerHandle = handle;
   } else {
     opt = getOption(body.option);
   }

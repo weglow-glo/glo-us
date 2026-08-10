@@ -18,6 +18,7 @@ export function groupbuyDemoMode(): boolean {
 export type DemoSeller = {
   id: string;
   user_id: string | null;
+  handle: string | null;
   name: string;
   phone: string | null;
   email: string | null;
@@ -29,6 +30,7 @@ export type DemoSeller = {
 export type DemoRound = {
   id: string;
   seller_id: string;
+  round_no: number | null;
   type: "groupbuy" | "sponsored";
   status: string;
   handle: string | null;
@@ -104,6 +106,7 @@ export const DEMO_SELLERS: DemoSeller[] = [
   {
     id: "demo-seller-1",
     user_id: "demo-user-1",
+    handle: "demo",
     name: "엘리",
     phone: "01012345678",
     email: "ellie@example.com",
@@ -114,6 +117,7 @@ export const DEMO_SELLERS: DemoSeller[] = [
   {
     id: "demo-seller-2",
     user_id: null,
+    handle: null,
     name: "김하늘",
     phone: "01098765432",
     email: null,
@@ -132,6 +136,7 @@ export const DEMO_ROUNDS: DemoRound[] = [
     // 진행 중 (LIVE) — /product/@demo 와 연결
     id: "demo-round-live",
     seller_id: "demo-seller-1",
+    round_no: 2,
     type: "groupbuy",
     status: "approved",
     handle: "demo",
@@ -150,6 +155,7 @@ export const DEMO_ROUNDS: DemoRound[] = [
     // 승인 대기 신청
     id: "demo-round-req",
     seller_id: "demo-seller-2",
+    round_no: null,
     type: "groupbuy",
     status: "requested",
     handle: null,
@@ -168,6 +174,7 @@ export const DEMO_ROUNDS: DemoRound[] = [
     // 종료 + 정산 확정 완료
     id: "demo-round-done",
     seller_id: "demo-seller-1",
+    round_no: 1,
     type: "groupbuy",
     status: "ended",
     handle: "ellie-jul",
