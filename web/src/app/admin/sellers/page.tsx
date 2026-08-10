@@ -12,15 +12,17 @@ const OPTIONS_TEMPLATE = GROUPBUY_STANDARD_OPTIONS.map(
   (o) => `${o.key} | ${o.months} | ${o.label} | ${o.price}${o.badge ? ` | ${o.badge}` : ""}`,
 ).join("\n");
 import {
+  approveApplication,
   approveRound,
-  createRound,
   createSeller,
   linkSellerUser,
+  rejectApplication,
   rejectRound,
   settleRound,
   toggleSellerActive,
 } from "./actions";
 import {
+  DEMO_APPLICATIONS,
   DEMO_ORDERS,
   DEMO_ROUNDS,
   DEMO_SELLERS,
@@ -63,6 +65,24 @@ function fmtDate(iso: string | null) {
   return new Date(iso).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" });
 }
 
+/** date 입력 프리필용 — KST 기준 YYYY-MM-DD (UTC slice 하면 하루 밀린다) */
+function kstDateInput(iso: string | null): string | undefined {
+  if (!iso) return undefined;
+  return new Date(iso).toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
+}
+
+type ApplicationRow = {
+  id: string;
+  user_id: string;
+  status: string;
+  name: string;
+  phone: string;
+  channel: string | null;
+  follower: string | null;
+  note: string | null;
+  created_at: string;
+};
+
 const ROUND_STATUS_LABEL: Record<string, string> = {
   requested: "신청",
   approved: "승인",
@@ -79,12 +99,14 @@ export default async function AdminSellersPage() {
   let sellers: SellerRow[];
   let rounds: RoundRow[];
   let orderRows: Array<{ round_id: string | null; status: string; amount: number }>;
+  let applications: ApplicationRow[];
 
   if (demo) {
     // 로컬 데모 — 서버 키 없이 화면 확인용 (프로덕션에서는 도달 불가)
     sellers = DEMO_SELLERS;
     rounds = DEMO_ROUNDS;
     orderRows = DEMO_ORDERS;
+    applications = DEMO_APPLICATIONS;
   } else {
     const admin = createAdminClient();
     const [{ data: sellerRows }, { data: roundRowsData }] = await Promise.all([
@@ -103,6 +125,15 @@ export default async function AdminSellersPage() {
     ]);
     sellers = sellerRows ?? [];
     rounds = roundRowsData ?? [];
+
+    const { data: appRows } = await admin
+      .from("seller_applications")
+      .select("id, user_id, status, name, phone, channel, follower, note, created_at")
+      .eq("status", "pending")
+      .order("created_at", { ascending: true })
+      .returns<ApplicationRow[]>();
+    applications = appRows ?? [];
+
     const roundIds = rounds.map((r) => r.id);
     if (roundIds.length > 0) {
       const { data } = await admin
@@ -151,6 +182,57 @@ export default async function AdminSellersPage() {
         </p>
       )}
 
+      {/* ── 셀러 지원 심사 ─────────────────────────── */}
+      {applications.length > 0 && (
+        <section className="mt-8">
+          <h2 className="font-sans text-lg text-ink">
+            셀러 지원 심사 <span className="text-accent">{applications.length}</span>
+          </h2>
+          <div className="mt-3 space-y-4">
+            {applications.map((a) => (
+              <div key={a.id} className="rounded-xl border border-accent/40 bg-bg-2 p-5">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <p className="text-sm font-semibold text-ink">{a.name}</p>
+                  <p className="text-xs text-ink-soft">{a.phone}</p>
+                  {a.follower && <p className="text-xs text-ink-soft">{a.follower}</p>}
+                  <p className="text-[11px] text-ink-mute">지원 {fmtDate(a.created_at)}</p>
+                </div>
+                {a.channel && (
+                  <a
+                    href={a.channel.startsWith("http") ? a.channel : `https://${a.channel}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-1 inline-block break-all font-mono text-xs text-accent hover:underline"
+                  >
+                    {a.channel}
+                  </a>
+                )}
+                {a.note && <p className="mt-2 text-sm text-ink-soft">{a.note}</p>}
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <form action={approveApplication}>
+                    <input type="hidden" name="application_id" value={a.id} />
+                    <button className="rounded-full bg-burg-600 px-5 py-2 text-xs font-semibold text-bg-1 hover:bg-burg-400">
+                      승인 · 문자 안내
+                    </button>
+                  </form>
+                  <form action={rejectApplication} className="flex items-center gap-2">
+                    <input type="hidden" name="application_id" value={a.id} />
+                    <input
+                      name="admin_note"
+                      placeholder="반려 사유 (문자에 포함)"
+                      className="w-56 rounded-md border border-ink-line bg-bg-1 px-3 py-1.5 text-xs text-ink"
+                    />
+                    <button className="rounded-full border border-ink-line px-4 py-1.5 text-xs font-medium text-burg-400 hover:border-burg-400">
+                      반려
+                    </button>
+                  </form>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* ── 일정 신청 인박스 ─────────────────────────── */}
       {requested.length > 0 && (
         <section className="mt-8">
@@ -171,8 +253,8 @@ export default async function AdminSellersPage() {
                   <input type="hidden" name="round_id" value={r.id} />
                   <Input name="handle" label="핸들 (URL)" placeholder="ellie-oct" required />
                   <Input name="display_name" label="표시 이름" placeholder="엘리" />
-                  <Input name="starts_at" label="시작일" type="date" required defaultValue={r.starts_at?.slice(0, 10)} />
-                  <Input name="ends_at" label="종료일" type="date" required defaultValue={r.ends_at?.slice(0, 10)} />
+                  <Input name="starts_at" label="시작일" type="date" required defaultValue={kstDateInput(r.starts_at)} />
+                  <Input name="ends_at" label="종료일" type="date" required defaultValue={kstDateInput(r.ends_at)} />
                   <Input name="commission_rate" label="수수료율 (%)" type="number" step="0.5" required />
                   <label className="block sm:col-span-2">
                     <span className="mb-1 block text-xs font-medium text-ink-soft">
@@ -223,55 +305,6 @@ export default async function AdminSellersPage() {
           <RoundTable rounds={doneRounds} sellerName={sellerName} agg={agg} now={now} />
         </section>
       )}
-
-      {/* ── 회차 만들기 (운영자 직접 — 협찬 등) ─────────────────────────── */}
-      <section className="mt-10 rounded-xl border border-ink-line bg-bg-2 p-5">
-        <h2 className="font-sans text-lg text-ink">회차 만들기</h2>
-        <p className="mt-1 text-xs text-ink-mute">
-          셀러 신청 없이 운영자가 직접 여는 회차 (협찬 등). 저장 즉시 승인 상태가 됩니다.
-        </p>
-        <form action={createRound} className="mt-4 grid gap-2 sm:grid-cols-3">
-          <label className="block">
-            <span className="mb-1 block text-xs font-medium text-ink-soft">셀러</span>
-            <select name="seller_id" required className="w-full rounded-md border border-ink-line bg-bg-1 px-3 py-2 text-sm text-ink">
-              <option value="">선택</option>
-              {sellers.filter((s) => s.active).map((s) => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="mb-1 block text-xs font-medium text-ink-soft">유형</span>
-            <select name="type" className="w-full rounded-md border border-ink-line bg-bg-1 px-3 py-2 text-sm text-ink">
-              <option value="groupbuy">공동구매</option>
-              <option value="sponsored">협찬</option>
-            </select>
-          </label>
-          <Input name="handle" label="핸들 (URL)" placeholder="ellie-oct" required />
-          <Input name="display_name" label="표시 이름" placeholder="엘리" />
-          <Input name="starts_at" label="시작일" type="date" required />
-          <Input name="ends_at" label="종료일" type="date" required />
-          <Input name="commission_rate" label="수수료율 (%)" type="number" step="0.5" required />
-          <label className="block sm:col-span-2">
-            <span className="mb-1 block text-xs font-medium text-ink-soft">
-              전용 옵션 — 한 줄에 하나: <code>키 | 개월 | 라벨 | 가격 | 배지(선택)</code> ·
-              기본값은 표준 공구 단가표
-            </span>
-            <textarea
-              name="options"
-              rows={7}
-              required
-              defaultValue={OPTIONS_TEMPLATE}
-              className="w-full rounded-md border border-ink-line bg-bg-1 px-3 py-2 font-mono text-xs text-ink"
-            />
-          </label>
-          <div className="flex items-end sm:col-span-3">
-            <button className="rounded-full bg-burg-600 px-6 py-2.5 text-sm font-semibold text-bg-1 hover:bg-burg-400">
-              회차 생성
-            </button>
-          </div>
-        </form>
-      </section>
 
       {/* ── 셀러 ─────────────────────────── */}
       <section className="mt-10">

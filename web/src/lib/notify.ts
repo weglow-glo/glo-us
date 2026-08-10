@@ -152,6 +152,56 @@ export async function sendShippingNotice(opts: ShippingNotice): Promise<NotifyRe
   }
 }
 
+/** 범용 문자(LMS) 1건 — 템플릿 심사가 필요 없는 운영 안내용 (셀러 심사 결과,
+ *  공구 일정 확정 등). 알림톡 템플릿이 준비되면 개별 함수로 승격한다. */
+export async function sendPlainNotice(opts: {
+  to: string;
+  subject: string;
+  text: string;
+}): Promise<NotifyResult> {
+  const key = process.env.SOLAPI_API_KEY;
+  const secret = process.env.SOLAPI_API_SECRET;
+  const from = process.env.SOLAPI_SENDER;
+  if (!key || !secret || !from) {
+    return { ok: false, channel: "lms", error: "발송 환경변수(SOLAPI_*) 미설정" };
+  }
+
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authHeader(key, secret),
+      },
+      body: JSON.stringify({
+        messages: [
+          {
+            to: opts.to,
+            from: from.replace(/\D/g, ""),
+            text: opts.text,
+            subject: opts.subject,
+          },
+        ],
+      }),
+    });
+    const json = (await res.json().catch(() => ({}))) as {
+      failedMessageList?: Array<{ statusMessage?: string }>;
+      messageList?: Array<{ messageId?: string }>;
+      groupId?: string;
+      message?: string;
+      errorMessage?: string;
+    };
+    if (!res.ok) {
+      return { ok: false, channel: "lms", error: json.errorMessage ?? json.message ?? `HTTP ${res.status}` };
+    }
+    const failed = json.failedMessageList?.[0];
+    if (failed) return { ok: false, channel: "lms", error: failed.statusMessage ?? "발송 실패" };
+    return { ok: true, channel: "lms", messageId: json.messageList?.[0]?.messageId ?? json.groupId };
+  } catch (e) {
+    return { ok: false, channel: "lms", error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
 /** 배송완료 7일 후 리뷰 요청 문자 본문. 금액은 지급 정책(app_settings)에서 받는다. */
 export function reviewRequestMessage(opts: {
   name: string | null;

@@ -7,7 +7,7 @@ import {
   ROUND_TYPE_LABEL,
   type RoundType,
 } from "@/lib/groupbuy";
-import { getSellerContext } from "./_lib";
+import { getSellerGate } from "./_lib";
 import NotSeller from "./_not-seller";
 import AutoRefresh from "./_refresh";
 import { DEMO_ORDERS, DEMO_ROUNDS, groupbuyDemoMode } from "@/lib/groupbuy-demo";
@@ -58,8 +58,17 @@ function isTodayKST(iso: string | null): boolean {
 
 /** 셀러 대시보드 — 진행 중 회차의 실시간 매출과 예상 정산액 */
 export default async function SellerDashboard() {
-  const ctx = await getSellerContext();
-  if (!ctx) return <NotSeller />;
+  const gate = await getSellerGate();
+  if (gate.kind === "guest") {
+    return (
+      <NotSeller
+        application={gate.application}
+        defaultName={gate.defaultName}
+        defaultPhone={gate.defaultPhone}
+      />
+    );
+  }
+  const ctx = gate.ctx;
 
   const demo = groupbuyDemoMode();
   let rounds: RoundRow[] = [];
