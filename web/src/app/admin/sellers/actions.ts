@@ -3,18 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { parseRoundOptions, SETTLE_HOLD_DAYS } from "@/lib/groupbuy";
-import { normalizePhone, sendPlainNotice } from "@/lib/notify";
-
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://glo-us.com";
-
-/** 심사·확정 안내 문자 — 실패해도 승인 처리는 막지 않는다 (베스트 에포트) */
-function notifySeller(phone: string | null | undefined, subject: string, text: string) {
-  const to = normalizePhone(phone);
-  if (!to) return;
-  void sendPlainNotice({ to, subject, text }).then((r) => {
-    if (!r.ok) console.error(`[sellers] 문자 발송 실패 (${subject}):`, r.error);
-  });
-}
+import {
+  dispatchSellerNotice,
+  roundApprovedNotice,
+  roundRejectedNotice,
+  sellerApprovedNotice,
+  sellerRejectedNotice,
+} from "@/lib/groupbuy-notices";
 
 /** 폼의 date 입력(YYYY-MM-DD)을 KST 자정 기준 timestamptz 로 */
 function kstDate(value: FormDataEntryValue | null, endOfDay = false): string | null {
@@ -113,19 +108,7 @@ export async function approveApplication(formData: FormData) {
     .update({ status: "approved", decided_at: new Date().toISOString() })
     .eq("id", app.id);
 
-  notifySeller(
-    app.phone,
-    "[glo] 셀러 심사 완료",
-    [
-      `[glo] 셀러 심사 완료`,
-      ``,
-      `${app.name}님, glo 셀러 심사가 완료되었습니다.`,
-      `지원하신 카카오 계정으로 셀러 센터에 로그인해 공동구매 일정을 신청하실 수 있습니다.`,
-      ``,
-      `셀러 센터`,
-      `${SITE}/seller`,
-    ].join("\n"),
-  );
+  dispatchSellerNotice(app.phone, sellerApprovedNotice(app.name));
 
   revalidatePath("/admin/sellers");
   revalidatePath("/admin/members");
@@ -150,20 +133,7 @@ export async function rejectApplication(formData: FormData) {
     .update({ status: "rejected", admin_note: note, decided_at: new Date().toISOString() })
     .eq("id", app.id);
 
-  notifySeller(
-    app.phone,
-    "[glo] 셀러 심사 결과 안내",
-    [
-      `[glo] 셀러 심사 결과 안내`,
-      ``,
-      `${app.name}님, 지원해주셔서 감사합니다.`,
-      `아쉽지만 이번에는 함께하지 못하게 되었습니다.`,
-      ...(note ? [``, `사유: ${note}`] : []),
-      ``,
-      `내용을 보완해 다시 지원하실 수 있습니다.`,
-      `문의: official@weglow.biz`,
-    ].join("\n"),
-  );
+  dispatchSellerNotice(app.phone, sellerRejectedNotice(app.name, note));
 
   revalidatePath("/admin/sellers");
 }
@@ -210,22 +180,14 @@ export async function approveRound(formData: FormData) {
       .select("name, phone")
       .eq("id", updated.seller_id)
       .maybeSingle();
-    const period = `${startsAt.slice(0, 10)} ~ ${endsAt.slice(0, 10)}`;
-    notifySeller(
+    dispatchSellerNotice(
       seller?.phone,
-      "[glo] 공동구매 일정 확정",
-      [
-        `[glo] 공동구매 일정 확정`,
-        ``,
-        `${seller?.name ?? "셀러"}님, 신청하신 일정이 확정되었습니다.`,
-        ``,
-        `· 기간: ${period}`,
-        `· 수수료율: ${rate}%`,
-        `· 전용 링크: ${SITE}/product/@${handle}`,
-        ``,
-        `링크는 시작일부터 열립니다. 실시간 매출과 정산은 셀러 센터에서 확인하세요.`,
-        `${SITE}/seller`,
-      ].join("\n"),
+      roundApprovedNotice({
+        name: seller?.name ?? "셀러",
+        period: `${startsAt.slice(0, 10)} ~ ${endsAt.slice(0, 10)}`,
+        rate,
+        handle,
+      }),
     );
   }
 
@@ -252,19 +214,7 @@ export async function rejectRound(formData: FormData) {
       .select("name, phone")
       .eq("id", updated.seller_id)
       .maybeSingle();
-    notifySeller(
-      seller?.phone,
-      "[glo] 일정 신청 결과 안내",
-      [
-        `[glo] 일정 신청 결과 안내`,
-        ``,
-        `${seller?.name ?? "셀러"}님, 신청하신 일정은 이번에 진행이 어렵게 되었습니다.`,
-        ...(note ? [``, `사유: ${note}`] : []),
-        ``,
-        `다른 기간으로 다시 신청하실 수 있습니다.`,
-        `${SITE}/seller/apply`,
-      ].join("\n"),
-    );
+    dispatchSellerNotice(seller?.phone, roundRejectedNotice(seller?.name ?? "셀러", note));
   }
 
   revalidatePath("/admin/sellers");
