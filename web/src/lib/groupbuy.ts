@@ -5,7 +5,7 @@
  * 규칙 요약:
  *  - 매출 귀속은 회차(round) 단위. 셀러 페이지에서 시작한 체크아웃만 귀속.
  *  - 회차 주문은 포인트 적립·사용 모두 불가 (리뷰 포인트는 별도 경로라 그대로).
- *  - 정산 = 회차 종료 + 21일 시점의 paid 스냅샷 × 수수료율.
+ *  - 정산 = 회차 종료 3주 뒤 금요일의 paid 스냅샷 × 수수료율.
  */
 import { PRODUCT } from "@/lib/product";
 
@@ -54,7 +54,8 @@ export const ROUND_TYPE_LABEL: Record<RoundType, string> = {
   sponsored: "협찬",
 };
 
-/** 정산 유보 기간 — 회차 종료 후 취소·교환·환불이 잦아드는 기간 */
+/** 정산 유보 기간 — 회차 종료 후 취소·교환·환불이 잦아드는 기간.
+ *  실제 기준일은 이 기간이 지난 뒤 도래하는 첫 금요일 (settleDueOf) */
 export const SETTLE_HOLD_DAYS = 21;
 
 /** live 판정은 상태 컬럼이 아니라 시간으로 — 크론 없이 접속 시점에 결정 */

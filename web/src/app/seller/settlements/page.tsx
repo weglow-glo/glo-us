@@ -89,7 +89,7 @@ export default async function SellerSettlementsPage() {
     <main className="mx-auto max-w-4xl px-6 py-8">
       <h1 className="font-sans text-2xl font-light text-ink">정산 내역</h1>
       <p className="mt-1 text-sm text-ink-mute">
-        정산액은 회차 종료 21일 후, 그 시점의 결제완료 주문 × 수수료율로 확정됩니다.
+        정산액은 회차 종료 3주 뒤 금요일에, 그 시점의 결제완료 주문 × 수수료율로 확정됩니다.
         확정 전 금액은 예상치이며 취소·환불에 따라 달라질 수 있습니다.
       </p>
 

@@ -308,8 +308,16 @@ export async function settleRound(formData: FormData) {
 
 // ─────────────────────────────────────────────── helpers
 
+/** 정산 기준일 = 회차 종료 + 3주가 지난 뒤 도래하는 첫 금요일 00:00 KST.
+ *  (21일째가 금요일이면 그날) — 정산일을 금요일로 통일해 이체 업무를 모은다. */
 function settleDueOf(endsAtIso: string): string {
-  return new Date(Date.parse(endsAtIso) + SETTLE_HOLD_DAYS * 86400_000).toISOString();
+  const base = Date.parse(endsAtIso) + SETTLE_HOLD_DAYS * 86400_000;
+  // KST 기준 그날 자정과 요일
+  const kst = new Date(base + 9 * 3600_000);
+  const kstMidnightUtc =
+    Date.UTC(kst.getUTCFullYear(), kst.getUTCMonth(), kst.getUTCDate()) - 9 * 3600_000;
+  const daysToFriday = (5 - kst.getUTCDay() + 7) % 7; // 0=일 … 5=금
+  return new Date(kstMidnightUtc + daysToFriday * 86400_000).toISOString();
 }
 
 /** textarea 의 옵션 JSON — 한 줄씩 "key | 개월 | 라벨 | 가격" 형식도 허용 */
