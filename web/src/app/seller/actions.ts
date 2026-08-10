@@ -46,6 +46,15 @@ export async function applyForSeller(formData: FormData) {
   redirect("/seller");
 }
 
+/** datetime-local(분 단위) 또는 date 입력을 KST timestamptz 로.
+ *  날짜만 오면 시작은 자정, 종료는 23:59:59 로 채운다. */
+function kstStamp(value: FormDataEntryValue | null, endOfDay: boolean): string | null {
+  const s = String(value ?? "").trim();
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(s)) return `${s}:00+09:00`;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return `${s}T${endOfDay ? "23:59:59" : "00:00:00"}+09:00`;
+  return null;
+}
+
 /**
  * 셀러 일정 신청 — 서버 액션은 세션에서 셀러를 다시 확인한다
  * (클라이언트가 보낸 seller_id 는 절대 신뢰하지 않는다).
@@ -65,11 +74,10 @@ export async function requestRound(formData: FormData) {
     .maybeSingle();
   if (!seller || !seller.active) return;
 
-  const starts = String(formData.get("starts_at") ?? "").trim();
-  const ends = String(formData.get("ends_at") ?? "").trim();
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(starts) || !/^\d{4}-\d{2}-\d{2}$/.test(ends)) return;
-  const startsAt = `${starts}T00:00:00+09:00`;
-  const endsAt = `${ends}T23:59:59+09:00`;
+  // datetime-local(YYYY-MM-DDTHH:mm) 또는 date(YYYY-MM-DD) — 모두 KST 로 해석
+  const startsAt = kstStamp(formData.get("starts_at"), false);
+  const endsAt = kstStamp(formData.get("ends_at"), true);
+  if (!startsAt || !endsAt) return;
   if (Date.parse(endsAt) <= Date.parse(startsAt)) return;
   if (Date.parse(startsAt) < Date.now() - 86400_000) return; // 과거 시작일 방지
 

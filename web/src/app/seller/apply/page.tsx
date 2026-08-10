@@ -19,22 +19,28 @@ export default async function SellerApplyPage() {
 
       <form action={requestRound} className="mt-8 grid gap-4">
         <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-ink-soft">시작일</span>
+          <span className="mb-1.5 block text-sm font-medium text-ink-soft">시작 일시</span>
           <input
             name="starts_at"
-            type="date"
+            type="datetime-local"
             required
             className="w-full rounded-md border border-ink-line bg-bg-1 px-4 py-3 text-sm text-ink outline-none focus:border-accent"
           />
+          <span className="mt-1 block text-xs text-ink-mute">
+            링크가 열리는 시각 — 예: 오후 8시 오픈이면 20:00
+          </span>
         </label>
         <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-ink-soft">종료일</span>
+          <span className="mb-1.5 block text-sm font-medium text-ink-soft">종료 일시</span>
           <input
             name="ends_at"
-            type="date"
+            type="datetime-local"
             required
             className="w-full rounded-md border border-ink-line bg-bg-1 px-4 py-3 text-sm text-ink outline-none focus:border-accent"
           />
+          <span className="mt-1 block text-xs text-ink-mute">
+            이 시각 이후에는 결제가 자동으로 닫힙니다
+          </span>
         </label>
         <label className="block">
           <span className="mb-1.5 block text-sm font-medium text-ink-soft">
