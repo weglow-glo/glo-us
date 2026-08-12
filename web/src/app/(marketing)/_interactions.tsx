@@ -924,7 +924,12 @@ export function LandingInteractions() {
 
     // 런칭 이벤트(8/11 자정 KST) 마감 후 — 최대 50% CTA 를 판매량 문구로 교체
     // (상세페이지 가격 전환과 같은 시각 기준; lib/product LAUNCH_EVENT_ENDS_AT)
-    if (Date.now() >= Date.parse("2026-08-11T15:00:00Z")) {
+    const postEra = Date.now() >= Date.parse("2026-08-11T15:00:00Z");
+    // 홈 가격 카운터 목표값 — 마감 후에는 1개월 일반 판매가
+    const homePrice = postEra ? 99960 : 83300;
+    if (postEra) {
+      const rsEm = document.querySelector<HTMLElement>(".rs-price em");
+      if (rsEm) rsEm.textContent = "16% 할인";
       const ctaSec = document.querySelector<HTMLElement>(".cta");
       if (ctaSec) {
         const ey = ctaSec.querySelector<HTMLElement>(".ey");
@@ -966,7 +971,7 @@ export function LandingInteractions() {
         });
       });
       const price = $("#rsPrice");
-      if (price) price.textContent = "83,300";
+      if (price) price.textContent = homePrice.toLocaleString("ko-KR");
     }
 
     (async () => {
@@ -1129,7 +1134,7 @@ export function LandingInteractions() {
                   pricePlayed = true;
                   const po = { n: 0 };
                   gsap.to(po, {
-                    n: 83300,
+                    n: homePrice,
                     duration: 1.1,
                     ease: "power2.out",
                     onUpdate: () => {
