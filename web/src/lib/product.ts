@@ -31,13 +31,13 @@ export function launchEventActive(now: number = Date.now()): boolean {
 
 /** Selectable duration bundles. Price is the trusted server-side amount.
  *  price   = 런칭 이벤트가 (2026-07-22~08-11): 소비자가 119,000/월에 30–50% 할인
- *  postPrice = 일반 판매가: 수량별 15/18/22/27/35% 할인 */
+ *  postPrice = 일반 판매가 (2026-08-10 개정): 수량별 16/21/26/33/40% 할인 */
 export const OPTIONS: ProductOption[] = [
-  { key: "1m", months: 1, label: "1개월 분", price: 83300, postPrice: 101150 },
-  { key: "2m", months: 2, label: "2개월 분", price: 159460, postPrice: 195160, badge: "추천" },
-  { key: "3m", months: 3, label: "3개월 분", price: 224910, postPrice: 278460, badge: "베스트" },
-  { key: "4m", months: 4, label: "4개월 분", price: 276080, postPrice: 347480 },
-  { key: "6m", months: 6, label: "6개월 분", price: 357000, postPrice: 464100 },
+  { key: "1m", months: 1, label: "1개월 분", price: 83300, postPrice: 99960 },
+  { key: "2m", months: 2, label: "2개월 분", price: 159460, postPrice: 188020, badge: "추천" },
+  { key: "3m", months: 3, label: "3개월 분", price: 224910, postPrice: 264180, badge: "베스트" },
+  { key: "4m", months: 4, label: "4개월 분", price: 276080, postPrice: 318920 },
+  { key: "6m", months: 6, label: "6개월 분", price: 357000, postPrice: 428400 },
 ];
 
 /** 시점 기준 실판매가 — 이벤트 종료 후 자동으로 일반 판매가로 전환. */
