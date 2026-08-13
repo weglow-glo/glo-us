@@ -471,22 +471,22 @@ export function ProductInteractions() {
         const floatPrice = document.getElementById("buy-float-price");
         if (floatPrice && activePrice) floatPrice.textContent = activePrice;
         scar?.remove();
-        // 런칭 배너 → 10만 포 달성 스토리로 교체
+        // 런칭 배너 → 30만 포 달성 스토리로 교체
         const bannerEy = document.querySelector<HTMLElement>(".po-banner .ey");
         if (bannerEy)
-          bannerEy.innerHTML = '<span class="dash"></span>10만 포 판매 돌파';
+          bannerEy.innerHTML = '<span class="dash"></span>30만 포 판매 돌파';
         const bannerH = document.querySelector<HTMLElement>(".po-banner-h");
         if (bannerH)
-          bannerH.innerHTML = "런칭 전후 3개월 만에,<br><em>10만 포 달성</em>";
+          bannerH.innerHTML = "런칭 전후 3개월 만에,<br><em>30만 포 달성</em>";
         const bannerNum = document.querySelector<HTMLElement>(".po-banner-num");
         if (bannerNum)
-          bannerNum.innerHTML = '10<span class="po-banner-pct">만</span>';
+          bannerNum.innerHTML = '30<span class="po-banner-pct">만</span>';
         const bannerOff = document.querySelector<HTMLElement>(".po-banner-off");
         if (bannerOff) bannerOff.textContent = "포";
         const bannerSub = document.querySelector<HTMLElement>(".po-banner-sub");
         if (bannerSub)
           bannerSub.textContent =
-            "공식 런칭 이벤트는 마감되었지만, 런칭 전후 3개월 만에 누적 10만 포 판매를 달성했습니다. 수량별 할인 혜택은 계속됩니다.";
+            "공식 런칭 이벤트는 마감되었지만, 런칭 전후 3개월 만에 누적 30만 포 판매를 달성했습니다. 수량별 할인 혜택은 계속됩니다.";
         document.querySelector(".po-banner-dl")?.remove();
       };
       if (Date.now() >= EVENT_ENDS) {
@@ -933,9 +933,9 @@ export function LandingInteractions() {
       const ctaSec = document.querySelector<HTMLElement>(".cta");
       if (ctaSec) {
         const ey = ctaSec.querySelector<HTMLElement>(".ey");
-        if (ey) ey.textContent = "10만 포 판매 돌파";
+        if (ey) ey.textContent = "30만 포 판매 돌파";
         const h = ctaSec.querySelector<HTMLElement>("h2");
-        if (h) h.innerHTML = "런칭 전후 3개월 만에<br/><em>10만 포</em>를 달성했습니다.";
+        if (h) h.innerHTML = "런칭 전후 3개월 만에<br/><em>30만 포</em>를 달성했습니다.";
         const lead = ctaSec.querySelector<HTMLElement>(".lead");
         if (lead)
           lead.textContent =
