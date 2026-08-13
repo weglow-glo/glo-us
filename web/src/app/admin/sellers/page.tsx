@@ -490,25 +490,30 @@ function RoundTable({
             return (
               <tr key={r.id} className="border-b border-ink-line align-top last:border-0">
                 <td className="px-4 py-3">
-                  <p className="font-medium text-ink">
+                  {/* 세로 스택: 이름 / n차 / 링크 / 상태 — 각 줄 안에서는 줄바꿈 없음 */}
+                  <p className="whitespace-nowrap font-medium text-ink">
                     {sellerName.get(r.seller_id) ?? "?"}
                     {r.display_name ? ` (${r.display_name})` : ""}
-                    {r.round_no != null && (
-                      <span className="ml-1.5 rounded-full bg-bg-3 px-2 py-0.5 text-[11px] font-bold text-accent">
+                  </p>
+                  {r.round_no != null && (
+                    <p className="mt-1">
+                      <span className="whitespace-nowrap rounded-full bg-bg-3 px-2 py-0.5 text-[11px] font-bold text-accent">
                         {r.round_no}차
                       </span>
-                    )}
-                  </p>
-                  {sellerHandle.get(r.seller_id) && (
-                    <a
-                      href={`/product/@${sellerHandle.get(r.seller_id)}`}
-                      target="_blank"
-                      className="font-mono text-xs text-accent hover:underline"
-                    >
-                      /product/@{sellerHandle.get(r.seller_id)}
-                    </a>
+                    </p>
                   )}
-                  <p className="mt-0.5 text-[11px]">
+                  {sellerHandle.get(r.seller_id) && (
+                    <p className="mt-1">
+                      <a
+                        href={`/product/@${sellerHandle.get(r.seller_id)}`}
+                        target="_blank"
+                        className="whitespace-nowrap font-mono text-xs text-accent hover:underline"
+                      >
+                        /product/@{sellerHandle.get(r.seller_id)}
+                      </a>
+                    </p>
+                  )}
+                  <p className="mt-1 text-[11px]">
                     {live ? (
                       <span className="font-semibold text-accent">LIVE</span>
                     ) : (
@@ -516,7 +521,7 @@ function RoundTable({
                     )}
                   </p>
                 </td>
-                <td className="px-4 py-3 text-ink-soft">{ROUND_TYPE_LABEL[r.type]}</td>
+                <td className="whitespace-nowrap px-4 py-3 text-ink-soft">{ROUND_TYPE_LABEL[r.type]}</td>
                 <td className="px-4 py-3 text-ink-soft">
                   {fmtDT(r.starts_at)} ~ {fmtDT(r.ends_at)}
                   {r.settle_due_at && (
@@ -525,13 +530,13 @@ function RoundTable({
                 </td>
                 <td className="px-4 py-3 text-xs text-ink-soft">
                   {opts.map((o) => (
-                    <p key={o.key}>
+                    <p key={o.key} className="whitespace-nowrap">
                       {o.label} · {formatKRW(o.price)}
                     </p>
                   ))}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <p className="font-medium text-ink">{formatKRW(a.paid)}</p>
+                  <p className="whitespace-nowrap font-medium text-ink">{formatKRW(a.paid)}</p>
                   <p className="text-[11px] text-ink-mute">{a.paidCount}건</p>
                 </td>
                 <td className="px-4 py-3 text-right text-ink-soft">
@@ -543,12 +548,12 @@ function RoundTable({
                 <td className="px-4 py-3 text-right">
                   {r.settled_at ? (
                     <>
-                      <p className="font-medium text-ink">{formatKRW(r.settled_amount ?? 0)}</p>
+                      <p className="whitespace-nowrap font-medium text-ink">{formatKRW(r.settled_amount ?? 0)}</p>
                       <p className="text-[11px] text-ink-mute">확정 {fmtDate(r.settled_at)}</p>
                     </>
                   ) : (
                     <>
-                      <p className="text-ink-soft">예상 {formatKRW(est)}</p>
+                      <p className="whitespace-nowrap text-ink-soft">예상 {formatKRW(est)}</p>
                       {/* 정산 확정은 기준일(종료 3주 뒤 금요일)부터만 — 진행 중엔 노출하지 않는다 */}
                       {showSettle &&
                         ended &&
