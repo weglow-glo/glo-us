@@ -264,3 +264,4 @@ function ChannelAccordion({
     </details>
   );
 }
+// vercel redeploy trigger — 2026-08-18 (#266 프로덕션 빌드 누락)
