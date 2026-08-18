@@ -58,6 +58,15 @@ export const ROUND_TYPE_LABEL: Record<RoundType, string> = {
  *  실제 기준일은 이 기간이 지난 뒤 도래하는 첫 금요일 (settleDueOf) */
 export const SETTLE_HOLD_DAYS = 21;
 
+/** 매출로 집계하는 주문 상태 — WMS 발주 자동화가 paid 를 배송 단계로
+ *  옮기므로, 결제완료만 세면 배송 시작된 주문이 매출에서 빠진다.
+ *  (주문관리 대시보드의 SETTLED 와 같은 집합) */
+export const ROUND_REVENUE_STATUSES = ["paid", "preparing", "shipped", "delivered"];
+
+export function isRoundRevenue(status: string): boolean {
+  return ROUND_REVENUE_STATUSES.includes(status);
+}
+
 /** live 판정은 상태 컬럼이 아니라 시간으로 — 크론 없이 접속 시점에 결정 */
 export function isRoundLive(
   round: { startsAt: string | null; endsAt: string | null },

@@ -2,6 +2,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { formatKRW } from "@/lib/product";
 import {
   isRoundLive,
+  isRoundRevenue,
   maskName,
   parseRoundOptions,
   ROUND_TYPE_LABEL,
@@ -139,7 +140,7 @@ export default async function SellerDashboard() {
             {ctx.name}님의 대시보드
           </h1>
           <p className="mt-1 text-sm text-ink-mute">
-            매출은 결제완료(paid) 기준이며, 취소·환불은 자동 차감 표시됩니다.
+            매출은 결제완료(배송 단계 포함) 기준이며, 취소·환불은 자동 차감 표시됩니다.
           </p>
         </div>
         <AutoRefresh />
@@ -178,7 +179,7 @@ export default async function SellerDashboard() {
 
       {[...live, ...upcoming].map((r) => {
         const ro = orders.filter((o) => o.round_id === r.id);
-        const paid = ro.filter((o) => o.status === "paid");
+        const paid = ro.filter((o) => isRoundRevenue(o.status));
         const lost = ro.filter((o) => o.status === "canceled" || o.status === "refunded");
         const paidSum = paid.reduce((s, o) => s + o.amount, 0);
         const lostSum = lost.reduce((s, o) => s + o.amount, 0);
