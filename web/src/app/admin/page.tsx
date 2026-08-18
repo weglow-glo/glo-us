@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import DateFilter from "./_date-filter";
+import RevenueAnalytics, { type AnalyticsOrder } from "./_revenue-analytics";
+import {
+  DEMO_DIRECT_ORDERS,
+  DEMO_ORDERS,
+  DEMO_ROUNDS,
+  DEMO_SELLERS,
+  groupbuyDemoMode,
+} from "@/lib/groupbuy-demo";
 import { formatKRW } from "@/lib/product";
 import { CARRIERS } from "@/lib/carriers";
 import { STATUS_LABEL, type OrderStatus } from "./status";
@@ -44,7 +52,7 @@ export default async function AdminPage({
   searchParams: Promise<{ status?: string; from?: string; to?: string }>;
 }) {
   const { status, from, to } = await searchParams;
-  const admin = createAdminClient();
+  const demo = groupbuyDemoMode();
 
   // 기간 필터 — 기본은 오늘(KST) 하루. ?from=all 이면 전체 누적.
   const todayKst = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
@@ -64,22 +72,99 @@ export default async function AdminPage({
     ? new Date(Date.parse(`${toDate}T00:00:00+09:00`) + 86400_000).toISOString()
     : null;
 
-  let base = admin
-    .from("orders")
-    .select(
-      "id, order_id, status, amount, quantity, customer_name, customer_phone, tracking_number, created_at, round_id, seller_handle",
-    );
-  if (status) base = base.eq("status", status);
-  if (dayStart && dayEnd) base = base.gte("created_at", dayStart).lt("created_at", dayEnd);
-  const { data, error } = await base
-    .order("created_at", { ascending: false })
-    .limit(500)
-    .returns<Row[]>();
-  const orders = data ?? [];
+  // 매출 분석 차트 구간 — 기간 선택 시 그 기간, 전체 누적이면 최근 30일
+  const last30Start = new Date(
+    Date.parse(`${todayKst}T00:00:00+09:00`) - 29 * 86400_000,
+  ).toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
+  const chartFrom = fromDate ?? last30Start;
+  const chartTo = toDate ?? todayKst;
+  const chartStart = `${chartFrom}T00:00:00+09:00`;
+  const chartEnd = new Date(Date.parse(`${chartTo}T00:00:00+09:00`) + 86400_000).toISOString();
 
-  // 공구 주문 표시 — round_id → 회차(차수) → 셀러 이름. "준호 공구 1차" 배지용.
+  const SETTLED = ["paid", "preparing", "shipped", "delivered"];
+
+  let orders: Row[] = [];
+  let error: { message: string } | null = null;
   const roundLabel = new Map<string, string>();
-  {
+  let paidCount = 0;
+  let totalRevenue = 0;
+  let settledCount = 0;
+  let unnotifiedCount = 0;
+  let dayRevenue = 0;
+  let dayCount = 0;
+  let dayLost = 0;
+  let dayLostCount = 0;
+  let analyticsRows: AnalyticsOrder[] = [];
+
+  if (demo) {
+    // 로컬 데모 — 서버 키 없이 화면 확인용 (프로덕션에서는 도달 불가)
+    const combined = [...DEMO_ORDERS, ...DEMO_DIRECT_ORDERS].map((o, i) => ({
+      id: `demo-${i}`,
+      order_id: `glo_demo_${String(i).padStart(4, "0")}`,
+      status: o.status as OrderStatus,
+      amount: o.amount,
+      quantity: o.quantity,
+      customer_name: o.customer_name,
+      customer_phone: "01000000000",
+      tracking_number: null,
+      created_at: o.created_at,
+      round_id: o.round_id,
+      seller_handle: null,
+      order_name: o.order_name,
+    }));
+    const sellerNames = new Map(DEMO_SELLERS.map((x) => [x.id, x.name]));
+    for (const r of DEMO_ROUNDS) {
+      const name = r.display_name ?? sellerNames.get(r.seller_id) ?? "셀러";
+      roundLabel.set(r.id, `${name} 공구${r.round_no != null ? ` ${r.round_no}차` : ""}`);
+    }
+    const inRange = (iso: string, s: string | null, e: string | null) =>
+      !s || !e || (Date.parse(iso) >= Date.parse(s) && iso < e);
+    orders = combined
+      .filter((o) => (!status || o.status === status) && inRange(o.created_at, dayStart, dayEnd))
+      .sort((a, b) => b.created_at.localeCompare(a.created_at));
+    for (const o of combined) {
+      if (SETTLED.includes(o.status)) {
+        totalRevenue += o.amount;
+        settledCount += 1;
+      }
+      if (o.status === "paid") paidCount += 1;
+      if (inRange(o.created_at, dayStart, dayEnd)) {
+        if (SETTLED.includes(o.status)) {
+          dayRevenue += o.amount;
+          dayCount += 1;
+        } else if (o.status === "canceled" || o.status === "refunded") {
+          dayLost += o.amount;
+          dayLostCount += 1;
+        }
+      }
+    }
+    analyticsRows = combined
+      .filter((o) => Date.parse(o.created_at) >= Date.parse(chartStart) && o.created_at < chartEnd)
+      .map((o) => ({
+        created_at: o.created_at,
+        amount: o.amount,
+        status: o.status,
+        round_id: o.round_id,
+        order_name: o.order_name,
+      }));
+  } else {
+    const admin = createAdminClient();
+
+    let base = admin
+      .from("orders")
+      .select(
+        "id, order_id, status, amount, quantity, customer_name, customer_phone, tracking_number, created_at, round_id, seller_handle",
+      );
+    if (status) base = base.eq("status", status);
+    if (dayStart && dayEnd) base = base.gte("created_at", dayStart).lt("created_at", dayEnd);
+    const { data, error: err } = await base
+      .order("created_at", { ascending: false })
+      .limit(500)
+      .returns<Row[]>();
+    orders = data ?? [];
+    error = err;
+
+    // 공구 주문 표시 — round_id → 회차(차수) → 셀러 이름. "준호 공구 1차" 배지용.
     const roundIds = [...new Set(orders.map((o) => o.round_id).filter(Boolean))] as string[];
     if (roundIds.length > 0) {
       const { data: rounds } = await admin
@@ -96,48 +181,55 @@ export default async function AdminPage({
         roundLabel.set(r.id, `${name} 공구${r.round_no != null ? ` ${r.round_no}차` : ""}`);
       }
     }
-  }
 
-  // How many orders are awaiting fulfillment (for the bulk-prepare button).
-  const { count: paidCount } = await admin
-    .from("orders")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "paid");
+    // How many orders are awaiting fulfillment (for the bulk-prepare button).
+    const { count } = await admin
+      .from("orders")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "paid");
+    paidCount = count ?? 0;
 
-  // Total settled revenue — paid orders that weren't canceled/refunded
-  // (i.e. paid + any fulfillment stage). Failed/pending/canceled/refunded excluded.
-  const SETTLED = ["paid", "preparing", "shipped", "delivered"];
-  const { data: revenueRows } = await admin
-    .from("orders")
-    .select("amount, status")
-    .in("status", SETTLED)
-    .limit(10000)
-    .returns<{ amount: number; status: string }[]>();
-  const totalRevenue = (revenueRows ?? []).reduce((sum, r) => sum + (r.amount ?? 0), 0);
-  const settledCount = revenueRows?.length ?? 0;
-
-  // 선택일 매출 — 상태 필터와 무관하게 그날 주문 전체 기준 (주문일 KST)
-  let dayRevenue = 0;
-  let dayCount = 0;
-  let dayLost = 0;
-  let dayLostCount = 0;
-  if (dayStart && dayEnd) {
-    const { data: dayRows } = await admin
+    // Total settled revenue — paid orders that weren't canceled/refunded.
+    const { data: revenueRows } = await admin
       .from("orders")
       .select("amount, status")
-      .gte("created_at", dayStart)
-      .lt("created_at", dayEnd)
-      .limit(5000)
+      .in("status", SETTLED)
+      .limit(10000)
       .returns<{ amount: number; status: string }[]>();
-    for (const r of dayRows ?? []) {
-      if (SETTLED.includes(r.status)) {
-        dayRevenue += r.amount ?? 0;
-        dayCount += 1;
-      } else if (r.status === "canceled" || r.status === "refunded") {
-        dayLost += r.amount ?? 0;
-        dayLostCount += 1;
+    totalRevenue = (revenueRows ?? []).reduce((sum, r) => sum + (r.amount ?? 0), 0);
+    settledCount = revenueRows?.length ?? 0;
+
+    // 매출 분석 구간 주문 (공구/자사몰·옵션별·차트용) — 선택 기간 요약도
+    // 같은 rows 로 계산 (상태 칩과 무관하게 그 기간 전체 기준)
+    const { data: chartRows } = await admin
+      .from("orders")
+      .select("created_at, amount, status, round_id, order_name")
+      .gte("created_at", chartStart)
+      .lt("created_at", chartEnd)
+      .limit(10000)
+      .returns<AnalyticsOrder[]>();
+    analyticsRows = chartRows ?? [];
+
+    if (dayStart && dayEnd) {
+      for (const r of analyticsRows) {
+        if (SETTLED.includes(r.status)) {
+          dayRevenue += r.amount ?? 0;
+          dayCount += 1;
+        } else if (r.status === "canceled" || r.status === "refunded") {
+          dayLost += r.amount ?? 0;
+          dayLostCount += 1;
+        }
       }
     }
+
+    // 배송중인데 발송 문자가 아직 안 나간 주문 (발송 실패 등)
+    const { count: unnotified } = await admin
+      .from("orders")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "shipped")
+      .not("tracking_number", "is", null)
+      .is("shipping_notified_at", null);
+    unnotifiedCount = unnotified ?? 0;
   }
   const fmtDay = (d: string, weekday = false) =>
     new Date(`${d}T00:00:00+09:00`).toLocaleDateString("ko-KR", {
@@ -153,13 +245,6 @@ export default async function AdminPage({
         : `${fmtDay(fromDate)} ~ ${fmtDay(toDate)}`
       : null;
 
-  // 배송중인데 발송 문자가 아직 안 나간 주문 (발송 실패 등)
-  const { count: unnotifiedCount } = await admin
-    .from("orders")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "shipped")
-    .not("tracking_number", "is", null)
-    .is("shipping_notified_at", null);
   const exportHref = status ? `/admin/export?status=${status}` : "/admin/export";
 
   return (
@@ -231,6 +316,14 @@ export default async function AdminPage({
           );
         })}
       </div>
+
+      {/* 매출 분석 — 공구/자사몰 분리 + 일자별 추이 */}
+      <RevenueAnalytics
+        rows={analyticsRows}
+        fromDate={chartFrom}
+        toDate={chartTo}
+        note={fromDate ? undefined : "최근 30일"}
+      />
 
       {/* 이벗WMS 자동 발주 — 아침 크론이 돌지만 수동 실행도 가능 */}
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ink-line bg-bg-2 px-5 py-4">
