@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
+import DateFilter from "./_date-filter";
 import { formatKRW } from "@/lib/product";
 import { CARRIERS } from "@/lib/carriers";
 import { STATUS_LABEL, type OrderStatus } from "./status";
@@ -40,18 +41,28 @@ function fmtDate(iso: string) {
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; date?: string }>;
 }) {
-  const { status } = await searchParams;
+  const { status, date } = await searchParams;
   const admin = createAdminClient();
 
-  const base = admin
+  // 날짜 필터 — 기본은 오늘(KST). ?date=all 이면 전체 누적.
+  const todayKst = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
+  const selectedDate =
+    date === "all" ? null : /^\d{4}-\d{2}-\d{2}$/.test(date ?? "") ? date! : todayKst;
+  const dayStart = selectedDate ? `${selectedDate}T00:00:00+09:00` : null;
+  const dayEnd = dayStart
+    ? new Date(Date.parse(dayStart) + 86400_000).toISOString()
+    : null;
+
+  let base = admin
     .from("orders")
     .select(
       "id, order_id, status, amount, quantity, customer_name, customer_phone, tracking_number, created_at, round_id, seller_handle",
     );
-  const filtered = status ? base.eq("status", status) : base;
-  const { data, error } = await filtered
+  if (status) base = base.eq("status", status);
+  if (dayStart && dayEnd) base = base.gte("created_at", dayStart).lt("created_at", dayEnd);
+  const { data, error } = await base
     .order("created_at", { ascending: false })
     .limit(500)
     .returns<Row[]>();
@@ -96,6 +107,38 @@ export default async function AdminPage({
   const totalRevenue = (revenueRows ?? []).reduce((sum, r) => sum + (r.amount ?? 0), 0);
   const settledCount = revenueRows?.length ?? 0;
 
+  // 선택일 매출 — 상태 필터와 무관하게 그날 주문 전체 기준 (주문일 KST)
+  let dayRevenue = 0;
+  let dayCount = 0;
+  let dayLost = 0;
+  let dayLostCount = 0;
+  if (dayStart && dayEnd) {
+    const { data: dayRows } = await admin
+      .from("orders")
+      .select("amount, status")
+      .gte("created_at", dayStart)
+      .lt("created_at", dayEnd)
+      .limit(5000)
+      .returns<{ amount: number; status: string }[]>();
+    for (const r of dayRows ?? []) {
+      if (SETTLED.includes(r.status)) {
+        dayRevenue += r.amount ?? 0;
+        dayCount += 1;
+      } else if (r.status === "canceled" || r.status === "refunded") {
+        dayLost += r.amount ?? 0;
+        dayLostCount += 1;
+      }
+    }
+  }
+  const dateLabel = selectedDate
+    ? new Date(`${selectedDate}T00:00:00+09:00`).toLocaleDateString("ko-KR", {
+        timeZone: "Asia/Seoul",
+        month: "long",
+        day: "numeric",
+        weekday: "short",
+      })
+    : null;
+
   // 배송중인데 발송 문자가 아직 안 나간 주문 (발송 실패 등)
   const { count: unnotifiedCount } = await admin
     .from("orders")
@@ -127,25 +170,42 @@ export default async function AdminPage({
         </div>
       </div>
 
-      {/* Settled revenue */}
+      {/* 매출 요약 — 기본은 선택일(오늘), 전체 누적은 보조 표기 */}
       <div className="mt-5 flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-xl border border-ink-line bg-bg-2 px-6 py-5">
         <span className="text-sm font-semibold uppercase tracking-wide text-ink-mute">
-          총 결제완료 금액
+          {dateLabel ? `${dateLabel} 매출` : "총 결제완료 금액"}
         </span>
         <span className="font-sans text-3xl font-light text-ink">
-          {formatKRW(totalRevenue)}
+          {formatKRW(dateLabel ? dayRevenue : totalRevenue)}
         </span>
-        <span className="text-sm text-ink-faint">결제 {settledCount}건 · 취소·환불 제외</span>
+        {dateLabel ? (
+          <>
+            <span className="text-sm text-ink-faint">
+              결제 {dayCount}건 · 취소·환불 제외
+              {dayLostCount > 0 ? ` (취소·환불 −${formatKRW(dayLost)} · ${dayLostCount}건)` : ""}
+            </span>
+            <span className="ml-auto text-sm text-ink-mute">
+              누적 {formatKRW(totalRevenue)} · {settledCount}건
+            </span>
+          </>
+        ) : (
+          <span className="text-sm text-ink-faint">결제 {settledCount}건 · 취소·환불 제외</span>
+        )}
+      </div>
+
+      {/* 날짜 필터 */}
+      <div className="mt-6">
+        <DateFilter date={selectedDate} status={status} />
       </div>
 
       {/* Status filter */}
-      <div className="mt-6 flex flex-wrap gap-2">
+      <div className="mt-4 flex flex-wrap gap-2">
         {FILTERS.map((f) => {
           const active = (status ?? "") === f.key;
           return (
             <Link
               key={f.key || "all"}
-              href={f.key ? `/admin?status=${f.key}` : "/admin"}
+              href={`/admin?date=${selectedDate ?? "all"}${f.key ? `&status=${f.key}` : ""}`}
               className={`rounded-full border px-4 py-1.5 text-sm transition ${
                 active
                   ? "border-accent bg-accent text-cream"
