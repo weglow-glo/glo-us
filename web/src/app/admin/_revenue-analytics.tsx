@@ -123,7 +123,7 @@ export default function RevenueAnalytics({
         </p>
       )}
       <div className="mt-4">
-        <div className="flex h-40 items-end gap-[2px] border-b border-ink-line">
+        <div className="flex h-40 items-end justify-center gap-[2px] border-b border-ink-line">
           {chartDays.map((d) => {
             const v = perDay.get(d)!;
             const gbH = (v.gb / maxTotal) * 100;
@@ -133,7 +133,7 @@ export default function RevenueAnalytics({
               <div
                 key={d}
                 title={title}
-                className="flex h-full min-w-[3px] flex-1 flex-col justify-end"
+                className="flex h-full min-w-[3px] max-w-16 flex-1 flex-col justify-end"
               >
                 {v.direct > 0 && (
                   <div
@@ -151,9 +151,9 @@ export default function RevenueAnalytics({
             );
           })}
         </div>
-        <div className="flex gap-[2px]">
+        <div className="flex justify-center gap-[2px]">
           {chartDays.map((d, i) => (
-            <div key={d} className="min-w-[3px] flex-1 text-center text-[10px] text-ink-mute">
+            <div key={d} className="min-w-[3px] max-w-16 flex-1 text-center text-[10px] text-ink-mute">
               {i % labelEvery === 0 || i === chartDays.length - 1 ? shortDay(d) : ""}
             </div>
           ))}
