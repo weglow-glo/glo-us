@@ -41,18 +41,27 @@ function fmtDate(iso: string) {
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; date?: string }>;
+  searchParams: Promise<{ status?: string; from?: string; to?: string }>;
 }) {
-  const { status, date } = await searchParams;
+  const { status, from, to } = await searchParams;
   const admin = createAdminClient();
 
-  // 날짜 필터 — 기본은 오늘(KST). ?date=all 이면 전체 누적.
+  // 기간 필터 — 기본은 오늘(KST) 하루. ?from=all 이면 전체 누적.
   const todayKst = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
-  const selectedDate =
-    date === "all" ? null : /^\d{4}-\d{2}-\d{2}$/.test(date ?? "") ? date! : todayKst;
-  const dayStart = selectedDate ? `${selectedDate}T00:00:00+09:00` : null;
-  const dayEnd = dayStart
-    ? new Date(Date.parse(dayStart) + 86400_000).toISOString()
+  const validDate = (v?: string) => (/^\d{4}-\d{2}-\d{2}$/.test(v ?? "") ? v! : null);
+  let fromDate: string | null;
+  let toDate: string | null;
+  if (from === "all" || to === "all") {
+    fromDate = null;
+    toDate = null;
+  } else {
+    fromDate = validDate(from) ?? todayKst;
+    toDate = validDate(to) ?? fromDate;
+    if (fromDate > toDate) [fromDate, toDate] = [toDate, fromDate];
+  }
+  const dayStart = fromDate ? `${fromDate}T00:00:00+09:00` : null;
+  const dayEnd = toDate
+    ? new Date(Date.parse(`${toDate}T00:00:00+09:00`) + 86400_000).toISOString()
     : null;
 
   let base = admin
@@ -130,14 +139,19 @@ export default async function AdminPage({
       }
     }
   }
-  const dateLabel = selectedDate
-    ? new Date(`${selectedDate}T00:00:00+09:00`).toLocaleDateString("ko-KR", {
-        timeZone: "Asia/Seoul",
-        month: "long",
-        day: "numeric",
-        weekday: "short",
-      })
-    : null;
+  const fmtDay = (d: string, weekday = false) =>
+    new Date(`${d}T00:00:00+09:00`).toLocaleDateString("ko-KR", {
+      timeZone: "Asia/Seoul",
+      month: "long",
+      day: "numeric",
+      ...(weekday ? { weekday: "short" as const } : {}),
+    });
+  const dateLabel =
+    fromDate && toDate
+      ? fromDate === toDate
+        ? fmtDay(fromDate, true)
+        : `${fmtDay(fromDate)} ~ ${fmtDay(toDate)}`
+      : null;
 
   // 배송중인데 발송 문자가 아직 안 나간 주문 (발송 실패 등)
   const { count: unnotifiedCount } = await admin
@@ -195,7 +209,7 @@ export default async function AdminPage({
 
       {/* 날짜 필터 */}
       <div className="mt-6">
-        <DateFilter date={selectedDate} status={status} />
+        <DateFilter from={fromDate} to={toDate} status={status} />
       </div>
 
       {/* Status filter */}
@@ -205,7 +219,7 @@ export default async function AdminPage({
           return (
             <Link
               key={f.key || "all"}
-              href={`/admin?date=${selectedDate ?? "all"}${f.key ? `&status=${f.key}` : ""}`}
+              href={`/admin?from=${fromDate ?? "all"}&to=${toDate ?? "all"}${f.key ? `&status=${f.key}` : ""}`}
               className={`rounded-full border px-4 py-1.5 text-sm transition ${
                 active
                   ? "border-accent bg-accent text-cream"
