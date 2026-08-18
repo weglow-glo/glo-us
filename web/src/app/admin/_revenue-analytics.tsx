@@ -128,23 +128,44 @@ export default function RevenueAnalytics({
             const v = perDay.get(d)!;
             const gbH = (v.gb / maxTotal) * 100;
             const directH = (v.direct / maxTotal) * 100;
-            const title = `${shortDay(d)} · 공구 ${formatKRW(v.gb)} · 자사몰 ${formatKRW(v.direct)} · 합 ${formatKRW(v.gb + v.direct)}`;
             return (
               <div
                 key={d}
-                title={title}
-                className="flex h-full min-w-[3px] max-w-16 flex-1 flex-col justify-end"
+                aria-label={`${shortDay(d)} 공구 ${formatKRW(v.gb)} 자사몰 ${formatKRW(v.direct)}`}
+                className="group relative flex h-full min-w-[3px] max-w-16 flex-1 flex-col justify-end"
               >
+                {/* 커스텀 호버 툴팁 — 브랜드 카드 (기본 title 툴팁 대체) */}
+                <div className="pointer-events-none invisible absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-burg-600 px-3.5 py-2.5 text-[11px] leading-relaxed text-cream opacity-0 shadow-[0_8px_24px_rgba(42,18,24,0.35)] transition-opacity duration-100 group-hover:visible group-hover:opacity-100">
+                  <p className="mb-1 font-bold">{shortDay(d)}</p>
+                  <p className="flex items-center gap-1.5">
+                    <span
+                      className="inline-block h-2 w-2 rounded-sm"
+                      style={{ background: GB_COLOR }}
+                    />
+                    공구 <b className="ml-auto pl-3">{formatKRW(v.gb)}</b>
+                  </p>
+                  <p className="flex items-center gap-1.5">
+                    <span
+                      className="inline-block h-2 w-2 rounded-sm"
+                      style={{ background: DIRECT_COLOR }}
+                    />
+                    자사몰 <b className="ml-auto pl-3">{formatKRW(v.direct)}</b>
+                  </p>
+                  <p className="mt-1 border-t border-cream/25 pt-1 text-right font-bold">
+                    합 {formatKRW(v.gb + v.direct)}
+                  </p>
+                  <span className="absolute left-1/2 top-full -mt-1 h-2 w-2 -translate-x-1/2 rotate-45 bg-burg-600" />
+                </div>
                 {v.direct > 0 && (
                   <div
                     style={{ height: `${directH}%`, background: DIRECT_COLOR }}
-                    className="rounded-t-[4px]"
+                    className="rounded-t-[4px] transition-opacity group-hover:opacity-80"
                   />
                 )}
                 {v.gb > 0 && (
                   <div
                     style={{ height: `${gbH}%`, background: GB_COLOR }}
-                    className={v.direct > 0 ? "mt-[2px]" : "rounded-t-[4px]"}
+                    className={`transition-opacity group-hover:opacity-80 ${v.direct > 0 ? "mt-[2px]" : "rounded-t-[4px]"}`}
                   />
                 )}
               </div>
@@ -174,7 +195,7 @@ export default function RevenueAnalytics({
           자사몰
         </span>
         <span className="ml-auto text-[11px] text-ink-mute">
-          결제완료·배송 단계 합산, 취소·환불 제외 · 막대에 마우스를 올리면 일자별 금액
+          결제완료·배송 단계 합산, 취소·환불 제외
         </span>
       </div>
     </section>
