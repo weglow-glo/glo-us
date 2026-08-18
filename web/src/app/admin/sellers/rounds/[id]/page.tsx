@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatKRW } from "@/lib/product";
-import { ROUND_TYPE_LABEL, type RoundType } from "@/lib/groupbuy";
+import { isRoundRevenue, ROUND_TYPE_LABEL, type RoundType } from "@/lib/groupbuy";
 import { statusLabel } from "@/lib/order-status";
 import {
   DEMO_ORDERS,
@@ -110,7 +110,7 @@ export default async function AdminRoundDetailPage({
     orders = orderRows ?? [];
   }
 
-  const paid = orders.filter((o) => o.status === "paid");
+  const paid = orders.filter((o) => isRoundRevenue(o.status));
   const lost = orders.filter((o) => ["canceled", "refunded"].includes(o.status));
   const paidSum = paid.reduce((s, o) => s + o.amount, 0);
   const lostSum = lost.reduce((s, o) => s + o.amount, 0);
@@ -151,7 +151,7 @@ export default async function AdminRoundDetailPage({
 
       {/* 집계 */}
       <div className="mt-5 grid gap-3 sm:grid-cols-4">
-        <Stat label="매출 (결제완료)" value={formatKRW(paidSum)} sub={`${paid.length}건 · 구매자 ${buyers}명`} />
+        <Stat label="매출" value={formatKRW(paidSum)} sub={`${paid.length}건 · 구매자 ${buyers}명`} />
         <Stat label="취소·환불" value={lost.length > 0 ? `−${formatKRW(lostSum)}` : "—"} sub={lost.length > 0 ? `${lost.length}건` : ""} />
         <Stat label="수수료율" value={`${rate}%`} sub="" />
         <Stat

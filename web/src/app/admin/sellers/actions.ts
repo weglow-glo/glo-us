@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { parseRoundOptions, SETTLE_HOLD_DAYS } from "@/lib/groupbuy";
+import { parseRoundOptions, ROUND_REVENUE_STATUSES, SETTLE_HOLD_DAYS } from "@/lib/groupbuy";
 import {
   dispatchSellerNotice,
   roundApprovedNotice,
@@ -260,7 +260,7 @@ export async function settleRound(formData: FormData) {
     .from("orders")
     .select("amount, status")
     .eq("round_id", roundId)
-    .eq("status", "paid")
+    .in("status", ROUND_REVENUE_STATUSES)
     .limit(100000);
   const sales = (orders ?? []).reduce((s, o) => s + (o.amount ?? 0), 0);
   const rate = Number(round.commission_rate ?? 0);

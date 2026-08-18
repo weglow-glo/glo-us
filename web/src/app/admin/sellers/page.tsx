@@ -3,6 +3,7 @@ import { formatKRW } from "@/lib/product";
 import {
   GROUPBUY_STANDARD_OPTIONS,
   ROUND_TYPE_LABEL,
+  isRoundRevenue,
   parseRoundOptions,
   type RoundType,
 } from "@/lib/groupbuy";
@@ -171,7 +172,7 @@ export default async function AdminSellersPage() {
   for (const o of orderRows) {
     if (!o.round_id) continue;
     const a = agg.get(o.round_id) ?? { paid: 0, paidCount: 0, lost: 0, lostCount: 0 };
-    if (o.status === "paid") {
+    if (isRoundRevenue(o.status)) {
       a.paid += o.amount ?? 0;
       a.paidCount += 1;
     } else if (o.status === "canceled" || o.status === "refunded") {
@@ -190,7 +191,7 @@ export default async function AdminSellersPage() {
       <h1 className="font-sans text-2xl font-light text-ink">셀러 · 공동구매 관리</h1>
       <p className="mt-1 text-sm text-ink-mute">
         전용 링크는 <code className="rounded bg-bg-3 px-1.5 py-0.5">glo-us.com/product/@핸들</code> ·
-        정산 기준일은 회차 종료 3주 뒤 금요일 (paid 스냅샷 × 수수료율)
+        정산 기준일은 회차 종료 3주 뒤 금요일 (매출 스냅샷 × 수수료율 · 취소·환불 제외)
       </p>
       {demo && (
         <p className="mt-3 rounded-md border border-amber-300 bg-amber-50 px-4 py-2.5 text-xs font-medium text-amber-800">
@@ -466,7 +467,7 @@ function RoundTable({
             <th className="px-4 py-3">유형</th>
             <th className="px-4 py-3">기간</th>
             <th className="px-4 py-3">구성</th>
-            <th className="px-4 py-3 text-right">매출 (paid)</th>
+            <th className="px-4 py-3 text-right">매출</th>
             <th className="px-4 py-3 text-right">취소·환불</th>
             <th className="px-4 py-3 text-right">수수료율</th>
             <th className="px-4 py-3 text-right">정산</th>
