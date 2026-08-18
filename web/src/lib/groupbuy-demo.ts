@@ -258,6 +258,41 @@ export const DEMO_ORDERS: DemoOrder[] = [
   ...ordersOf("demo-round-done", DONE_SPECS),
 ];
 
+/** 자사몰(일반) 데모 주문 — 주문관리 매출 분석(공구 vs 자사몰) 확인용 */
+export type DemoDirectOrder = Omit<DemoOrder, "round_id"> & { round_id: null };
+
+const DIRECT_SPECS: Array<[number, number, string, number, number, string, string]> = [
+  // [일수 전, 시각, 라벨, 개월, 금액, 상태, 주문자]
+  [0, 10, "1개월 분", 1, 99960, "paid", "신애"],
+  [0, 14, "3개월 분", 3, 264180, "paid", "구현정"],
+  [1, 9, "2개월 분", 2, 188020, "shipped", "박세미"],
+  [1, 16, "1개월 분", 1, 99960, "shipped", "이도윤"],
+  [2, 11, "3개월 분", 3, 264180, "shipped", "김하람"],
+  [2, 13, "1개월 분", 1, 99960, "canceled", "정수빈"],
+  [3, 10, "6개월 분", 6, 428400, "delivered", "최연우"],
+  [3, 15, "2개월 분", 2, 188020, "delivered", "한서진"],
+  [4, 12, "1개월 분", 1, 99960, "delivered", "오지유"],
+  [5, 10, "3개월 분", 3, 264180, "delivered", "임가온"],
+  [5, 17, "2개월 분", 2, 188020, "delivered", "황시우"],
+  [6, 11, "1개월 분", 1, 99960, "delivered", "윤보라"],
+];
+
+export const DEMO_DIRECT_ORDERS: DemoDirectOrder[] = DIRECT_SPECS.map(
+  ([daysAgo, hour, label, months, amount, status, name]) => {
+    const t = now() - daysAgo * DAY - (23 - hour) * 3600_000;
+    return {
+      round_id: null,
+      status,
+      amount,
+      quantity: months,
+      customer_name: name,
+      order_name: `glo GL-01 ${label}`,
+      approved_at: status === "pending" ? null : iso(t),
+      created_at: iso(t),
+    };
+  },
+);
+
 // 종료 회차의 확정 정산액 = paid 합계 × 20% (화면 숫자가 서로 맞도록)
 {
   const doneSales = DEMO_ORDERS.filter(
