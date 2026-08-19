@@ -922,6 +922,16 @@ export function LandingInteractions() {
     if (reduce) htmlEl.classList.add("glo-nav-on");
     cleanups.push(() => htmlEl.classList.remove("glo-home-nav", "glo-nav-on"));
 
+    // 플로팅 제품 CTA — 히어로를 지나기 시작하면 등장 (채널톡 아이콘 위)
+    const floatCta = document.getElementById("gloFloatCta");
+    if (floatCta) {
+      const onFloatScroll = () =>
+        floatCta.classList.toggle("on", window.scrollY > window.innerHeight * 0.6);
+      onFloatScroll();
+      window.addEventListener("scroll", onFloatScroll, { passive: true });
+      cleanups.push(() => window.removeEventListener("scroll", onFloatScroll));
+    }
+
     // 런칭 이벤트(8/11 자정 KST) 마감 후 — 최대 50% CTA 를 판매량 문구로 교체
     // (상세페이지 가격 전환과 같은 시각 기준; lib/product LAUNCH_EVENT_ENDS_AT)
     const postEra = Date.now() >= Date.parse("2026-08-11T15:00:00Z");
