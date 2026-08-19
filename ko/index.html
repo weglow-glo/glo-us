@@ -251,6 +251,19 @@ html.glo-home-nav .nav-burger:active{background:rgba(244,235,235,.12);}
   font-family:var(--en);font-size:10.5px;letter-spacing:3px;text-transform:uppercase;color:rgba(244,235,235,.42);
   display:flex;flex-direction:column;align-items:center;gap:12px;}
 .glohome .scroll-cue i{display:block;width:1px;height:52px;background:linear-gradient(180deg,var(--gold),transparent);animation:glhCue 2.2s var(--ease) infinite;}
+.glohome .hero-cta{display:inline-flex;align-items:center;gap:10px;margin-top:38px;padding:16px 32px;border-radius:100px;
+  background:var(--cream);color:#2a1218;font-family:var(--kr);font-weight:700;font-size:14.5px;letter-spacing:-.2px;
+  box-shadow:0 12px 38px rgba(0,0,0,.4);transition:transform .25s var(--ease),box-shadow .25s var(--ease);}
+.glohome .hero-cta:hover{transform:translateY(-2px);box-shadow:0 16px 44px rgba(0,0,0,.5);}
+.glohome .hero-cta .hc-arr{font-family:var(--en);font-style:italic;color:var(--gold-dp);}
+.glohome .hero-sachet a{display:block;cursor:pointer;}
+.glohome .glo-float-cta{position:fixed;right:18px;bottom:100px;z-index:70;display:inline-flex;align-items:center;gap:8px;
+  padding:14px 24px;border-radius:100px;background:#3a1a22;color:var(--cream);font-family:var(--kr);font-weight:700;
+  font-size:13.5px;letter-spacing:-.2px;border:1px solid rgba(244,235,235,.16);box-shadow:0 12px 32px rgba(26,15,20,.4);
+  opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .3s var(--ease),transform .3s var(--ease);}
+.glohome .glo-float-cta.on{opacity:1;transform:none;pointer-events:auto;}
+.glohome .glo-float-cta:hover{background:#5a2229;}
+@media (max-width:640px){.glohome .glo-float-cta{right:14px;bottom:96px;padding:12px 19px;font-size:12.5px;}}
 @keyframes glhCue{0%{transform:scaleY(0);transform-origin:0 0}45%{transform:scaleY(1);transform-origin:0 0}46%{transform-origin:0 100%}100%{transform:scaleY(0);transform-origin:0 100%}}
 .glohome .scan{position:relative;padding:clamp(90px,13vw,160px) 0;background:var(--burg-900);overflow:hidden;}
 .glohome .scan::before{content:"";position:absolute;top:-160px;right:-140px;width:600px;height:600px;
@@ -517,7 +530,7 @@ html.glo-home-nav .nav-burger:active{background:rgba(244,235,235,.12);}
   <div class="hero-glowring" aria-hidden="true"></div>
   <div class="hero-sachet" id="heroSachet">
     <div class="hs-float" id="hsFloat">
-      <img id="hsImg" src="/assets/bottle/sachet-hero.webp" alt="glo GL-01 사쉐 20g" width="360" height="1372" fetchpriority="high"/>
+      <a href="/product#buy" aria-label="GL-01 제품 상세 보기"><img id="hsImg" src="/assets/bottle/sachet-hero.webp" alt="glo GL-01 사쉐 20g" width="360" height="1372" fetchpriority="high"/></a>
     </div>
   </div>
   <div class="hero-brand" aria-label="glo">glo<span class="kdot">.</span></div>
@@ -527,9 +540,12 @@ html.glo-home-nav .nav-burger:active{background:rgba(244,235,235,.12);}
     <h1 data-split>아니라</h1>
     <h1 data-split><span class="au">설계하는</span> 것 입니다.</h1>
     <p class="hero-sub" data-fade>임상으로 검증된 9가지 활성 성분. 하루 한 포, 20g.</p>
+    <a class="hero-cta" href="/product#buy" data-fade>GL-01 보러가기<span class="hc-arr">&rarr;</span></a>
   </div>
   <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><i></i></div>
 </header>
+
+<a class="glo-float-cta" id="gloFloatCta" href="/product#buy" aria-label="GL-01 제품 보러가기">GL-01 보러가기<span aria-hidden="true">&rarr;</span></a>
 
 <!-- 2. AI 얼굴 스캔 -->
 <section class="scan" id="scan">
