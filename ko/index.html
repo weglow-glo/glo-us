@@ -257,13 +257,13 @@ html.glo-home-nav .nav-burger:active{background:rgba(244,235,235,.12);}
 .glohome .hero-cta:hover{transform:translateY(-2px);box-shadow:0 16px 44px rgba(0,0,0,.5);}
 .glohome .hero-cta .hc-arr{font-family:var(--en);font-style:italic;color:var(--gold-dp);}
 .glohome .hero-sachet a{display:block;cursor:pointer;}
-.glohome .glo-float-cta{position:fixed;right:18px;bottom:160px;z-index:70;display:inline-flex;align-items:center;gap:8px;
+.glohome .glo-float-cta{position:fixed;left:50%;bottom:28px;z-index:70;display:inline-flex;align-items:center;gap:8px;
   padding:14px 24px;border-radius:100px;background:#3a1a22;color:var(--cream);font-family:var(--kr);font-weight:700;
   font-size:13.5px;letter-spacing:-.2px;border:1px solid rgba(244,235,235,.16);box-shadow:0 12px 32px rgba(26,15,20,.4);
-  opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .3s var(--ease),transform .3s var(--ease);}
-.glohome .glo-float-cta.on{opacity:1;transform:none;pointer-events:auto;}
+  opacity:0;transform:translate(-50%,10px);pointer-events:none;transition:opacity .3s var(--ease),transform .3s var(--ease);}
+.glohome .glo-float-cta.on{opacity:1;transform:translate(-50%,0);pointer-events:auto;}
 .glohome .glo-float-cta:hover{background:#5a2229;}
-@media (max-width:640px){.glohome .glo-float-cta{right:14px;bottom:152px;padding:12px 19px;font-size:12.5px;}}
+@media (max-width:640px){.glohome .glo-float-cta{bottom:20px;padding:12px 19px;font-size:12.5px;}}
 @keyframes glhCue{0%{transform:scaleY(0);transform-origin:0 0}45%{transform:scaleY(1);transform-origin:0 0}46%{transform-origin:0 100%}100%{transform:scaleY(0);transform-origin:0 100%}}
 .glohome .scan{position:relative;padding:clamp(90px,13vw,160px) 0;background:var(--burg-900);overflow:hidden;}
 .glohome .scan::before{content:"";position:absolute;top:-160px;right:-140px;width:600px;height:600px;
