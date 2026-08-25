@@ -20,6 +20,7 @@ import { type RoundOption, type RoundType } from "@/lib/groupbuy";
 import type { Address } from "@/lib/address";
 import { metaTrack } from "@/lib/meta";
 import { naverConv } from "@/lib/naver-cts";
+import { gaBeginCheckout } from "@/lib/ga";
 
 const CLIENT_KEY = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!;
 const IS_TEST_KEY = CLIENT_KEY?.startsWith("test_") ?? false;
@@ -155,6 +156,7 @@ export default function CheckoutClient({
       currency: "KRW",
       value: opt.price,
     });
+    gaBeginCheckout({ value: opt.price, optionLabel: opt.label, round: round?.handle ?? null });
     naverConv({
       type: "begin_checkout",
       items: [{ id: "GL-01", name: `${PRODUCT.name} ${opt.label}`, quantity: opt.months, payAmount: opt.price }],

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { formatKRW } from "@/lib/product";
 import { metaTrack } from "@/lib/meta";
+import { gaPurchase } from "@/lib/ga";
 import { naverPurchase } from "@/lib/naver-cts";
 
 type VirtualAccount = {
@@ -91,6 +92,8 @@ function SuccessInner() {
         );
         // 네이버 전환추적 구매완료 — 주문번호 기준 1회만 발화
         naverPurchase(orderId, data.totalAmount ?? amount, data.orderName);
+        // GA4 구매 — transaction_id 로 중복 제거
+        gaPurchase({ orderId, value: data.totalAmount ?? amount, orderName: data.orderName });
       })
       .catch((e) =>
         setResult({

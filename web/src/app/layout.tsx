@@ -4,6 +4,7 @@ import "./globals.css";
 import ChannelTalk from "./channel-talk";
 import MetaPixel from "./meta-pixel";
 import NaverCts from "./naver-cts";
+import GoogleAnalytics from "./google-analytics";
 
 // Display serif — headlines, italic accent emphasis, ingredient names, large numerals
 const fraunces = Fraunces({
@@ -56,6 +57,7 @@ export default function RootLayout({
         <ChannelTalk />
         <MetaPixel />
         <NaverCts />
+        <GoogleAnalytics />
       </body>
     </html>
   );
