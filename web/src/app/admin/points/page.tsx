@@ -1,6 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getPointPolicy, POINT_REASON_LABEL } from "@/lib/points";
-import { updatePointPolicy } from "./actions";
+import { grantPointsManual, updatePointPolicy } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +20,12 @@ function fmtDate(iso: string) {
 }
 
 /** 포인트 운영 — 지급 정책(동적 조정) + 전체 내역 모니터링 */
-export default async function AdminPointsPage() {
+export default async function AdminPointsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ grant?: string; amount?: string; email?: string }>;
+}) {
+  const { grant, amount: grantAmount, email: grantEmail } = await searchParams;
   const admin = createAdminClient();
   const policy = await getPointPolicy(admin);
 
@@ -95,6 +100,71 @@ export default async function AdminPointsPage() {
           </div>
         </div>
       </div>
+
+      {/* 수기 지급 — 보상·CS 보정 */}
+      <section className="mt-8 rounded-xl border border-ink-line bg-bg-2 p-6">
+        <h2 className="text-lg font-semibold text-ink">포인트 수기 지급</h2>
+        <p className="mt-1 text-sm text-ink-mute">
+          누락 보상·CS 보정용. 사유는 <b>관리자 조정</b>으로 기록되며 유효기간은 일반
+          적립과 동일하게 지급일로부터 6개월입니다. 차감은 음수를 입력하세요.
+        </p>
+
+        {grant === "ok" && (
+          <p className="mt-3 rounded-md bg-bg-3 px-4 py-2.5 text-sm font-medium text-accent">
+            {grantEmail} 님에게 {Number(grantAmount ?? 0).toLocaleString("ko-KR")}P 처리
+            완료했습니다.
+          </p>
+        )}
+        {grant === "notfound" && (
+          <p className="mt-3 rounded-md border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm text-amber-800">
+            {grantEmail} 계정을 찾지 못했습니다 — 회원관리에서 가입 이메일을 확인해주세요.
+          </p>
+        )}
+        {(grant === "invalid" || grant === "toobig" || grant === "fail") && (
+          <p className="mt-3 rounded-md bg-bg-3 px-4 py-2.5 text-sm text-burg-400">
+            {grant === "invalid"
+              ? "이메일과 0이 아닌 포인트를 입력해주세요."
+              : grant === "toobig"
+                ? "1회 100만P 를 넘길 수 없습니다."
+                : "지급에 실패했습니다. 잠시 후 다시 시도해주세요."}
+          </p>
+        )}
+
+        <form action={grantPointsManual} className="mt-4 flex flex-wrap items-end gap-3">
+          <label className="block">
+            <span className="mb-1 block text-xs font-medium text-ink-soft">회원 이메일</span>
+            <input
+              name="email"
+              type="email"
+              required
+              placeholder="customer@example.com"
+              className="w-64 rounded-md border border-ink-line bg-bg-1 px-3 py-2 text-sm text-ink outline-none focus:border-accent"
+            />
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-xs font-medium text-ink-soft">포인트</span>
+            <input
+              name="amount"
+              type="number"
+              required
+              step="100"
+              placeholder="5000"
+              className="w-32 rounded-md border border-ink-line bg-bg-1 px-3 py-2 text-right text-sm text-ink outline-none focus:border-accent"
+            />
+          </label>
+          <label className="block min-w-56 flex-1">
+            <span className="mb-1 block text-xs font-medium text-ink-soft">사유 메모 (선택)</span>
+            <input
+              name="memo"
+              placeholder="예: 출고 누락 보상"
+              className="w-full rounded-md border border-ink-line bg-bg-1 px-3 py-2 text-sm text-ink outline-none focus:border-accent"
+            />
+          </label>
+          <button className="rounded-full bg-burg-600 px-6 py-2.5 text-sm font-semibold text-bg-1 transition hover:bg-burg-400">
+            지급
+          </button>
+        </form>
+      </section>
 
       {/* 지급 정책 */}
       <section className="mt-8 rounded-xl border border-ink-line bg-bg-2 p-6">
