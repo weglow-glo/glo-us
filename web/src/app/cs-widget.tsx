@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import {
   csConvTopic,
   CS_CATEGORY_LABEL,
+  CS_MAX_IMAGES_PER_MESSAGE,
+  CS_MAX_IMAGE_BYTES,
   type CsCategory,
   type CsMessage,
   type CsMeta,
@@ -73,7 +75,10 @@ export default function CsWidget() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [unread, setUnread] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [typing, setTyping] = useState(false);
   const [bottom, setBottom] = useState(20);
+  const fileRef = useRef<HTMLInputElement>(null);
   const loadedRef = useRef(false);
   const loggedInRef = useRef(false);
   const openRef = useRef(false);
@@ -136,6 +141,7 @@ export default function CsWidget() {
       .on("broadcast", { event: "message" }, ({ payload }) => {
         const m = payload as CsMessage;
         setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
+        if (m.sender !== "customer") setTyping(false); // 답변 도착 → 작성 중 해제
         if (m.sender === "admin" && !openRef.current) setUnread(true);
       })
       .subscribe((status, err) => {
@@ -149,7 +155,14 @@ export default function CsWidget() {
 
   useEffect(() => {
     if (open) scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-  }, [messages, open]);
+  }, [messages, open, typing]);
+
+  // 작성 중 표시 안전장치 — 응답이 오래 안 오면(오류 등) 60초 후 자동 해제
+  useEffect(() => {
+    if (!typing) return;
+    const t = setTimeout(() => setTyping(false), 60_000);
+    return () => clearTimeout(t);
+  }, [typing]);
 
   async function sendMessage(text: string, meta?: CsMeta) {
     if (!text || sending) return;
@@ -171,11 +184,13 @@ export default function CsWidget() {
         conversation?: Conv;
         message?: CsMessage;
         botReply?: CsMessage | null;
+        pending?: "bot" | null;
       };
       if (!res.ok || !j.ok || !j.conversation || !j.message) {
         setError(j.error ?? "전송에 실패했습니다. 다시 시도해주세요.");
         return;
       }
+      if (j.pending === "bot") setTyping(true);
       setConv(j.conversation);
       saveToken(j.conversation.token);
       const incoming = [j.message, ...(j.botReply ? [j.botReply] : [])];
@@ -193,6 +208,64 @@ export default function CsWidget() {
 
   function handleSend() {
     void sendMessage(input.trim());
+  }
+
+  /** 사진 첨부 — 스토리지에 직접 업로드 후 이미지 메시지로 전송 */
+  async function handleAttach(files: FileList | null) {
+    if (!files || files.length === 0 || uploading || sending) return;
+    const token = getToken() ?? conv?.token;
+    if (!token) {
+      setError("사진 첨부는 문의 유형을 선택하거나 메시지를 먼저 보낸 뒤 가능합니다.");
+      return;
+    }
+    const list = [...files].slice(0, CS_MAX_IMAGES_PER_MESSAGE);
+    for (const f of list) {
+      if (!f.type.startsWith("image/")) {
+        setError("이미지 파일만 첨부할 수 있습니다.");
+        return;
+      }
+      if (f.size > CS_MAX_IMAGE_BYTES) {
+        setError("사진은 장당 10MB 이하만 첨부할 수 있습니다.");
+        return;
+      }
+    }
+    setUploading(true);
+    setError(null);
+    try {
+      const urls: string[] = [];
+      for (const f of list) {
+        const prep = await fetch("/api/cs/upload-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, contentType: f.type }),
+        });
+        const pj = (await prep.json()) as {
+          uploadUrl?: string;
+          publicUrl?: string;
+          error?: string;
+        };
+        if (!prep.ok || !pj.uploadUrl || !pj.publicUrl) {
+          setError(pj.error ?? "업로드 준비에 실패했습니다.");
+          return;
+        }
+        const up = await fetch(pj.uploadUrl, {
+          method: "PUT",
+          headers: { "Content-Type": f.type },
+          body: f,
+        });
+        if (!up.ok) {
+          setError("사진 업로드에 실패했습니다. 다시 시도해주세요.");
+          return;
+        }
+        urls.push(pj.publicUrl);
+      }
+      await sendMessage(`사진 ${urls.length}장을 첨부했습니다`, { kind: "images", urls });
+    } catch {
+      setError("사진 업로드 중 오류가 발생했습니다.");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
   }
 
   /**
@@ -361,7 +434,22 @@ export default function CsWidget() {
                           : "rounded-bl-md border border-ink-line-2 bg-bg-2 text-ink"
                       }`}
                     >
-                      {m.body}
+                      {meta?.kind === "images" ? (
+                        <span className="flex flex-wrap gap-1.5 py-1!">
+                          {meta.urls.map((u) => (
+                            <a key={u} href={u} target="_blank" rel="noreferrer">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={u}
+                                alt="첨부 사진"
+                                className="max-h-36 max-w-[160px] rounded-lg object-cover"
+                              />
+                            </a>
+                          ))}
+                        </span>
+                      ) : (
+                        m.body
+                      )}
                     </div>
                   </div>
                   {/* 구조화 메시지의 버튼은 최신 메시지일 때만 활성 표시 */}
@@ -413,6 +501,16 @@ export default function CsWidget() {
                 </div>
               );
             })}
+            {typing && (
+              <div>
+                <p className="mb-0.5! text-[10px] text-ink-faint">AI 도우미</p>
+                <div className="flex justify-start">
+                  <div className="rounded-2xl rounded-bl-md border border-ink-line-2 bg-bg-2 px-3.5! py-2.5! text-sm text-ink-mute">
+                    답변을 작성하고 있어요 ···
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="border-t border-ink-line bg-bg-1 p-3!">
@@ -431,6 +529,31 @@ export default function CsWidget() {
             )}
             {error && <p className="mb-2! text-xs text-accent">{error}</p>}
             <div className="flex items-end gap-2">
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => void handleAttach(e.target.files)}
+              />
+              <button
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading || sending}
+                aria-label="사진 첨부"
+                title="사진 첨부 (최대 3장)"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-ink-line bg-bg-2 text-ink-mute transition hover:text-accent disabled:opacity-40"
+              >
+                {uploading ? (
+                  <span className="text-[10px] font-semibold">···</span>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" strokeWidth="1.6" />
+                    <circle cx="9" cy="10.5" r="1.7" fill="currentColor" />
+                    <path d="M6 17.5l4.2-4.2a1.5 1.5 0 0 1 2.1 0l2 2 1.6-1.6a1.5 1.5 0 0 1 2.1 0L21 16.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                  </svg>
+                )}
+              </button>
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}

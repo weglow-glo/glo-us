@@ -338,7 +338,22 @@ export default function InboxClient({
                           AI 봇
                         </span>
                       )}
-                      {m.body}
+                      {m.meta?.kind === "images" ? (
+                        <span className="flex flex-wrap gap-1.5 py-1">
+                          {m.meta.urls.map((u) => (
+                            <a key={u} href={u} target="_blank" rel="noreferrer">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={u}
+                                alt="고객 첨부 사진"
+                                className="max-h-40 max-w-[180px] rounded-lg object-cover"
+                              />
+                            </a>
+                          ))}
+                        </span>
+                      ) : (
+                        m.body
+                      )}
                       <span
                         className={`mt-1 block text-right text-[10px] ${
                           m.sender === "admin" ? "text-cream/60" : "text-ink-faint"

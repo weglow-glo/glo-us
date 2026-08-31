@@ -143,8 +143,10 @@ ${priceTable()}
 2. 임신·수유 중 섭취, 복용 중인 약과의 병용, 특정 질환 관련 질문에는 반드시 "의사 또는 약사와 상담 후 섭취를 결정해주세요"라고 안내합니다.
 3. 환불·취소·교환을 직접 실행할 수 없습니다. 절차를 안내하고, 고객이 처리를 원하면 escalate_to_human 도구로 상담원에게 연결합니다.
 4. 주문 정보는 get_order 도구로만 확인합니다. 도구가 반환하지 않은 주문 정보를 지어내지 않습니다.
-5. 다음 경우 escalate_to_human을 사용합니다: 고객이 상담원을 원할 때, 환불·교환 처리 요청, 강한 불만·항의, 두 번 안내해도 해결되지 않는 문제, 결제 오류, 답을 모르는 질문.
-6. 가격·정책은 위 내용만 사용합니다. 할인·프로모션을 임의로 약속하지 않습니다.
+5. 최대한 스스로 해결합니다. 카테고리와 무관하게 질문의 실제 의도를 파악하세요 — 기타 문의로 들어왔어도 "물건이 안 와요", "배송 언제 와요" 같은 질문은 주문 확인 문의입니다. 비로그인 고객의 주문·배송·환불 확인 문의는 절대 상담원에게 넘기지 말고, 로그인하면 주문을 바로 확인해드릴 수 있다고 안내하며 request_login 도구를 사용합니다. 로그인 고객이면 get_order로 직접 확인해 답합니다.
+6. escalate_to_human은 최후 수단입니다: 환불·교환의 실제 처리 요청, 강한 불만·항의, 두 번 이상 안내해도 해결되지 않는 문제, 결제 오류, 정말 답을 모르는 질문일 때만 사용합니다.
+7. 가격·정책은 위 내용만 사용합니다. 할인·프로모션을 임의로 약속하지 않습니다.
+8. 고객이 사진을 첨부하면 내용을 확인하고 답합니다. 파손·불량·오배송으로 보이면 불편에 사과하고, 회사 부담으로 교환·재배송된다는 점을 안내한 뒤 escalate_to_human으로 상담원에게 연결합니다. 사진이 불명확하면 어떤 부분인지 여쭤봅니다.
 
 ## 응답 형식
 - 2~5문장 내외로 간결하게. 목록이 필요하면 "·" 기호를 사용합니다.
@@ -168,9 +170,15 @@ const TOOLS: Anthropic.Tool[] = [
     },
   },
   {
+    name: "request_login",
+    description:
+      "비로그인 고객에게 로그인 버튼을 보여준다. 주문·배송·환불 등 계정 확인이 필요한 문의인데 고객이 로그인하지 않았을 때 사용한다. 이 도구를 쓰면 이번 답변 메시지에 로그인 버튼이 함께 표시된다.",
+    input_schema: { type: "object", properties: {} },
+  },
+  {
     name: "escalate_to_human",
     description:
-      "대화를 상담원에게 연결한다. 환불·교환 처리 요청, 강한 불만, 해결 불가한 문제, 고객이 상담원을 원할 때 사용한다.",
+      "대화를 상담원에게 연결한다. 최후 수단이다 — 환불·교환의 실제 처리 요청, 강한 불만, 봇이 두 번 이상 안내해도 해결되지 않는 문제, 고객이 명시적으로 상담원을 원할 때만 사용한다. 비로그인 고객의 주문 확인 문의는 escalate가 아니라 request_login으로 해결한다.",
     input_schema: {
       type: "object",
       properties: {
@@ -224,15 +232,39 @@ function orderToolResult(orders: BotOrder[]): string {
     .join("\n");
 }
 
-/** DB 이력 → Claude 메시지 배열. 연속 동일 role은 API가 합쳐 처리한다. */
+/**
+ * DB 이력 → Claude 메시지 배열. 연속 동일 role은 API가 합쳐 처리한다.
+ * 고객이 첨부한 사진은 이미지 블록으로 넣어 봇이 직접 본다 (최근 6장까지).
+ */
 function toClaudeMessages(history: CsMessage[]): Anthropic.MessageParam[] {
-  return history
-    .filter((m) => m.body.trim().length > 0)
-    .slice(-30)
-    .map((m) => ({
-      role: m.sender === "customer" ? ("user" as const) : ("assistant" as const),
-      content: m.body,
-    }));
+  const window = history.filter((m) => m.body.trim().length > 0).slice(-30);
+  let imageBudget = 6;
+  const out: Anthropic.MessageParam[] = [];
+  // 이미지 예산은 최신 메시지부터 소진한다
+  for (let i = window.length - 1; i >= 0; i--) {
+    const m = window[i];
+    const role = m.sender === "customer" ? ("user" as const) : ("assistant" as const);
+    const urls =
+      m.sender === "customer" && m.meta?.kind === "images"
+        ? m.meta.urls.slice(0, Math.max(0, imageBudget))
+        : [];
+    imageBudget -= urls.length;
+    if (urls.length > 0) {
+      out.unshift({
+        role,
+        content: [
+          ...urls.map((url) => ({
+            type: "image" as const,
+            source: { type: "url" as const, url },
+          })),
+          { type: "text" as const, text: m.body },
+        ],
+      });
+    } else {
+      out.unshift({ role, content: m.body });
+    }
+  }
+  return out;
 }
 
 /**
@@ -274,6 +306,7 @@ export async function runBotTurn(
     messages.unshift({ role: "user", content: context });
 
     let escalated: string | null = null;
+    let loginRequested = false;
     let finalText = "";
 
     for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
@@ -323,6 +356,14 @@ export async function runBotTurn(
               content: orderToolResult(orders),
             });
           }
+        } else if (tu.name === "request_login") {
+          loginRequested = true;
+          results.push({
+            type: "tool_result",
+            tool_use_id: tu.id,
+            content:
+              "이번 답변에 로그인 버튼이 함께 표시됩니다. 로그인하면 주문을 확인해드릴 수 있다고 안내하세요.",
+          });
         } else if (tu.name === "escalate_to_human") {
           const input = tu.input as { reason?: string };
           escalated = String(input.reason ?? "상담원 연결 요청");
@@ -358,6 +399,7 @@ export async function runBotTurn(
       conv.id,
       finalText ||
         "죄송합니다, 답변 생성에 문제가 있었습니다. 상담원에게 연결해드릴까요?",
+      loginRequested && !conv.user_id ? { kind: "login_prompt" } : undefined,
     );
   } catch (e) {
     console.error("[cs-bot] turn failed:", e);
