@@ -19,21 +19,30 @@ export const CS_CATEGORY_LABEL: Record<CsCategory, string> = {
 /** 로그인해야 주문 컨텍스트를 붙일 수 있는 카테고리 */
 export const CS_CATEGORY_NEEDS_ORDER: CsCategory[] = ["order", "shipping", "refund"];
 
+/** 주문 선택 카드 1건 — label은 구버전 메시지 호환용 */
+export type CsOrderCard = {
+  orderId: string;
+  name?: string;
+  date?: string;
+  amount?: string;
+  status: string;
+  label?: string;
+};
+
 /**
  * 구조화 메시지 페이로드 (cs_messages.meta).
- * 고객 발신: category / order_select / resume / escalate
- * 봇 발신:   login_prompt / order_picker
+ * 고객 발신: category / order_select / resume / escalate / restart
+ * 봇 발신:   login_prompt / order_picker / category_picker
  */
 export type CsMeta =
   | { kind: "category"; value: CsCategory }
   | { kind: "order_select"; orderId: string }
   | { kind: "resume" }
   | { kind: "escalate" }
+  | { kind: "restart" }
   | { kind: "login_prompt" }
-  | {
-      kind: "order_picker";
-      orders: { orderId: string; label: string; status: string }[];
-    };
+  | { kind: "category_picker" }
+  | { kind: "order_picker"; orders: CsOrderCard[] };
 
 export type CsMessage = {
   id: string;
