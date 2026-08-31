@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -178,23 +178,36 @@ export default function CsWidget() {
     >
       {open && (
         <div
-          className="mb-3 flex w-[360px] max-w-[calc(100vw-40px)] flex-col overflow-hidden rounded-2xl border border-ink-line bg-bg-1 shadow-2xl"
-          style={{ height: `min(520px, calc(100dvh - ${bottom + 96}px))` }}
+          className="flex flex-col overflow-hidden border border-ink-line bg-bg-1 shadow-2xl max-sm:fixed max-sm:inset-2 max-sm:z-[80] max-sm:rounded-2xl sm:mb-3! sm:h-(--cs-h) sm:w-[360px] sm:rounded-2xl"
+          style={{ "--cs-h": `min(520px, calc(100dvh - ${bottom + 96}px))` } as React.CSSProperties}
         >
-          <div className="bg-burg-600 px-5 py-4 text-cream">
-            <p className="text-base">
-              <span className="font-display">glo</span> 고객 문의
-            </p>
-            <p className="mt-0.5 text-xs text-cream/70">
-              평일 10:00–18:00 · 자리를 비운 시간에는 순차적으로 답변드립니다.
-            </p>
+          <div className="flex items-start justify-between gap-3 bg-burg-600 px-5! py-4! text-cream">
+            <div className="min-w-0">
+              <p className="text-base">
+                <span className="font-display">glo</span> 고객 문의
+              </p>
+              <p className="mt-0.5! text-xs leading-relaxed text-cream/70">
+                평일 10:00–18:00 · 자리를 비운 시간에는 순차적으로 답변드립니다.
+              </p>
+            </div>
+            <button
+              onClick={() => setOpen(false)}
+              aria-label="문의창 닫기"
+              className="-mr-1! mt-0.5! shrink-0 rounded-full p-1.5! text-cream/70 transition hover:bg-burg-400 hover:text-cream"
+            >
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            </button>
           </div>
 
-          <div ref={scrollRef} className="flex-1 space-y-2 overflow-y-auto bg-bg-2 p-4">
+          <div ref={scrollRef} className="flex-1 space-y-2! overflow-y-auto bg-bg-2 p-4!">
             {messages.length === 0 && (
-              <div className="rounded-xl border border-ink-line bg-bg-1 px-4 py-3 text-[13px] leading-relaxed text-ink-mute">
-                무엇을 도와드릴까요? 주문·배송 문의는 로그인 상태에서 남겨주시면 더
-                빠르게 확인해드릴 수 있습니다.
+              <div className="flex justify-start">
+                <div className="max-w-[85%] rounded-2xl rounded-bl-md border border-ink-line bg-bg-1 px-3.5! py-2.5! text-sm leading-relaxed text-ink">
+                  무엇을 도와드릴까요? 주문·배송 문의는 로그인 상태에서 남겨주시면 더
+                  빠르게 확인해드릴 수 있습니다.
+                </div>
               </div>
             )}
             {messages.map((m) => (
@@ -203,7 +216,7 @@ export default function CsWidget() {
                 className={`flex ${m.sender === "customer" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[85%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2 text-sm leading-relaxed ${
+                  className={`max-w-[85%] whitespace-pre-wrap break-words rounded-2xl px-3.5! py-2! text-sm leading-relaxed ${
                     m.sender === "customer"
                       ? "rounded-br-md bg-burg-600 text-cream"
                       : "rounded-bl-md border border-ink-line bg-bg-1 text-ink"
@@ -215,8 +228,8 @@ export default function CsWidget() {
             ))}
           </div>
 
-          <div className="border-t border-ink-line bg-bg-1 p-3">
-            {error && <p className="mb-2 text-xs text-accent">{error}</p>}
+          <div className="border-t border-ink-line bg-bg-1 p-3!">
+            {error && <p className="mb-2! text-xs text-accent">{error}</p>}
             <div className="flex items-end gap-2">
               <textarea
                 value={input}
@@ -230,12 +243,12 @@ export default function CsWidget() {
                 rows={1}
                 placeholder="메시지를 입력하세요"
                 aria-label="문의 메시지"
-                className="max-h-24 flex-1 resize-none rounded-xl border border-ink-line bg-bg-2 px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint"
+                className="max-h-24 min-w-0 flex-1 resize-none rounded-xl border border-ink-line bg-bg-2 px-3.5! py-2.5! text-sm text-ink placeholder:text-ink-faint"
               />
               <button
                 onClick={() => void handleSend()}
                 disabled={sending || !input.trim()}
-                className="rounded-full bg-burg-600 px-4 py-2.5 text-sm font-semibold text-cream transition hover:bg-burg-400 disabled:opacity-40"
+                className="shrink-0 rounded-full bg-burg-600 px-4! py-2.5! text-sm font-semibold text-cream transition hover:bg-burg-400 disabled:opacity-40"
               >
                 전송
               </button>
@@ -248,7 +261,9 @@ export default function CsWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "문의창 닫기" : "문의하기"}
         aria-expanded={open}
-        className="relative flex h-14 w-14 items-center justify-center rounded-full border-2 border-cream bg-burg-600 text-cream shadow-lg transition hover:bg-burg-400"
+        className={`relative flex h-14 w-14 items-center justify-center rounded-full border-2 border-cream bg-burg-600 text-cream shadow-lg transition hover:bg-burg-400 ${
+          open ? "max-sm:hidden" : ""
+        }`}
       >
         {open ? (
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
