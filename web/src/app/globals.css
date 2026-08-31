@@ -104,6 +104,15 @@
   border-radius: 4px;
 }
 
+/* CS 위젯 — 답변 작성 중 ··· 점 애니메이션 */
+@keyframes glo-cs-dot {
+  0%, 60%, 100% { opacity: 0.25; }
+  30% { opacity: 1; }
+}
+.glo-cs-dot { animation: glo-cs-dot 1.2s ease-in-out infinite; }
+.glo-cs-dot:nth-child(2) { animation-delay: 0.2s; }
+.glo-cs-dot:nth-child(3) { animation-delay: 0.4s; }
+
 /* Checkout validation toast — fade/slide in, hold, fade/slide out */
 @keyframes glo-toast-inout {
   0% { opacity: 0; transform: translate(-50%, -12px); }
