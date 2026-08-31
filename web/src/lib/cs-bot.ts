@@ -22,6 +22,7 @@ const MAX_TOOL_ROUNDS = 4;
 
 export type BotOrder = {
   order_id: string;
+  order_name: string | null;
   status: string;
   amount: number | null;
   tracking_number: string | null;
@@ -32,7 +33,7 @@ export type BotOrder = {
 };
 
 export const BOT_ORDER_SELECT =
-  "order_id, status, amount, tracking_number, carrier, created_at, shipped_at, delivered_at";
+  "order_id, order_name, status, amount, tracking_number, carrier, created_at, shipped_at, delivered_at";
 
 function fmtDate(iso: string | null): string {
   if (!iso) return "-";
@@ -43,15 +44,32 @@ function fmtDate(iso: string | null): string {
   });
 }
 
-/** 주문 선택 칩 라벨 — "8월 12일 주문 · 99,960원" */
-export function fmtOrderChipLabel(o: BotOrder): string {
-  return `${fmtDate(o.created_at)} 주문${o.amount != null ? ` · ${formatKRW(o.amount)}` : ""}`;
+/** 주문 선택 카드 — 위젯의 order_picker 렌더용 구조화 데이터 */
+export function orderCardOf(o: BotOrder): {
+  orderId: string;
+  name: string;
+  date: string;
+  amount?: string;
+  status: string;
+} {
+  return {
+    orderId: o.order_id,
+    name: o.order_name ?? "glo GL-01",
+    date: `${fmtDate(o.created_at)} 주문`,
+    amount: o.amount != null ? formatKRW(o.amount) : undefined,
+    status: statusLabel(o.status).label,
+  };
 }
 
 /** 주문 1건 상태를 규칙 기반으로 안내 (LLM 없이 — order_select 즉답에도 사용). */
 export function orderStatusAnswer(o: BotOrder): string {
   const s = statusLabel(o.status).label;
-  const head = `주문 ${o.order_id} (${fmtDate(o.created_at)} 주문) — 현재 상태는 "${s}"입니다.`;
+  const head = [
+    `${o.order_name ?? "glo GL-01"}`,
+    `· 주문번호: ${o.order_id}`,
+    `· 주문일: ${fmtDate(o.created_at)}${o.amount != null ? ` · ${formatKRW(o.amount)}` : ""}`,
+    `· 현재 상태: ${s}`,
+  ].join("\n");
   switch (o.status) {
     case "pending":
       return `${head}\n결제가 완료되지 않은 주문입니다. 결제를 다시 시도해주시거나, 문제가 계속되면 말씀해주세요.`;
@@ -190,6 +208,7 @@ function orderToolResult(orders: BotOrder[]): string {
   return orders
     .map((o) =>
       [
+        `상품: ${o.order_name ?? "glo GL-01"}`,
         `주문번호 ${o.order_id}`,
         `상태: ${statusLabel(o.status).label}`,
         `주문일: ${fmtDate(o.created_at)}`,

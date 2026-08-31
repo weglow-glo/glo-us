@@ -15,11 +15,10 @@ import {
 import {
   runBotTurn,
   orderStatusAnswer,
-  fmtOrderChipLabel,
+  orderCardOf,
   BOT_ORDER_SELECT,
   type BotOrder,
 } from "@/lib/cs-bot";
-import { statusLabel } from "@/lib/order-status";
 
 export const dynamic = "force-dynamic";
 
@@ -139,6 +138,7 @@ function parseMeta(raw: unknown): CsMeta | null {
     return { kind: "order_select", orderId: m.orderId.slice(0, 64) };
   if (m.kind === "resume") return { kind: "resume" };
   if (m.kind === "escalate") return { kind: "escalate" };
+  if (m.kind === "restart") return { kind: "restart" };
   return null;
 }
 
@@ -189,11 +189,7 @@ async function categoryReply(
     }
     return postBotMessage(admin, conv.id, "어떤 주문 건인지 선택해주세요.", {
       kind: "order_picker",
-      orders: orders.map((o) => ({
-        orderId: o.order_id,
-        label: fmtOrderChipLabel(o),
-        status: statusLabel(o.status).label,
-      })),
+      orders: orders.map(orderCardOf),
     });
   }
 
@@ -338,6 +334,18 @@ export async function POST(request: Request) {
     }
   } else if (meta?.kind === "escalate") {
     botReply = await escalate(admin, conv, "고객이 상담원 연결을 요청했습니다.");
+  } else if (meta?.kind === "restart") {
+    // 처음으로 — 퍼널 상태를 비우고 봇 응대로 되돌린 뒤 카테고리부터 다시.
+    await admin
+      .from("cs_conversations")
+      .update({ category: null, order_id: null, mode: "bot" })
+      .eq("id", conv.id);
+    botReply = await postBotMessage(
+      admin,
+      conv.id,
+      "네, 처음부터 다시 도와드릴게요. 어떤 문의로 찾아주셨나요?",
+      { kind: "category_picker" },
+    );
   } else if (conv.mode === "bot") {
     // 자유 텍스트 → AI 봇. 응답은 브로드캐스트로 도착하므로 요청은 먼저 반환한다.
     const convId = conv.id;

@@ -260,6 +260,21 @@ export default function CsWidget() {
 
   if (hideWidget) return null;
 
+  const categoryChips = (
+    <div className="flex flex-wrap gap-2 pt-1!">
+      {(Object.keys(CS_CATEGORY_LABEL) as CsCategory[]).map((k) => (
+        <button
+          key={k}
+          disabled={sending}
+          onClick={() => void sendMessage(CS_CATEGORY_LABEL[k], { kind: "category", value: k })}
+          className="rounded-full border border-burg-50 bg-bg-1 px-3.5! py-2! text-[13px] font-medium text-ink transition hover:border-accent hover:text-accent disabled:opacity-40"
+        >
+          {CS_CATEGORY_LABEL[k]}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <div
       className="fixed right-5 z-[70] flex flex-col items-end"
@@ -281,15 +296,26 @@ export default function CsWidget() {
                 평일 10:00–18:00 · 자리를 비운 시간에는 순차적으로 답변드립니다.
               </p>
             </div>
-            <button
-              onClick={() => setOpen(false)}
-              aria-label="문의창 닫기"
-              className="-mr-1! mt-0.5! shrink-0 rounded-full p-1.5! text-cream/70 transition hover:bg-burg-400 hover:text-cream"
-            >
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-              </svg>
-            </button>
+            <div className="flex shrink-0 items-center gap-1">
+              {messages.length > 0 && (
+                <button
+                  onClick={() => void sendMessage("처음부터 다시 문의할게요", { kind: "restart" })}
+                  disabled={sending}
+                  className="mt-0.5! rounded-full px-2! py-1! text-[11px] text-cream/70 transition hover:bg-burg-400 hover:text-cream disabled:opacity-40"
+                >
+                  처음으로
+                </button>
+              )}
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="문의창 닫기"
+                className="-mr-1! mt-0.5! rounded-full p-1.5! text-cream/70 transition hover:bg-burg-400 hover:text-cream"
+              >
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           <div ref={scrollRef} className="flex-1 space-y-2! overflow-y-auto bg-bg-2 p-4!">
@@ -301,20 +327,7 @@ export default function CsWidget() {
                     문의로 찾아주셨나요? 아래에서 선택하시거나 바로 입력하셔도 됩니다.
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-2 pt-1!">
-                  {(Object.keys(CS_CATEGORY_LABEL) as CsCategory[]).map((k) => (
-                    <button
-                      key={k}
-                      disabled={sending}
-                      onClick={() =>
-                        void sendMessage(CS_CATEGORY_LABEL[k], { kind: "category", value: k })
-                      }
-                      className="rounded-full border border-burg-50 bg-bg-1 px-3.5! py-2! text-[13px] font-medium text-ink transition hover:border-accent hover:text-accent disabled:opacity-40"
-                    >
-                      {CS_CATEGORY_LABEL[k]}
-                    </button>
-                  ))}
-                </div>
+                {categoryChips}
               </>
             )}
             {messages.map((m, i) => {
@@ -358,18 +371,33 @@ export default function CsWidget() {
                           key={o.orderId}
                           disabled={sending}
                           onClick={() =>
-                            void sendMessage(o.label, {
+                            void sendMessage(o.name ?? o.label ?? o.orderId, {
                               kind: "order_select",
                               orderId: o.orderId,
                             })
                           }
                           className="block w-full rounded-xl border border-ink-line bg-bg-1 px-3.5! py-2.5! text-left text-[13px] text-ink transition hover:border-accent disabled:opacity-40"
                         >
-                          <span className="font-semibold">{o.label}</span>
-                          <span className="ml-2! text-ink-mute">{o.status}</span>
+                          <span className="flex items-baseline justify-between gap-2">
+                            <span className="font-semibold">{o.name ?? o.label}</span>
+                            <span className="shrink-0 rounded-full bg-bg-3 px-2! py-0.5! text-[11px] font-semibold text-burg-300">
+                              {o.status}
+                            </span>
+                          </span>
+                          {(o.date || o.amount) && (
+                            <span className="mt-0.5! block text-[12px] text-ink-mute">
+                              {[o.date, o.amount].filter(Boolean).join(" · ")}
+                            </span>
+                          )}
+                          <span className="mt-0.5! block text-[11px] text-ink-faint">
+                            {o.orderId}
+                          </span>
                         </button>
                       ))}
                     </div>
+                  )}
+                  {isLast && meta?.kind === "category_picker" && (
+                    <div className="mt-2!">{categoryChips}</div>
                   )}
                 </div>
               );
