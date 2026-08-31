@@ -318,11 +318,11 @@ export default function CsWidget() {
             </div>
           </div>
 
-          <div ref={scrollRef} className="flex-1 space-y-2! overflow-y-auto bg-bg-2 p-4!">
+          <div ref={scrollRef} className="flex-1 space-y-2! overflow-y-auto bg-bg-1 p-4!">
             {messages.length === 0 && (
               <>
                 <div className="flex justify-start">
-                  <div className="max-w-[85%] rounded-2xl rounded-bl-md border border-ink-line bg-bg-1 px-3.5! py-2.5! text-sm leading-relaxed text-ink">
+                  <div className="max-w-[85%] rounded-2xl rounded-bl-md border border-ink-line-2 bg-bg-2 px-3.5! py-2.5! text-sm leading-relaxed text-ink">
                     안녕하세요, <span className="font-display">glo</span>입니다. 어떤
                     문의로 찾아주셨나요? 아래에서 선택하시거나 바로 입력하셔도 됩니다.
                   </div>
@@ -347,7 +347,7 @@ export default function CsWidget() {
                       className={`max-w-[85%] whitespace-pre-wrap break-words rounded-2xl px-3.5! py-2! text-sm leading-relaxed ${
                         m.sender === "customer"
                           ? "rounded-br-md bg-burg-600 text-cream"
-                          : "rounded-bl-md border border-ink-line bg-bg-1 text-ink"
+                          : "rounded-bl-md border border-ink-line-2 bg-bg-2 text-ink"
                       }`}
                     >
                       {m.body}
