@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import ChannelTalk from "./channel-talk";
+import CsWidget from "./cs-widget";
 import MetaPixel from "./meta-pixel";
 import NaverCts from "./naver-cts";
 import GoogleAnalytics from "./google-analytics";
@@ -54,7 +55,8 @@ export default function RootLayout({
           본문으로 건너뛰기
         </a>
         {children}
-        <ChannelTalk />
+        {/* 자체 CS 채팅 전환 플래그 — 1이면 자체 위젯, 아니면 채널톡 (병행 검증 후 제거 예정) */}
+        {process.env.NEXT_PUBLIC_CS_WIDGET === "1" ? <CsWidget /> : <ChannelTalk />}
         <MetaPixel />
         <NaverCts />
         <GoogleAnalytics />
