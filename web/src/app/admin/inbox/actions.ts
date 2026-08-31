@@ -14,6 +14,8 @@ export type InboxConversation = {
   user_id: string | null;
   display_name: string | null;
   status: "open" | "closed";
+  category: string | null;
+  mode: "bot" | "human";
   last_preview: string | null;
   last_message_at: string;
   admin_unread: number;
@@ -35,7 +37,7 @@ export async function fetchInbox(): Promise<InboxConversation[]> {
   const admin = createAdminClient();
   const { data } = await admin
     .from("cs_conversations")
-    .select("id, user_id, display_name, status, last_preview, last_message_at, admin_unread, created_at")
+    .select("id, user_id, display_name, status, category, mode, last_preview, last_message_at, admin_unread, created_at")
     .order("last_message_at", { ascending: false })
     .limit(200)
     .returns<InboxConversation[]>();
@@ -50,7 +52,7 @@ export async function fetchThread(
 
   const { data: messages } = await admin
     .from("cs_messages")
-    .select("id, conversation_id, sender, body, created_at")
+    .select("id, conversation_id, sender, body, meta, created_at")
     .eq("conversation_id", conversationId)
     .order("created_at", { ascending: true })
     .limit(200)
@@ -104,7 +106,7 @@ export async function sendReply(
   const { data: msg, error: insErr } = await admin
     .from("cs_messages")
     .insert({ conversation_id: conv.id, sender: "admin", body: text })
-    .select("id, conversation_id, sender, body, created_at")
+    .select("id, conversation_id, sender, body, meta, created_at")
     .single<CsMessage>();
   if (insErr || !msg) {
     console.error("[admin/inbox] reply insert failed:", insErr?.message);
@@ -118,6 +120,7 @@ export async function sendReply(
       last_message_at: msg.created_at,
       customer_unread: conv.customer_unread + 1,
       admin_unread: 0,
+      mode: "human", // 상담원이 답하면 봇은 이 대화에서 빠진다
     })
     .eq("id", conv.id);
 
@@ -125,6 +128,16 @@ export async function sendReply(
   await broadcastCs(CS_INBOX_TOPIC, "update", { conversationId: conv.id });
 
   return { ok: true, message: msg };
+}
+
+/** 봇 응대 재개 / 상담원 모드 전환 (인박스 헤더 토글). */
+export async function setConversationMode(
+  conversationId: string,
+  mode: "bot" | "human",
+): Promise<void> {
+  const admin = createAdminClient();
+  await admin.from("cs_conversations").update({ mode }).eq("id", conversationId);
+  await broadcastCs(CS_INBOX_TOPIC, "update", { conversationId });
 }
 
 export async function setConversationStatus(

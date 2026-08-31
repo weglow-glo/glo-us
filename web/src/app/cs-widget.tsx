@@ -3,7 +3,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { csConvTopic, type CsMessage } from "@/lib/cs";
+import {
+  csConvTopic,
+  CS_CATEGORY_LABEL,
+  type CsCategory,
+  type CsMessage,
+  type CsMeta,
+} from "@/lib/cs";
 
 /**
  * 자체 CS 채팅 위젯 — 채널톡 자리를 대체하는 우하단 버블.
@@ -15,6 +21,8 @@ import { csConvTopic, type CsMessage } from "@/lib/cs";
  */
 
 const TOKEN_KEY = "glo-cs-token";
+/** 로그인 유도 후 복귀했을 때 위젯을 자동으로 다시 열고 대화를 잇는 플래그 */
+const RESUME_KEY = "glo-cs-resume";
 
 /**
  * 하단 고정 바(상세페이지 모바일 .buy-float, 체크아웃 결제바 [data-glo-bottombar])가
@@ -134,8 +142,7 @@ export default function CsWidget() {
     if (open) scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages, open]);
 
-  async function handleSend() {
-    const text = input.trim();
+  async function sendMessage(text: string, meta?: CsMeta) {
     if (!text || sending) return;
     setSending(true);
     setError(null);
@@ -143,13 +150,18 @@ export default function CsWidget() {
       const res = await fetch("/api/cs/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: getToken() ?? conv?.token ?? null, body: text }),
+        body: JSON.stringify({
+          token: getToken() ?? conv?.token ?? null,
+          body: text,
+          meta: meta ?? null,
+        }),
       });
       const j = (await res.json()) as {
         ok?: boolean;
         error?: string;
         conversation?: Conv;
         message?: CsMessage;
+        botReply?: CsMessage | null;
       };
       if (!res.ok || !j.ok || !j.conversation || !j.message) {
         setError(j.error ?? "전송에 실패했습니다. 다시 시도해주세요.");
@@ -157,8 +169,11 @@ export default function CsWidget() {
       }
       setConv(j.conversation);
       saveToken(j.conversation.token);
-      const m = j.message;
-      setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
+      const incoming = [j.message, ...(j.botReply ? [j.botReply] : [])];
+      setMessages((prev) => [
+        ...prev,
+        ...incoming.filter((m) => !prev.some((x) => x.id === m.id)),
+      ]);
       setInput("");
     } catch {
       setError("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
@@ -166,6 +181,41 @@ export default function CsWidget() {
       setSending(false);
     }
   }
+
+  function handleSend() {
+    void sendMessage(input.trim());
+  }
+
+  /** 로그인 유도 카드 → 로그인 페이지로 (복귀 시 위젯 자동 재개) */
+  function goLogin() {
+    try {
+      sessionStorage.setItem(RESUME_KEY, "1");
+    } catch {
+      // 저장 불가 환경 — 복귀 자동 재개만 포기
+    }
+    window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
+  }
+
+  // 로그인 후 복귀 — 위젯을 열고 진행 중이던 퍼널 스텝을 서버에 다시 요청한다.
+  const resumedRef = useRef(false);
+  useEffect(() => {
+    if (onAdmin || resumedRef.current) return;
+    let flagged = false;
+    try {
+      flagged = sessionStorage.getItem(RESUME_KEY) === "1";
+      if (flagged) sessionStorage.removeItem(RESUME_KEY);
+    } catch {
+      flagged = false;
+    }
+    if (!flagged) return;
+    resumedRef.current = true;
+    setOpen(true);
+    void (async () => {
+      await load();
+      await sendMessage("로그인했습니다", { kind: "resume" });
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onAdmin]);
 
   if (onAdmin) return null;
 
@@ -203,32 +253,98 @@ export default function CsWidget() {
 
           <div ref={scrollRef} className="flex-1 space-y-2! overflow-y-auto bg-bg-2 p-4!">
             {messages.length === 0 && (
-              <div className="flex justify-start">
-                <div className="max-w-[85%] rounded-2xl rounded-bl-md border border-ink-line bg-bg-1 px-3.5! py-2.5! text-sm leading-relaxed text-ink">
-                  무엇을 도와드릴까요? 주문·배송 문의는 로그인 상태에서 남겨주시면 더
-                  빠르게 확인해드릴 수 있습니다.
+              <>
+                <div className="flex justify-start">
+                  <div className="max-w-[85%] rounded-2xl rounded-bl-md border border-ink-line bg-bg-1 px-3.5! py-2.5! text-sm leading-relaxed text-ink">
+                    안녕하세요, <span className="font-display">glo</span>입니다. 어떤
+                    문의로 찾아주셨나요? 아래에서 선택하시거나 바로 입력하셔도 됩니다.
+                  </div>
                 </div>
-              </div>
+                <div className="flex flex-wrap gap-2 pt-1!">
+                  {(Object.keys(CS_CATEGORY_LABEL) as CsCategory[]).map((k) => (
+                    <button
+                      key={k}
+                      disabled={sending}
+                      onClick={() =>
+                        void sendMessage(CS_CATEGORY_LABEL[k], { kind: "category", value: k })
+                      }
+                      className="rounded-full border border-burg-50 bg-bg-1 px-3.5! py-2! text-[13px] font-medium text-ink transition hover:border-accent hover:text-accent disabled:opacity-40"
+                    >
+                      {CS_CATEGORY_LABEL[k]}
+                    </button>
+                  ))}
+                </div>
+              </>
             )}
-            {messages.map((m) => (
-              <div
-                key={m.id}
-                className={`flex ${m.sender === "customer" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`max-w-[85%] whitespace-pre-wrap break-words rounded-2xl px-3.5! py-2! text-sm leading-relaxed ${
-                    m.sender === "customer"
-                      ? "rounded-br-md bg-burg-600 text-cream"
-                      : "rounded-bl-md border border-ink-line bg-bg-1 text-ink"
-                  }`}
-                >
-                  {m.body}
+            {messages.map((m, i) => {
+              const isLast = i === messages.length - 1;
+              const meta = m.meta ?? null;
+              return (
+                <div key={m.id}>
+                  {m.sender !== "customer" && (
+                    <p className="mb-0.5! text-[10px] text-ink-faint">
+                      {m.sender === "bot" ? "AI 도우미" : "상담원"}
+                    </p>
+                  )}
+                  <div
+                    className={`flex ${m.sender === "customer" ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                      className={`max-w-[85%] whitespace-pre-wrap break-words rounded-2xl px-3.5! py-2! text-sm leading-relaxed ${
+                        m.sender === "customer"
+                          ? "rounded-br-md bg-burg-600 text-cream"
+                          : "rounded-bl-md border border-ink-line bg-bg-1 text-ink"
+                      }`}
+                    >
+                      {m.body}
+                    </div>
+                  </div>
+                  {/* 구조화 메시지의 버튼은 최신 메시지일 때만 활성 표시 */}
+                  {isLast && meta?.kind === "login_prompt" && (
+                    <div className="mt-2! flex justify-start">
+                      <button
+                        onClick={goLogin}
+                        className="rounded-full bg-burg-600 px-4! py-2.5! text-[13px] font-semibold text-cream transition hover:bg-burg-400"
+                      >
+                        로그인하고 주문 확인하기
+                      </button>
+                    </div>
+                  )}
+                  {isLast && meta?.kind === "order_picker" && (
+                    <div className="mt-2! space-y-1.5!">
+                      {meta.orders.map((o) => (
+                        <button
+                          key={o.orderId}
+                          disabled={sending}
+                          onClick={() =>
+                            void sendMessage(o.label, {
+                              kind: "order_select",
+                              orderId: o.orderId,
+                            })
+                          }
+                          className="block w-full rounded-xl border border-ink-line bg-bg-1 px-3.5! py-2.5! text-left text-[13px] text-ink transition hover:border-accent disabled:opacity-40"
+                        >
+                          <span className="font-semibold">{o.label}</span>
+                          <span className="ml-2! text-ink-mute">{o.status}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="border-t border-ink-line bg-bg-1 p-3!">
+            <div className="mb-1.5! flex justify-end">
+              <button
+                onClick={() => void sendMessage("상담원 연결을 원해요", { kind: "escalate" })}
+                disabled={sending}
+                className="text-[11px] text-ink-faint underline underline-offset-2 transition hover:text-accent disabled:opacity-40"
+              >
+                상담원 연결
+              </button>
+            </div>
             {error && <p className="mb-2! text-xs text-accent">{error}</p>}
             <div className="flex items-end gap-2">
               <textarea

@@ -36,6 +36,48 @@ export async function broadcastCs(
   }
 }
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { csConvTopic, CS_INBOX_TOPIC, type CsMessage, type CsMeta } from "./cs";
+
+/**
+ * 봇/시스템 발신 메시지 1건: 저장 → 대화 메타 갱신 → 브로드캐스트.
+ * 규칙 기반 응답(route)과 AI 응답(cs-bot)이 공용으로 쓴다.
+ */
+export async function postBotMessage(
+  admin: SupabaseClient,
+  conversationId: string,
+  body: string,
+  meta?: CsMeta,
+): Promise<CsMessage | null> {
+  const { data: msg, error } = await admin
+    .from("cs_messages")
+    .insert({ conversation_id: conversationId, sender: "bot", body, meta: meta ?? null })
+    .select("id, conversation_id, sender, body, meta, created_at")
+    .single<CsMessage>();
+  if (error || !msg) {
+    console.error("[cs-bot] message insert failed:", error?.message);
+    return null;
+  }
+
+  const { data: conv } = await admin
+    .from("cs_conversations")
+    .select("customer_unread")
+    .eq("id", conversationId)
+    .maybeSingle<{ customer_unread: number }>();
+  await admin
+    .from("cs_conversations")
+    .update({
+      last_preview: body.slice(0, 80),
+      last_message_at: msg.created_at,
+      customer_unread: (conv?.customer_unread ?? 0) + 1,
+    })
+    .eq("id", conversationId);
+
+  await broadcastCs(csConvTopic(conversationId), "message", msg);
+  await broadcastCs(CS_INBOX_TOPIC, "update", { conversationId });
+  return msg;
+}
+
 /** 새 고객 문의를 슬랙 #글로-cs 채널에 통지한다 (베스트에포트). */
 export async function notifyCsSlack(opts: {
   conversationId: string;
