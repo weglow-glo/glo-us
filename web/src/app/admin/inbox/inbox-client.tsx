@@ -9,10 +9,12 @@ import {
   fetchThread,
   markThreadRead,
   sendReply,
+  setConversationMode,
   setConversationStatus,
   type InboxConversation,
   type ThreadOrder,
 } from "./actions";
+import { CS_CATEGORY_LABEL, type CsCategory } from "@/lib/cs";
 
 /**
  * 문의관리 인박스 — 좌측 대화 목록 + 우측 스레드.
@@ -150,6 +152,10 @@ export default function InboxClient({
     }
     const m = r.message;
     setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
+    // 서버가 답변과 함께 상담원 모드로 전환한다 — 목록 상태도 맞춘다
+    setConversations((cs) =>
+      cs.map((c) => (c.id === selectedId ? { ...c, mode: "human" as const } : c)),
+    );
     setInput("");
   }
 
@@ -208,6 +214,16 @@ export default function InboxClient({
                   <span className="text-sm font-semibold text-ink">
                     {c.display_name ?? "비회원"}
                   </span>
+                  {c.mode === "bot" && (
+                    <span className="rounded-full bg-bg-3 px-1.5 py-0.5 text-[10px] font-semibold text-burg-300">
+                      봇
+                    </span>
+                  )}
+                  {c.category && (
+                    <span className="text-[11px] text-ink-faint">
+                      {CS_CATEGORY_LABEL[c.category as CsCategory] ?? c.category}
+                    </span>
+                  )}
                   {c.status === "closed" && (
                     <span className="text-[11px] text-ink-faint">완료</span>
                   )}
@@ -256,8 +272,29 @@ export default function InboxClient({
                   </p>
                 </div>
                 <button
+                  onClick={async () => {
+                    const next = selected.mode === "bot" ? "human" : "bot";
+                    await setConversationMode(selected.id, next);
+                    setConversations((cs) =>
+                      cs.map((c) => (c.id === selected.id ? { ...c, mode: next } : c)),
+                    );
+                  }}
+                  className={`ml-auto rounded-full border px-3 py-1 text-xs font-semibold transition ${
+                    selected.mode === "bot"
+                      ? "border-burg-50 bg-bg-3 text-burg-300"
+                      : "border-ink-line text-ink-mute hover:text-ink"
+                  }`}
+                  title={
+                    selected.mode === "bot"
+                      ? "현재 AI 봇이 응대 중 — 누르면 상담원 모드로 전환"
+                      : "누르면 AI 봇 응대를 재개"
+                  }
+                >
+                  {selected.mode === "bot" ? "봇 응대 중" : "봇 재개"}
+                </button>
+                <button
                   onClick={() => handleStatus(selected.status === "closed" ? "open" : "closed")}
-                  className="ml-auto rounded-full border border-ink-line px-3 py-1 text-xs font-semibold text-ink-mute transition hover:text-ink"
+                  className="rounded-full border border-ink-line px-3 py-1 text-xs font-semibold text-ink-mute transition hover:text-ink"
                 >
                   {selected.status === "closed" ? "다시 열기" : "완료 처리"}
                 </button>
@@ -285,15 +322,22 @@ export default function InboxClient({
                 {messages.map((m) => (
                   <div
                     key={m.id}
-                    className={`flex ${m.sender === "admin" ? "justify-end" : "justify-start"}`}
+                    className={`flex ${m.sender === "customer" ? "justify-start" : "justify-end"}`}
                   >
                     <div
                       className={`max-w-[80%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2 text-sm leading-relaxed ${
                         m.sender === "admin"
                           ? "rounded-br-md bg-burg-600 text-cream"
-                          : "rounded-bl-md border border-ink-line bg-bg-1 text-ink"
+                          : m.sender === "bot"
+                            ? "rounded-br-md border border-burg-50 bg-bg-3 text-ink"
+                            : "rounded-bl-md border border-ink-line bg-bg-1 text-ink"
                       }`}
                     >
+                      {m.sender === "bot" && (
+                        <span className="mb-0.5 block text-[10px] font-semibold text-burg-300">
+                          AI 봇
+                        </span>
+                      )}
                       {m.body}
                       <span
                         className={`mt-1 block text-right text-[10px] ${
