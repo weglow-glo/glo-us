@@ -62,7 +62,9 @@ type Conv = { id: string; token: string; status: string };
 
 export default function CsWidget() {
   const pathname = usePathname();
-  const onAdmin = pathname?.startsWith("/admin") ?? false;
+  // admin 대시보드와 팝업 로그인 착지 페이지에서는 위젯을 숨긴다
+  const hideWidget =
+    (pathname?.startsWith("/admin") || pathname?.startsWith("/cs-login-done")) ?? false;
 
   const [open, setOpen] = useState(false);
   const [conv, setConv] = useState<Conv | null>(null);
@@ -73,6 +75,7 @@ export default function CsWidget() {
   const [unread, setUnread] = useState(false);
   const [bottom, setBottom] = useState(20);
   const loadedRef = useRef(false);
+  const loggedInRef = useRef(false);
   const openRef = useRef(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -83,21 +86,26 @@ export default function CsWidget() {
 
   // 페이지 이동/리사이즈 때마다 하단 바를 피해 위치를 다시 잡는다.
   useEffect(() => {
-    if (onAdmin) return;
+    if (hideWidget) return;
     const recalc = () => setBottom(calcBottom());
     recalc();
     window.addEventListener("resize", recalc);
     return () => window.removeEventListener("resize", recalc);
-  }, [onAdmin, pathname]);
+  }, [hideWidget, pathname]);
 
-  const load = useCallback(async () => {
-    if (loadedRef.current) return;
+  const load = useCallback(async (): Promise<boolean> => {
+    if (loadedRef.current) return loggedInRef.current;
     loadedRef.current = true;
     try {
       const token = getToken();
       const res = await fetch(`/api/cs/messages${token ? `?token=${token}` : ""}`);
-      if (!res.ok) return;
-      const j = (await res.json()) as { conversation: Conv | null; messages: CsMessage[] };
+      if (!res.ok) return loggedInRef.current;
+      const j = (await res.json()) as {
+        conversation: Conv | null;
+        messages: CsMessage[];
+        loggedIn?: boolean;
+      };
+      loggedInRef.current = !!j.loggedIn;
       if (j.conversation) {
         setConv(j.conversation);
         saveToken(j.conversation.token);
@@ -106,13 +114,14 @@ export default function CsWidget() {
     } catch {
       loadedRef.current = false; // 다음 열기에서 재시도
     }
+    return loggedInRef.current;
   }, []);
 
   // 기존 대화가 있는 방문자만 마운트 시 복원 (신규 방문자는 열 때까지 요청 없음).
   // 답변 뱃지를 위해 위젯이 닫혀 있어도 구독은 유지한다.
   useEffect(() => {
-    if (!onAdmin && getToken()) void load();
-  }, [onAdmin, load]);
+    if (!hideWidget && getToken()) void load();
+  }, [hideWidget, load]);
 
   // 첫 열기 — 토큰은 없지만 로그인 회원일 수 있으니 세션으로 조회해본다.
   useEffect(() => {
@@ -186,8 +195,19 @@ export default function CsWidget() {
     void sendMessage(input.trim());
   }
 
-  /** 로그인 유도 카드 → 로그인 페이지로 (복귀 시 위젯 자동 재개) */
+  /**
+   * 로그인 유도 카드 → 팝업으로 로그인 (채팅 화면을 떠나지 않는다).
+   * 팝업이 로그인 완료 후 /cs-login-done 에 착지해 postMessage로 알려주면
+   * 아래 message 리스너가 대화를 이어간다. 팝업이 차단되면 전체 페이지
+   * 이동(+복귀 플래그) 방식으로 폴백.
+   */
   function goLogin() {
+    const popup = window.open(
+      "/login?next=%2Fcs-login-done",
+      "glo-cs-login",
+      "width=480,height=720,menubar=no,toolbar=no",
+    );
+    if (popup) return;
     try {
       sessionStorage.setItem(RESUME_KEY, "1");
     } catch {
@@ -196,10 +216,29 @@ export default function CsWidget() {
     window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
   }
 
+  // 팝업 로그인 완료 신호 → 로그인 상태 재확인 후 퍼널 재개
+  useEffect(() => {
+    if (hideWidget) return;
+    const onMsg = (e: MessageEvent) => {
+      if (e.origin !== window.location.origin || e.data !== "glo-cs-login-done") return;
+      void (async () => {
+        loadedRef.current = false; // 세션이 바뀌었으니 대화를 다시 불러온다
+        const loggedIn = await load();
+        if (loggedIn) await sendMessage("로그인했습니다", { kind: "resume" });
+      })();
+    };
+    window.addEventListener("message", onMsg);
+    return () => window.removeEventListener("message", onMsg);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hideWidget, load]);
+
   // 로그인 후 복귀 — 위젯을 열고 진행 중이던 퍼널 스텝을 서버에 다시 요청한다.
+  // 주의: 위젯은 /login 페이지에도 마운트되므로 그곳에서는 플래그를 소진하지
+  // 않는다 (진짜 로그인 후 next 페이지로 돌아왔을 때 발동해야 함).
   const resumedRef = useRef(false);
   useEffect(() => {
-    if (onAdmin || resumedRef.current) return;
+    if (hideWidget || resumedRef.current) return;
+    if (pathname?.startsWith("/login") || pathname?.startsWith("/auth")) return;
     let flagged = false;
     try {
       flagged = sessionStorage.getItem(RESUME_KEY) === "1";
@@ -211,13 +250,15 @@ export default function CsWidget() {
     resumedRef.current = true;
     setOpen(true);
     void (async () => {
-      await load();
-      await sendMessage("로그인했습니다", { kind: "resume" });
+      // 실제로 로그인된 경우에만 재개 — 로그인 없이 돌아왔다면(뒤로가기 등)
+      // 아무것도 보내지 않는다. 로그인 유도 카드가 그대로 남아 있다.
+      const loggedIn = await load();
+      if (loggedIn) await sendMessage("로그인했습니다", { kind: "resume" });
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onAdmin]);
+  }, [hideWidget, pathname]);
 
-  if (onAdmin) return null;
+  if (hideWidget) return null;
 
   return (
     <div
