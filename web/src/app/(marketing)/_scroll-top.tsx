@@ -21,10 +21,12 @@ export default function ScrollTop() {
   }, []);
 
   useEffect(() => {
+    // 자체 CS 위젯(cs-widget.tsx)이 켜져 있으면 같은 코너를 쓰므로 그 위로 스택.
+    const csOffset = process.env.NEXT_PUBLIC_CS_WIDGET === "1" ? 68 : 0;
     const calc = () => {
       const bar = document.querySelector(".buy-float");
       const barVisible = !!bar && getComputedStyle(bar).display !== "none";
-      setBottom(barVisible ? 88 : 24);
+      setBottom((barVisible ? 88 : 24) + csOffset);
     };
     calc();
     window.addEventListener("resize", calc);
@@ -55,7 +57,9 @@ export default function ScrollTop() {
         lineHeight: 1,
         opacity: show ? 1 : 0,
         pointerEvents: show ? "auto" : "none",
-        transition: "opacity .2s, bottom .2s",
+        // bottom은 transition 대상에서 제외 — reduced-motion의 0.01ms 오버라이드와
+        // 얽히면 렌더 프레임이 없는 탭에서 시작값에 고착되는 사례가 있었다.
+        transition: "opacity .2s",
       }}
     >
       ↑
