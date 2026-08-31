@@ -277,7 +277,9 @@ export default function CsWidget() {
 
   return (
     <div
-      className="fixed right-5 z-[70] flex flex-col items-end"
+      className="fixed right-5 z-[10000] flex flex-col items-end"
+      // z-[10000]: 홈의 분위기 오버레이(.vig z-9997, .grain z-9998 — 화면 전체를 덮는
+      // 비네트/노이즈)보다 위에 있어야 채팅창이 어둡게 씌워지지 않는다.
       // transition:none — 전역 reduced-motion 오버라이드(* { transition-duration: .01ms })가
       // 위치 변경까지 트랜지션으로 만들면 렌더가 멈춘 백그라운드 탭에서 이전 위치에 고착된다.
       style={{ bottom, transition: "none" }}
