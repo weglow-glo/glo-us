@@ -140,6 +140,14 @@ function parseMeta(raw: unknown): CsMeta | null {
   if (m.kind === "escalate") return { kind: "escalate" };
   if (m.kind === "restart") return { kind: "restart" };
   if (m.kind === "back") return { kind: "back" };
+  if (m.kind === "images") {
+    // 우리 cs-media 버킷의 공개 URL만 허용 — 외부 URL 주입(렌더·봇 비전 악용) 차단
+    const prefix = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/cs-media/`;
+    const urls = (Array.isArray((m as { urls?: unknown }).urls) ? (m as { urls: unknown[] }).urls : [])
+      .filter((u): u is string => typeof u === "string" && u.startsWith(prefix))
+      .slice(0, 3);
+    if (urls.length > 0) return { kind: "images", urls };
+  }
   return null;
 }
 
@@ -301,6 +309,7 @@ export async function POST(request: Request) {
 
   // ---- 응대 계층 분기 ----
   let botReply: CsMessage | null = null;
+  let pending: "bot" | null = null; // AI 응답 생성 예정 → 위젯이 "작성 중" 표시
   if (meta?.kind === "category") {
     await admin
       .from("cs_conversations")
@@ -377,6 +386,7 @@ export async function POST(request: Request) {
     );
   } else if (conv.mode === "bot") {
     // 자유 텍스트 → AI 봇. 응답은 브로드캐스트로 도착하므로 요청은 먼저 반환한다.
+    pending = "bot";
     const convId = conv.id;
     after(async () => {
       await runBotTurn(admin, convId);
@@ -398,5 +408,6 @@ export async function POST(request: Request) {
     message: msg,
     // 구독 시작 전(새 대화 첫 메시지)에도 봇 즉답이 보이도록 응답에 동봉
     botReply,
+    pending,
   });
 }

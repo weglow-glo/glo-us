@@ -41,9 +41,14 @@ export type CsMeta =
   | { kind: "escalate" }
   | { kind: "restart" }
   | { kind: "back" }
+  | { kind: "images"; urls: string[] }
   | { kind: "login_prompt" }
   | { kind: "category_picker" }
   | { kind: "order_picker"; orders: CsOrderCard[] };
+
+/** 첨부 이미지 제한 — 위젯·업로드 API·meta 검증이 공유 */
+export const CS_MAX_IMAGES_PER_MESSAGE = 3;
+export const CS_MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 스토리지 버킷 제한과 동일
 
 export type CsMessage = {
   id: string;
