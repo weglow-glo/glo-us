@@ -139,6 +139,7 @@ function parseMeta(raw: unknown): CsMeta | null {
   if (m.kind === "resume") return { kind: "resume" };
   if (m.kind === "escalate") return { kind: "escalate" };
   if (m.kind === "restart") return { kind: "restart" };
+  if (m.kind === "back") return { kind: "back" };
   return null;
 }
 
@@ -334,6 +335,34 @@ export async function POST(request: Request) {
     }
   } else if (meta?.kind === "escalate") {
     botReply = await escalate(admin, conv, "고객이 상담원 연결을 요청했습니다.");
+  } else if (meta?.kind === "back") {
+    // 이전 단계 — 주문 선택을 되돌리고, 되돌릴 주문 선택지가 없으면 카테고리로.
+    if (conv.order_id && conv.user_id) {
+      await admin.from("cs_conversations").update({ order_id: null }).eq("id", conv.id);
+      const { data: orders } = await admin
+        .from("orders")
+        .select(BOT_ORDER_SELECT)
+        .eq("user_id", conv.user_id)
+        .order("created_at", { ascending: false })
+        .limit(5)
+        .returns<BotOrder[]>();
+      if (orders && orders.length >= 2) {
+        botReply = await postBotMessage(admin, conv.id, "어떤 주문 건인지 다시 선택해주세요.", {
+          kind: "order_picker",
+          orders: orders.map(orderCardOf),
+        });
+      } else {
+        await admin.from("cs_conversations").update({ category: null }).eq("id", conv.id);
+        botReply = await postBotMessage(admin, conv.id, "어떤 문의로 찾아주셨나요?", {
+          kind: "category_picker",
+        });
+      }
+    } else {
+      await admin.from("cs_conversations").update({ category: null }).eq("id", conv.id);
+      botReply = await postBotMessage(admin, conv.id, "어떤 문의로 찾아주셨나요?", {
+        kind: "category_picker",
+      });
+    }
   } else if (meta?.kind === "restart") {
     // 처음으로 — 퍼널 상태를 비우고 봇 응대로 되돌린 뒤 카테고리부터 다시.
     await admin

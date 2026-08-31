@@ -40,6 +40,7 @@ export type CsMeta =
   | { kind: "resume" }
   | { kind: "escalate" }
   | { kind: "restart" }
+  | { kind: "back" }
   | { kind: "login_prompt" }
   | { kind: "category_picker" }
   | { kind: "order_picker"; orders: CsOrderCard[] };

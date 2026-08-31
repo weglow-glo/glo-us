@@ -298,13 +298,22 @@ export default function CsWidget() {
             </div>
             <div className="flex shrink-0 items-center gap-1">
               {messages.length > 0 && (
-                <button
-                  onClick={() => void sendMessage("처음부터 다시 문의할게요", { kind: "restart" })}
-                  disabled={sending}
-                  className="mt-0.5! rounded-full px-2! py-1! text-[11px] text-cream/70 transition hover:bg-burg-400 hover:text-cream disabled:opacity-40"
-                >
-                  처음으로
-                </button>
+                <>
+                  <button
+                    onClick={() => void sendMessage("이전 단계로 갈게요", { kind: "back" })}
+                    disabled={sending}
+                    className="mt-0.5! rounded-full px-2! py-1! text-[11px] text-cream/70 transition hover:bg-burg-400 hover:text-cream disabled:opacity-40"
+                  >
+                    이전
+                  </button>
+                  <button
+                    onClick={() => void sendMessage("처음부터 다시 문의할게요", { kind: "restart" })}
+                    disabled={sending}
+                    className="mt-0.5! rounded-full px-2! py-1! text-[11px] text-cream/70 transition hover:bg-burg-400 hover:text-cream disabled:opacity-40"
+                  >
+                    처음으로
+                  </button>
+                </>
               )}
               <button
                 onClick={() => setOpen(false)}
