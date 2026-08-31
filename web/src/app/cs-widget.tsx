@@ -77,6 +77,8 @@ export default function CsWidget() {
   const [unread, setUnread] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [typing, setTyping] = useState(false);
+  // 전송 직후가 아니라 ~2초 뒤에 ··· 표시 (즉답이 오면 아예 안 보이게)
+  const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [bottom, setBottom] = useState(20);
   const fileRef = useRef<HTMLInputElement>(null);
   const loadedRef = useRef(false);
@@ -141,7 +143,11 @@ export default function CsWidget() {
       .on("broadcast", { event: "message" }, ({ payload }) => {
         const m = payload as CsMessage;
         setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
-        if (m.sender !== "customer") setTyping(false); // 답변 도착 → 작성 중 해제
+        if (m.sender !== "customer") {
+          // 답변 도착 → 작성 중(예약 포함) 해제
+          if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+          setTyping(false);
+        }
         if (m.sender === "admin" && !openRef.current) setUnread(true);
       })
       .subscribe((status, err) => {
@@ -190,7 +196,10 @@ export default function CsWidget() {
         setError(j.error ?? "전송에 실패했습니다. 다시 시도해주세요.");
         return;
       }
-      if (j.pending === "bot") setTyping(true);
+      if (j.pending === "bot") {
+        if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+        typingTimerRef.current = setTimeout(() => setTyping(true), 2000);
+      }
       setConv(j.conversation);
       saveToken(j.conversation.token);
       const incoming = [j.message, ...(j.botReply ? [j.botReply] : [])];
@@ -419,10 +428,8 @@ export default function CsWidget() {
               const meta = m.meta ?? null;
               return (
                 <div key={m.id}>
-                  {m.sender !== "customer" && (
-                    <p className="mb-0.5! text-[10px] text-ink-faint">
-                      {m.sender === "bot" ? "AI 도우미" : "상담원"}
-                    </p>
+                  {m.sender === "admin" && (
+                    <p className="mb-0.5! text-[10px] text-ink-faint">상담원</p>
                   )}
                   <div
                     className={`flex ${m.sender === "customer" ? "justify-end" : "justify-start"}`}
@@ -502,12 +509,14 @@ export default function CsWidget() {
               );
             })}
             {typing && (
-              <div>
-                <p className="mb-0.5! text-[10px] text-ink-faint">AI 도우미</p>
-                <div className="flex justify-start">
-                  <div className="rounded-2xl rounded-bl-md border border-ink-line-2 bg-bg-2 px-3.5! py-2.5! text-sm text-ink-mute">
-                    답변을 작성하고 있어요 ···
-                  </div>
+              <div className="flex justify-start">
+                <div
+                  className="rounded-2xl rounded-bl-md border border-ink-line-2 bg-bg-2 px-4! py-3! leading-none text-ink-mute"
+                  aria-label="답변 작성 중"
+                >
+                  <span className="glo-cs-dot inline-block text-lg">·</span>
+                  <span className="glo-cs-dot inline-block text-lg">·</span>
+                  <span className="glo-cs-dot inline-block text-lg">·</span>
                 </div>
               </div>
             )}
