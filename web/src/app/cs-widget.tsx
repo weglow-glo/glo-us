@@ -16,6 +16,24 @@ import { csConvTopic, type CsMessage } from "@/lib/cs";
 
 const TOKEN_KEY = "glo-cs-token";
 
+/**
+ * 하단 고정 바(상세페이지 모바일 .buy-float, 체크아웃 결제바 [data-glo-bottombar])가
+ * 보이면 그 위로 버블을 띄운다. 마케팅 _scroll-top.tsx의 "맨 위로" 버튼은
+ * 위젯이 켜져 있으면 이 버블 위(+68px)로 스택된다.
+ */
+function calcBottom(): number {
+  let lift = 20;
+  document.querySelectorAll(".buy-float, [data-glo-bottombar]").forEach((el) => {
+    const cs = getComputedStyle(el);
+    // (체크아웃 바는 PC에선 static으로 풀린다 — fixed일 때만 피한다)
+    if (cs.position !== "fixed" || cs.display === "none" || cs.visibility === "hidden") return;
+    const r = el.getBoundingClientRect();
+    if (r.height === 0) return;
+    lift = Math.max(lift, Math.round(window.innerHeight - r.top) + 12);
+  });
+  return lift;
+}
+
 function getToken(): string | null {
   try {
     return localStorage.getItem(TOKEN_KEY);
@@ -45,6 +63,7 @@ export default function CsWidget() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [unread, setUnread] = useState(false);
+  const [bottom, setBottom] = useState(20);
   const loadedRef = useRef(false);
   const openRef = useRef(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -53,6 +72,15 @@ export default function CsWidget() {
     openRef.current = open;
     if (open) setUnread(false);
   }, [open]);
+
+  // 페이지 이동/리사이즈 때마다 하단 바를 피해 위치를 다시 잡는다.
+  useEffect(() => {
+    if (onAdmin) return;
+    const recalc = () => setBottom(calcBottom());
+    recalc();
+    window.addEventListener("resize", recalc);
+    return () => window.removeEventListener("resize", recalc);
+  }, [onAdmin, pathname]);
 
   const load = useCallback(async () => {
     if (loadedRef.current) return;
@@ -142,9 +170,17 @@ export default function CsWidget() {
   if (onAdmin) return null;
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+    <div
+      className="fixed right-5 z-[70] flex flex-col items-end"
+      // transition:none — 전역 reduced-motion 오버라이드(* { transition-duration: .01ms })가
+      // 위치 변경까지 트랜지션으로 만들면 렌더가 멈춘 백그라운드 탭에서 이전 위치에 고착된다.
+      style={{ bottom, transition: "none" }}
+    >
       {open && (
-        <div className="mb-3 flex h-[min(520px,calc(100dvh-120px))] w-[360px] max-w-[calc(100vw-40px)] flex-col overflow-hidden rounded-2xl border border-ink-line bg-bg-1 shadow-2xl">
+        <div
+          className="mb-3 flex w-[360px] max-w-[calc(100vw-40px)] flex-col overflow-hidden rounded-2xl border border-ink-line bg-bg-1 shadow-2xl"
+          style={{ height: `min(520px, calc(100dvh - ${bottom + 96}px))` }}
+        >
           <div className="bg-burg-600 px-5 py-4 text-cream">
             <p className="text-base">
               <span className="font-display">glo</span> 고객 문의
@@ -212,7 +248,7 @@ export default function CsWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "문의창 닫기" : "문의하기"}
         aria-expanded={open}
-        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-burg-600 text-cream shadow-lg transition hover:bg-burg-400"
+        className="relative flex h-14 w-14 items-center justify-center rounded-full border-2 border-cream bg-burg-600 text-cream shadow-lg transition hover:bg-burg-400"
       >
         {open ? (
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">

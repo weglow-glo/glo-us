@@ -639,7 +639,10 @@ export default function CheckoutClient({
       )}
 
       {/* Pay button — floating bottom bar on mobile, inline on desktop */}
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-ink-line bg-bg-1/95 px-4 py-4 backdrop-blur sm:static sm:mt-6 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none">
+      <div
+        data-glo-bottombar
+        className="fixed inset-x-0 bottom-0 z-50 border-t border-ink-line bg-bg-1/95 px-4 py-4 backdrop-blur sm:static sm:mt-6 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none"
+      >
         <div className="w-full">
           <button
             onClick={handlePay}
