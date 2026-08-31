@@ -336,15 +336,19 @@ export default function CsWidget() {
           </div>
 
           <div className="border-t border-ink-line bg-bg-1 p-3!">
-            <div className="mb-1.5! flex justify-end">
-              <button
-                onClick={() => void sendMessage("상담원 연결을 원해요", { kind: "escalate" })}
-                disabled={sending}
-                className="text-[11px] text-ink-faint underline underline-offset-2 transition hover:text-accent disabled:opacity-40"
-              >
-                상담원 연결
-              </button>
-            </div>
+            {/* 상담원 연결은 최후 수단 — 봇 답변이 3회 이상 쌓인 뒤에만 노출.
+                (그 전에도 "상담원 연결해주세요"라고 입력하면 봇이 escalate로 연결) */}
+            {messages.filter((m) => m.sender === "bot" && !m.meta).length >= 3 && (
+              <div className="mb-1.5! flex justify-end">
+                <button
+                  onClick={() => void sendMessage("상담원 연결을 원해요", { kind: "escalate" })}
+                  disabled={sending}
+                  className="text-[11px] text-ink-faint underline underline-offset-2 transition hover:text-accent disabled:opacity-40"
+                >
+                  해결이 안 되셨나요? 상담원 연결
+                </button>
+              </div>
+            )}
             {error && <p className="mb-2! text-xs text-accent">{error}</p>}
             <div className="flex items-end gap-2">
               <textarea
