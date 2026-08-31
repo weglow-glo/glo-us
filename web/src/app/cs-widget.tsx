@@ -428,8 +428,10 @@ export default function CsWidget() {
               const meta = m.meta ?? null;
               return (
                 <div key={m.id}>
-                  {m.sender === "admin" && (
-                    <p className="mb-0.5! text-[10px] text-ink-faint">상담원</p>
+                  {m.sender !== "customer" && (
+                    <p className="mb-0.5! text-[10px] text-ink-faint">
+                      {m.sender === "bot" ? "AI 도우미" : "상담원"}
+                    </p>
                   )}
                   <div
                     className={`flex ${m.sender === "customer" ? "justify-end" : "justify-start"}`}
