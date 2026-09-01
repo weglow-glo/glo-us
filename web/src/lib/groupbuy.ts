@@ -67,6 +67,17 @@ export function isRoundRevenue(status: string): boolean {
   return ROUND_REVENUE_STATUSES.includes(status);
 }
 
+/** 전용 URL 핸들 규칙 — 인스타·유튜브 아이디를 그대로 쓸 수 있게
+ *  영문 소문자·숫자에 하이픈·밑줄·마침표까지 허용한다 (예: _blanc_beauty).
+ *  영문/숫자가 최소 1자는 있어야 하고, 정규화(소문자·트림)까지 함께 처리한다.
+ *  잘못된 값이면 null. */
+export function normalizeSellerHandle(raw: string | null | undefined): string | null {
+  const h = String(raw ?? "").trim().toLowerCase();
+  if (!/^[a-z0-9._-]{2,40}$/.test(h)) return null;
+  if (!/[a-z0-9]/.test(h)) return null;
+  return h;
+}
+
 /** live 판정은 상태 컬럼이 아니라 시간으로 — 크론 없이 접속 시점에 결정 */
 export function isRoundLive(
   round: { startsAt: string | null; endsAt: string | null },

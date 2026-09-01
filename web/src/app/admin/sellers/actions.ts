@@ -2,7 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { parseRoundOptions, ROUND_REVENUE_STATUSES, SETTLE_HOLD_DAYS } from "@/lib/groupbuy";
+import { redirect } from "next/navigation";
+import {
+  normalizeSellerHandle,
+  parseRoundOptions,
+  ROUND_REVENUE_STATUSES,
+  SETTLE_HOLD_DAYS,
+} from "@/lib/groupbuy";
 import {
   dispatchSellerNotice,
   roundApprovedNotice,
@@ -35,12 +41,16 @@ export async function updateSellerHandle(formData: FormData) {
   const sellerId = str(formData.get("seller_id"));
   if (!sellerId) return;
 
-  const raw = str(formData.get("handle"))?.toLowerCase() ?? null;
-  if (raw && !/^[a-z0-9-]{2,40}$/.test(raw)) return;
+  const input = str(formData.get("handle"));
+  // 빈 값이면 해제, 값이 있으면 규칙 검증
+  const raw = input ? normalizeSellerHandle(input) : null;
+  if (input && !raw) redirect("/admin/sellers?err=handle");
 
   const admin = createAdminClient();
-  await admin.from("sellers").update({ handle: raw }).eq("id", sellerId);
+  const { error } = await admin.from("sellers").update({ handle: raw }).eq("id", sellerId);
+  if (error) redirect("/admin/sellers?err=handle_taken");
   revalidatePath("/admin/sellers");
+  redirect("/admin/sellers?ok=handle");
 }
 
 export async function toggleSellerActive(formData: FormData) {
@@ -137,9 +147,13 @@ export async function approveRound(formData: FormData) {
   const options = parseOptionsField(formData.get("options"));
 
   if (!roundId) return;
-  if (!startsAt || !endsAt || Date.parse(endsAt) <= Date.parse(startsAt)) return;
-  if (!Number.isFinite(rate) || rate < 0 || rate > 100) return;
-  if (!options) return;
+  if (!startsAt || !endsAt || Date.parse(endsAt) <= Date.parse(startsAt)) {
+    redirect("/admin/sellers?err=period");
+  }
+  if (!Number.isFinite(rate) || rate < 0 || rate > 100) {
+    redirect("/admin/sellers?err=rate");
+  }
+  if (!options) redirect("/admin/sellers?err=options");
 
   const admin = createAdminClient();
 
@@ -161,13 +175,13 @@ export async function approveRound(formData: FormData) {
   // 핸들: 이미 있으면 재사용, 없으면(첫 회차) 폼 입력을 셀러에 저장
   let handle = seller.handle;
   if (!handle) {
-    const input = str(formData.get("handle"))?.toLowerCase() ?? null;
-    if (!input || !/^[a-z0-9-]{2,40}$/.test(input)) return;
+    const input = normalizeSellerHandle(str(formData.get("handle")));
+    if (!input) redirect("/admin/sellers?err=handle");
     const { error: handleErr } = await admin
       .from("sellers")
       .update({ handle: input })
       .eq("id", seller.id);
-    if (handleErr) return; // 중복 핸들 등 — 화면에서 다른 값으로 재시도
+    if (handleErr) redirect("/admin/sellers?err=handle_taken");
     handle = input;
   }
 
@@ -211,6 +225,7 @@ export async function approveRound(formData: FormData) {
   }
 
   revalidatePath("/admin/sellers");
+  redirect("/admin/sellers?ok=approved");
 }
 
 export async function rejectRound(formData: FormData) {

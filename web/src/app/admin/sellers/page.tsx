@@ -109,7 +109,26 @@ const ROUND_STATUS_LABEL: Record<string, string> = {
 };
 
 /** 셀러·회차 관리 — 공동구매/협찬 매출 분리 집계와 정산 */
-export default async function AdminSellersPage() {
+const ERR_MSG: Record<string, string> = {
+  handle:
+    "전용 URL 핸들 형식이 올바르지 않습니다 — 영문 소문자·숫자와 하이픈(-), 밑줄(_), 마침표(.)만 2~40자로 쓸 수 있습니다.",
+  handle_taken: "이미 다른 셀러가 쓰는 핸들입니다 — 다른 값으로 지정해주세요.",
+  period: "기간이 올바르지 않습니다 — 종료 일시가 시작 일시보다 뒤여야 합니다.",
+  rate: "수수료율은 0~100 사이 숫자로 입력해주세요.",
+  options: "전용 옵션 형식을 확인해주세요 — 한 줄에 `키 | 개월 | 라벨 | 가격`.",
+};
+
+const OK_MSG: Record<string, string> = {
+  approved: "승인 완료 — 전용 링크가 발급되고 셀러에게 안내가 발송되었습니다.",
+  handle: "전용 URL 을 저장했습니다.",
+};
+
+export default async function AdminSellersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ err?: string; ok?: string }>;
+}) {
+  const { err, ok } = await searchParams;
   const now = Date.now();
   const demo = groupbuyDemoMode();
 
@@ -200,6 +219,17 @@ export default async function AdminSellersPage() {
         </p>
       )}
 
+      {err && ERR_MSG[err] && (
+        <p className="mt-3 rounded-md border border-burg-200 bg-bg-3 px-4 py-2.5 text-sm font-medium text-burg-400">
+          {ERR_MSG[err]}
+        </p>
+      )}
+      {ok && OK_MSG[ok] && (
+        <p className="mt-3 rounded-md bg-bg-3 px-4 py-2.5 text-sm font-medium text-accent">
+          {OK_MSG[ok]}
+        </p>
+      )}
+
       {/* ── 셀러 지원 심사 ─────────────────────────── */}
       {applications.length > 0 && (
         <section className="mt-8">
@@ -277,7 +307,7 @@ export default async function AdminSellersPage() {
                       </p>
                     </label>
                   ) : (
-                    <Input name="handle" label="전용 URL 핸들 — 최초 1회 지정, 이후 고정" placeholder="ellie" required />
+                    <Input name="handle" label="전용 URL 핸들 — 최초 1회 지정, 이후 고정" placeholder="_blanc_beauty" required />
                   )}
                   <Input name="display_name" label="표시 이름" placeholder="엘리" />
                   <Input name="starts_at" label="시작 일시" type="datetime-local" required defaultValue={kstDateTimeInput(r.starts_at)} />
