@@ -53,7 +53,8 @@ export default function InboxClient({
   initialSelectedId: string | null;
 }) {
   const [conversations, setConversations] = useState(initialConversations);
-  const [filter, setFilter] = useState<Filter>("all");
+  // 미답변이 상담원의 기본 업무 목록 — 첫 진입 시 미답변 탭
+  const [filter, setFilter] = useState<Filter>("unread");
   const [selectedId, setSelectedId] = useState<string | null>(initialSelectedId);
   const [messages, setMessages] = useState<CsMessage[]>([]);
   const [orders, setOrders] = useState<ThreadOrder[]>([]);
