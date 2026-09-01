@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { fetchPublicRound } from "@/lib/groupbuy-server";
-import { type PublicRound } from "@/lib/groupbuy";
+import { normalizeSellerHandle, type PublicRound } from "@/lib/groupbuy";
 // 생성된 마케팅 상세페이지를 그대로 재사용한다 — predev/prebuild 가
 // ko/product.html 에서 생성하므로 빌드 시점에는 항상 존재한다 (gitignored).
 import MarketingLayout from "../../(marketing)/layout";
@@ -22,8 +22,7 @@ export const dynamic = "force-dynamic";
 function normalizeHandle(raw: string): string | null {
   const decoded = decodeURIComponent(raw);
   if (!decoded.startsWith("@")) return null;
-  const h = decoded.slice(1).trim().toLowerCase();
-  return /^[a-z0-9-]{2,40}$/.test(h) ? h : null;
+  return normalizeSellerHandle(decoded.slice(1));
 }
 
 async function resolveRound(rawHandle: string): Promise<PublicRound | null> {
