@@ -22,9 +22,6 @@ function gloWord(): HTMLElement {
  *
  * 원본 .opt 버튼을 제거하므로 _interactions.tsx 가 걸어둔 클릭 핸들러는
  * 노드와 함께 사라진다. 선택 동작은 여기서 동일하게 다시 구현한다.
- * 런칭 이벤트 카운트다운(#launch-scar)은 공구와 무관하므로 제거하고,
- * 마감 시 가격을 덮어쓰는 applyPostPricing 에 대비해 data-post-price 를
- * 회차 가격과 동일하게 박아 어떤 경로로도 가격이 바뀌지 않게 한다.
  */
 export default function RoundBuyPatch({ round }: { round: PublicRound }) {
   useEffect(() => {
@@ -56,8 +53,7 @@ export default function RoundBuyPatch({ round }: { round: PublicRound }) {
       if (hm !== "23:59") endLabel += ` ${hm}`;
     }
 
-    // 1) 런칭 이벤트 카운트다운 제거 → 회차 기간으로 도는 프로모션 카운트다운
-    document.getElementById("launch-scar")?.remove();
+    // 1) 회차 기간으로 도는 프로모션 카운트다운
     const buyBox = optList.closest<HTMLElement>(".buy-box");
     let banner: HTMLElement | null = null;
     let timerEl: HTMLElement | null = null;
@@ -196,8 +192,6 @@ export default function RoundBuyPatch({ round }: { round: PublicRound }) {
       btn.type = "button";
       btn.className = `opt${idx === 0 ? " active" : ""}`;
       btn.dataset.key = o.key;
-      btn.dataset.postPrice = price; // 이벤트 마감 스왑이 돌아도 가격 불변
-      btn.dataset.postDisc = disc;
       btn.setAttribute("role", "radio");
       btn.setAttribute("aria-checked", idx === 0 ? "true" : "false");
 
